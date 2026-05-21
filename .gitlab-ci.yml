@@ -1,8 +1,7 @@
 pages:
   stage: deploy
   script:
-    - mkdir -p public
-    - cp -R remix_test public/remix_test
+    - cp -R site public
   artifacts:
     paths:
       - public
