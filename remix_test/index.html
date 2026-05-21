@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>混剪一致性测试 Demo</title>
+  <style>
+    :root { color-scheme: light; --bg: #f6f7f9; --panel: #fff; --text: #17202a; --muted: #5b6472; --line: #d9dee7; --soft: #eef3fb; --accent: #2457a6; --ok: #16794f; --warn: #996500; --bad: #b42318; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 14px; line-height: 1.55; }
+    header { background: var(--panel); border-bottom: 1px solid var(--line); }
+    .wrap { width: min(1280px, calc(100% - 40px)); margin: 0 auto; }
+    .top { padding: 30px 0 22px; display: grid; gap: 10px; }
+    h1, h2, h3, p { margin: 0; }
+    h1 { font-size: 28px; line-height: 1.2; font-weight: 760; letter-spacing: 0; }
+    h2 { font-size: 19px; margin-bottom: 14px; font-weight: 720; letter-spacing: 0; }
+    h3 { font-size: 15px; font-weight: 720; letter-spacing: 0; }
+    a { color: var(--accent); text-decoration: none; overflow-wrap: anywhere; }
+    a:hover { text-decoration: underline; }
+    code, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; font-size: 12px; }
+    main { padding: 22px 0 46px; display: grid; gap: 22px; }
+    section, .panel, .case-detail { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; }
+    section, .panel { padding: 18px; }
+    .meta, .quick-nav, .filters { color: var(--muted); display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+    .pill, .quick-nav a, .filter-btn { display: inline-flex; align-items: center; min-height: 26px; padding: 2px 8px; border: 1px solid var(--line); background: #fafbfc; border-radius: 4px; color: var(--muted); white-space: nowrap; }
+    .quick-nav a:hover, .filter-btn:hover { text-decoration: none; border-color: #b7c1d1; }
+    .filter-btn { cursor: pointer; font: inherit; }
+    .filter-btn.active { color: var(--accent); border-color: #c9d8f0; background: var(--soft); font-weight: 700; }
+    .callout { border: 1px solid #c9d8f0; background: var(--soft); border-radius: 6px; padding: 12px; color: #24364f; }
+    .stats { display: grid; grid-template-columns: repeat(5, minmax(150px, 1fr)); gap: 10px; }
+    .stat { border: 1px solid var(--line); border-radius: 6px; background: #fbfcfe; padding: 12px; min-height: 78px; }
+    .stat .label { color: var(--muted); font-size: 12px; margin-bottom: 5px; }
+    .stat .value { font-size: 24px; line-height: 1.1; font-weight: 760; }
+    .toolbar { display: grid; gap: 12px; }
+    .search { width: min(420px, 100%); min-height: 34px; border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; font: inherit; }
+    .table-scroll { width: 100%; overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 920px; }
+    th, td { padding: 9px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+    th { color: var(--muted); font-size: 12px; font-weight: 650; background: #fafbfc; }
+    tr:last-child td { border-bottom: 0; }
+    td span { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
+    .tag { display: inline-flex; align-items: center; min-height: 22px; border: 1px solid var(--line); border-radius: 4px; padding: 1px 7px; background: #fafbfc; color: var(--muted); font-size: 12px; font-weight: 700; white-space: nowrap; }
+    .mode-remix { border-color: #bddfcf; background: #eefaf4; color: var(--ok); }
+    .mode-partial { border-color: #f0d38f; background: #fff8e8; color: var(--warn); }
+    .risk-high, .risk-hard { border-color: #f0b8b2; background: #fff2f0; color: var(--bad); }
+    .risk-medium { border-color: #f0d38f; background: #fff8e8; color: var(--warn); }
+    .case-list { display: grid; gap: 14px; }
+    .case-detail { overflow: hidden; }
+    .case-detail > summary { cursor: pointer; display: flex; justify-content: space-between; gap: 12px; padding: 13px 16px; font-weight: 720; font-size: 15px; background: #fbfcfe; }
+    .summary-tags { display: inline-flex; gap: 6px; }
+    .case-layout { display: grid; grid-template-columns: minmax(240px, 360px) 1fr; gap: 16px; padding: 16px; border-top: 1px solid var(--line); }
+    .video-shell { aspect-ratio: 9 / 16; background: #0b0f14; border-radius: 6px; overflow: hidden; display: grid; place-items: center; }
+    .video-shell iframe { width: 100%; height: 100%; border: 0; display: block; }
+    .load-video { border: 1px solid #465365; background: #111827; color: #fff; border-radius: 6px; min-height: 36px; padding: 7px 12px; cursor: pointer; font: inherit; }
+    .case-summary { display: grid; gap: 12px; align-content: start; }
+    .facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0; }
+    .facts div { border: 1px solid var(--line); border-radius: 6px; padding: 8px; background: #fbfcfe; min-width: 0; }
+    .facts dt { color: var(--muted); font-size: 12px; margin-bottom: 3px; }
+    .facts dd { margin: 0; overflow-wrap: anywhere; }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .actions a { display: inline-flex; min-height: 32px; align-items: center; border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; background: #fbfcfe; }
+    .nested-report { margin: 0 16px 16px; border-top: 1px solid var(--line); padding-top: 14px; }
+    .nested-report > summary { cursor: pointer; font-weight: 720; }
+    .report-content { margin-top: 14px; display: grid; gap: 12px; }
+    .report-content h2 { margin: 10px 0 0; font-size: 17px; }
+    .report-content h3 { margin: 8px 0 0; font-size: 15px; }
+    .report-content h4 { margin: 6px 0 0; font-size: 14px; }
+    .report-content p { color: #2d3748; }
+    .clean { margin: 0; padding-left: 18px; }
+    .clean li + li { margin-top: 5px; }
+    blockquote { margin: 0; border-left: 3px solid #c9d8f0; background: #fbfcfe; padding: 9px 12px; color: #334155; }
+    [hidden] { display: none !important; }
+    footer { color: var(--muted); padding: 0 0 30px; }
+    @media (max-width: 980px) { .stats { grid-template-columns: repeat(2, minmax(140px, 1fr)); } .case-layout { grid-template-columns: 1fr; } .video-shell { max-height: none; } }
+    @media (max-width: 620px) { .wrap { width: min(100% - 24px, 1280px); } h1 { font-size: 24px; } .stats, .facts { grid-template-columns: 1fr; } .case-detail > summary { display: grid; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap top">
+      <h1>混剪一致性测试 Demo</h1>
+      <div class="meta">
+        <span class="pill">run mode: <span class="mono">test-remix</span></span>
+        <span class="pill">video: Google Drive iframe</span>
+        <span class="pill">ready for 30-case expansion</span>
+      </div>
+      <p class="callout">本页按 30 条案例的阅读方式组织：先看统计和总览表，再展开具体案例。视频播放器默认延迟加载，避免多个 Google Drive iframe 同时启动。</p>
+    </div>
+  </header>
+  <main class="wrap">
+    <section>
+      <h2>总览</h2>
+      <div class="stats">
+        <div class="stat"><div class="label">Demo 数</div><div class="value">3</div></div>
+        <div class="stat"><div class="label">REMIX</div><div class="value">1</div></div>
+        <div class="stat"><div class="label">PARTIAL_REMIX</div><div class="value">2</div></div>
+        <div class="stat"><div class="label">规则/LLM 有差异</div><div class="value">1</div></div>
+        <div class="stat"><div class="label">高风险或硬拒绝</div><div class="value">3</div></div>
+      </div>
+    </section>
+    <section class="toolbar">
+      <h2>筛选与导航</h2>
+      <div class="filters" role="group" aria-label="mode filter">
+        <button class="filter-btn active" type="button" data-mode-filter="all">全部</button>
+        <button class="filter-btn" type="button" data-mode-filter="REMIX">REMIX</button>
+        <button class="filter-btn" type="button" data-mode-filter="PARTIAL_REMIX">PARTIAL_REMIX</button>
+      </div>
+      <input class="search" type="search" id="caseSearch" placeholder="搜索编号、品类或 item 名称">
+      <div class="quick-nav"><a href="#case-001">001</a><a href="#case-002">002</a><a href="#case-003">003</a></div>
+    </section>
+    <section>
+      <h2>案例总览表</h2>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>ID</th><th>品类</th><th>模式</th><th>参与混剪</th><th>未参与</th><th>时长</th><th>镜头数</th><th>风险</th><th>规则/LLM差异</th></tr></thead>
+          <tbody>
+      <tr data-case-row data-mode="PARTIAL_REMIX" data-risk="high" data-text="001 clear phone case 001_clear_phone_case">
+        <td><a href="#case-001">001</a></td>
+        <td><strong>Clear Phone Case</strong><span>001_Clear_Phone_case</span></td>
+        <td><span class="tag mode-partial">PARTIAL_REMIX</span></td>
+        <td><code>[1, 2]</code></td>
+        <td><code>[0]</code></td>
+        <td><code>9.99s</code></td>
+        <td><code>5</code></td>
+        <td><span class="tag risk-high">high</span></td>
+        <td>是</td>
+      </tr>
+      <tr data-case-row data-mode="REMIX" data-risk="high" data-text="002 card collection album 002_card_collection_album">
+        <td><a href="#case-002">002</a></td>
+        <td><strong>Card Collection Album</strong><span>002_Card_Collection_Album</span></td>
+        <td><span class="tag mode-remix">REMIX</span></td>
+        <td><code>[0, 1, 2]</code></td>
+        <td><code>[]</code></td>
+        <td><code>14.69s</code></td>
+        <td><code>12</code></td>
+        <td><span class="tag risk-high">high</span></td>
+        <td>否</td>
+      </tr>
+      <tr data-case-row data-mode="PARTIAL_REMIX" data-risk="hard_reject" data-text="003 unisex slippers 003_unisex_slippers">
+        <td><a href="#case-003">003</a></td>
+        <td><strong>Unisex Slippers</strong><span>003_Unisex_slippers</span></td>
+        <td><span class="tag mode-partial">PARTIAL_REMIX</span></td>
+        <td><code>[0, 2]</code></td>
+        <td><code>[1]</code></td>
+        <td><code>12.04s</code></td>
+        <td><code>9</code></td>
+        <td><span class="tag risk-hard">hard_reject</span></td>
+        <td>否</td>
+      </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <section>
+      <h2>案例详情</h2>
+      <div class="case-list">
+      <details class="case-detail" id="case-001" data-case-detail data-mode="PARTIAL_REMIX" data-risk="high" data-text="001 clear phone case 001_clear_phone_case" open>
+        <summary>
+          <span>001 · Clear Phone Case</span>
+          <span class="summary-tags"><span class="tag mode-partial">PARTIAL_REMIX</span><span class="tag risk-high">high</span></span>
+        </summary>
+        <div class="case-layout">
+          <div class="video-shell" data-drive-id="1KeHnw1ADSU5JAPV-WfPBpjf2LlzIkknB">
+            <button class="load-video" type="button">加载视频</button>
+          </div>
+          <aside class="case-summary">
+            <h3>混剪结论</h3>
+            <dl class="facts compact">
+              <div><dt>规则层</dt><dd><code>REMIX</code></dd></div>
+              <div><dt>LLM/最终</dt><dd><code>PARTIAL_REMIX</code></dd></div>
+              <div><dt>参与混剪</dt><dd><code>[1, 2]</code></dd></div>
+              <div><dt>未参与</dt><dd><code>[0]</code></dd></div>
+              <div><dt>成片时长</dt><dd><code>9.99s</code></dd></div>
+              <div><dt>镜头数</dt><dd><code>5</code></dd></div>
+            </dl>
+            <p>将视觉一致性最高的视频1和视频2进行混剪，以展示手机壳的开箱、MagSafe功能和配件使用场景。视频0因其独特的防黄卖点和男性手部特征，作为独立视频进行翻译，以最大化利用所有素材并控制视觉风险。</p>
+            <div class="actions inline-actions">
+              <a href="https://drive.google.com/file/d/1KeHnw1ADSU5JAPV-WfPBpjf2LlzIkknB/view?usp=drive_link" target="_blank" rel="noopener">打开 Google Drive 视频</a>
+              <a href="data/remix_report_1.md" target="_blank" rel="noopener">原始 report.md</a>
+            </div>
+          </aside>
+        </div>
+        <details class="nested-report">
+          <summary>展开完整 report.md</summary>
+          <div class="report-content"><h2>混剪测试输出说明</h2>
+<h3>1. 混剪结论</h3>
+<ul class="clean">
+<li>混剪模式：<code>PARTIAL_REMIX</code></li>
+<li>参与混剪视频：<code>[1, 2]</code></li>
+<li>单独翻译/未参与混剪视频：<code>[0]</code></li>
+<li>决策摘要：<code>将视觉一致性最高的视频1和视频2进行混剪，以展示手机壳的开箱、MagSafe功能和配件使用场景。视频0因其独特的防黄卖点和男性手部特征，作为独立视频进行翻译，以最大化利用所有素材并控制视觉风险。</code></li>
+</ul>
+<blockquote>将视觉一致性最高的视频1和视频2进行混剪，以展示手机壳的开箱、MagSafe功能和配件使用场景。视频0因其独特的防黄卖点和男性手部特征，作为独立视频进行翻译，以最大化利用所有素材并控制视觉风险。</blockquote>
+<h3>2. 输入素材关系</h3>
+<div class="table-scroll"><table><thead><tr><th>视频</th><th>商品/内容判断</th><th>角色</th><th>是否进入混剪</th><th>原因</th></tr></thead><tbody><tr><td>视频 0</td><td>透明MagSafe手机壳</td><td>primary</td><td>否，单独翻译</td><td>完整展示手机壳安装在手机上的效果，并突出防黄核心卖点，叙事清晰，适合作为主线骨架。</td></tr><tr><td>视频 1</td><td>透明MagSafe手机壳</td><td>auxiliary</td><td>是</td><td>可补充手机壳的开箱、MagSafe环特写以及安装过程，丰富主线叙事。</td></tr><tr><td>视频 2</td><td>透明MagSafe手机壳 / 米菲兔磁吸支架</td><td>auxiliary</td><td>是</td><td>展示女性用户视角、包装盒、MagSafe配件和米菲兔支架，可补充主线关于MagSafe功能和多样化使用场景的演示，但引入了额外配件和不同人物，与主线连续性稍弱。</td></tr></tbody></table></div>
+<h3>3. 规则层判断</h3>
+<h4>3.1 规则层推荐结论</h4>
+<ul class="clean">
+<li>规则推荐模式：<code>REMIX</code></li>
+<li>规则推荐混剪视频：<code>[0, 1, 2]</code></li>
+<li>规则推荐单独翻译/排除视频：<code>[]</code></li>
+<li>规则置信度：<code>0.65</code></li>
+<li>规则原因：<code>全部视频存在共同核心内容类型和相近商品语义，可组合为同一商品混剪</code></li>
+</ul>
+<h4>3.2 规则层兼容性判断</h4>
+<div class="table-scroll"><table><thead><tr><th>视频组合</th><th>商品一致性</th><th>风格一致性</th><th>人物/手部一致性</th><th>视觉连续性分数</th><th>风险等级</th><th>规则决策</th></tr></thead><tbody><tr><td>0 + 1</td><td>不一致</td><td>bright/closeup/demo/lifestyle/static/studio/tabletop/ugc &lt;-&gt; bright/lifestyle/static/studio/tabletop/ugc</td><td>不一致</td><td>0.5</td><td>high</td><td>can_remix</td></tr><tr><td>0 + 2</td><td>不一致</td><td>bright/closeup/demo/lifestyle/static/studio/tabletop/ugc &lt;-&gt; bright/closeup/demo/lifestyle/studio/tabletop/ugc</td><td>不一致</td><td>0.5</td><td>high</td><td>can_remix</td></tr><tr><td>1 + 2</td><td>不一致</td><td>bright/lifestyle/static/studio/tabletop/ugc &lt;-&gt; bright/closeup/demo/lifestyle/studio/tabletop/ugc</td><td>一致</td><td>0.5</td><td>medium</td><td>can_remix</td></tr></tbody></table></div>
+<h4>3.3 规则层风险说明</h4>
+<div class="table-scroll"><table><thead><tr><th>视频组合</th><th>风险类型</th><th>风险原因</th></tr></thead><tbody><tr><td>0 + 1</td><td>high</td><td>人物/手部特征不一致；棚拍/白底与UGC手持画面风格冲突；棚拍/白底与生活方式画面风格冲突</td></tr><tr><td>0 + 2</td><td>high</td><td>人物/手部特征不一致；棚拍/白底与UGC手持画面风格冲突；棚拍/白底与生活方式画面风格冲突</td></tr><tr><td>1 + 2</td><td>medium</td><td>棚拍/白底与UGC手持画面风格冲突；棚拍/白底与生活方式画面风格冲突</td></tr></tbody></table></div>
+<h3>4. LLM 判断</h3>
+<h4>4.1 LLM 最终结论</h4>
+<ul class="clean">
+<li>LLM 决策模式：<code>PARTIAL_REMIX</code></li>
+<li>LLM 选择混剪视频：<code>[1, 2]</code></li>
+<li>LLM 选择单独翻译/排除视频：<code>[0]</code></li>
+<li>LLM 置信度：<code>0.9</code></li>
+<li>LLM 决策原因：<code>将视觉一致性最高的视频1和视频2进行混剪，以展示手机壳的开箱、MagSafe功能和配件使用场景。视频0因其独特的防黄卖点和男性手部特征，作为独立视频进行翻译，以最大化利用所有素材并控制视觉风险。</code></li>
+</ul>
+<h4>4.2 LLM 候选组合评估</h4>
+<div class="table-scroll"><table><thead><tr><th>候选组合</th><th>商品一致性</th><th>风格一致性</th><th>背景一致性</th><th>人物/手部一致性</th><th>视觉风险</th><th>推荐结果</th><th>原因</th></tr></thead><tbody><tr><td>0 + 1 + 2</td><td>部分一致</td><td>一致</td><td>一致</td><td>不一致</td><td>high</td><td>reject</td><td>该组合包含男性和女性手部，人物连续性风险高。视频2引入了米菲兔支架，与视频0和1仅展示手机壳的商品焦点略有差异，难以形成高度统一的商品卖点。</td></tr><tr><td>0 + 1</td><td>一致</td><td>一致</td><td>一致</td><td>不一致</td><td>high</td><td>reject</td><td>该组合存在男性和女性手部的不一致，视觉连续性风险高，不符合人物连续性风险可控的优先原则。</td></tr><tr><td>0 + 2</td><td>部分一致</td><td>一致</td><td>一致</td><td>不一致</td><td>high</td><td>reject</td><td>该组合存在男性和女性手部的不一致，视觉连续性风险高。同时视频2引入了额外商品，商品统一性不如其他组合。</td></tr><tr><td>1 + 2</td><td>一致</td><td>一致</td><td>一致</td><td>一致</td><td>medium</td><td>best</td><td>该组合在人物和背景上高度一致，视觉连续性风险最低。虽然视频2引入了米菲兔支架，但可作为MagSafe功能和配件的演示，与手机壳的卖点可统一。这是视觉一致性最好的组合。</td></tr></tbody></table></div>
+<h4>4.3 LLM 重点说明</h4>
+<blockquote>选择 [1, 2] 作为混剪组，是因为该组合在人物和背景上高度一致，视觉风险最低，最符合视觉连续性风险可控的优先原则。视频0因其独特的防黄卖点和男性手部特征，将作为独立视频进行翻译，以保留其卖点并避免引入人物不一致的风险。</blockquote>
+<h3>5. 规则层与 LLM 差异</h3>
+<ul class="clean">
+<li>是否存在差异：<code>是</code></li>
+<li>差异类型：<code>决策不一致</code></li>
+<li>规则层结论：<code>REMIX</code> / <code>[0, 1, 2]</code></li>
+<li>LLM 结论：<code>PARTIAL_REMIX</code> / <code>[1, 2]</code></li>
+<li>最终采用：<code>llm</code></li>
+<li>采用原因：<code>将视觉一致性最高的视频1和视频2进行混剪，以展示手机壳的开箱、MagSafe功能和配件使用场景。视频0因其独特的防黄卖点和男性手部特征，作为独立视频进行翻译，以最大化利用所有素材并控制视觉风险。</code></li>
+</ul>
+<h3>6. 镜头选择结果</h3>
+<ul class="clean">
+<li>识别镜头总数：<code>14</code></li>
+<li>最终使用镜头数：<code>5</code></li>
+<li>最终使用镜头：<code>[&#x27;v3_s2&#x27;, &#x27;v3_s5&#x27;, &#x27;v3_s1&#x27;, &#x27;v2_s3&#x27;, &#x27;v3_s6&#x27;]</code></li>
+<li>被过滤/丢弃镜头：<code>[]</code></li>
+</ul>
+<h4>6.1 最终使用镜头</h4>
+<div class="table-scroll"><table><thead><tr><th>镜头 ID</th><th>来源视频</th><th>原始时间段</th><th>输出时间段</th><th>使用原因</th></tr></thead><tbody><tr><td><code>v3_s2</code></td><td>视频 2</td><td>2.12-3.45s</td><td>0.0-1.33s</td><td>主视频骨架镜头</td></tr><tr><td><code>v3_s5</code></td><td>视频 2</td><td>21.52-22.85s</td><td>1.33-2.66s</td><td>主视频骨架镜头</td></tr><tr><td><code>v3_s1</code></td><td>视频 2</td><td>0.0-1.33s</td><td>2.66-3.99s</td><td>主视频骨架镜头</td></tr><tr><td><code>v2_s3</code></td><td>视频 1</td><td>3.08-6.08s</td><td>3.99-6.99s</td><td>最终时间线使用</td></tr><tr><td><code>v3_s6</code></td><td>视频 2</td><td>23.24-26.24s</td><td>6.99-9.99s</td><td>主视频骨架镜头</td></tr></tbody></table></div>
+<h4>6.2 被过滤/丢弃镜头</h4>
+<div class="table-scroll"><table><thead><tr><th>镜头 ID</th><th>来源视频</th><th>丢弃原因</th><th>相似/冲突对象</th></tr></thead><tbody><tr><td>-</td><td>-</td><td>-</td><td>-</td></tr></tbody></table></div>
+<h3>7. 成片结构</h3>
+<ul class="clean">
+<li>输出视频：<code>output_test_remix/001_Clear_Phone_case/final_remix_test_remix_info.mp4</code></li>
+<li>成片时长：<code>9.99s</code></li>
+<li>输出模式：<code>PARTIAL_REMIX</code></li>
+</ul>
+<div class="table-scroll"><table><thead><tr><th>段落</th><th>时间</th><th>镜头</th><th>内容作用</th></tr></thead><tbody><tr><td><code>1</code></td><td>0.0-3.99s</td><td><code>[&#x27;v3_s2&#x27;, &#x27;v3_s5&#x27;, &#x27;v3_s1&#x27;]</code></td><td>产品名称</td></tr><tr><td><code>2</code></td><td>3.99-6.99s</td><td><code>[&#x27;v2_s3&#x27;]</code></td><td>核心卖点</td></tr><tr><td><code>3</code></td><td>6.99-9.99s</td><td><code>[&#x27;v3_s6&#x27;]</code></td><td>促销信息</td></tr></tbody></table></div></div>
+        </details>
+      </details>
+      <details class="case-detail" id="case-002" data-case-detail data-mode="REMIX" data-risk="high" data-text="002 card collection album 002_card_collection_album">
+        <summary>
+          <span>002 · Card Collection Album</span>
+          <span class="summary-tags"><span class="tag mode-remix">REMIX</span><span class="tag risk-high">high</span></span>
+        </summary>
+        <div class="case-layout">
+          <div class="video-shell" data-drive-id="1_1xoqnmKJebbEkiQRIZL6b5gTpSi-EFn">
+            <button class="load-video" type="button">加载视频</button>
+          </div>
+          <aside class="case-summary">
+            <h3>混剪结论</h3>
+            <dl class="facts compact">
+              <div><dt>规则层</dt><dd><code>REMIX</code></dd></div>
+              <div><dt>LLM/最终</dt><dd><code>REMIX</code></dd></div>
+              <div><dt>参与混剪</dt><dd><code>[0, 1, 2]</code></dd></div>
+              <div><dt>未参与</dt><dd><code>[]</code></dd></div>
+              <div><dt>成片时长</dt><dd><code>14.69s</code></dd></div>
+              <div><dt>镜头数</dt><dd><code>12</code></dd></div>
+            </dl>
+            <p>所有视频均展示同一卡片收集册的不同款式和使用场景，商品和人物手部高度一致，尽管风格和背景存在可控风险，但整体可REMIX以最大化卖点覆盖。</p>
+            <div class="actions inline-actions">
+              <a href="https://drive.google.com/file/d/1_1xoqnmKJebbEkiQRIZL6b5gTpSi-EFn/view?usp=drive_link" target="_blank" rel="noopener">打开 Google Drive 视频</a>
+              <a href="data/remix_report_2.md" target="_blank" rel="noopener">原始 report.md</a>
+            </div>
+          </aside>
+        </div>
+        <details class="nested-report">
+          <summary>展开完整 report.md</summary>
+          <div class="report-content"><h2>混剪测试输出说明</h2>
+<h3>1. 混剪结论</h3>
+<ul class="clean">
+<li>混剪模式：<code>REMIX</code></li>
+<li>参与混剪视频：<code>[0, 1, 2]</code></li>
+<li>单独翻译/未参与混剪视频：<code>[]</code></li>
+<li>决策摘要：<code>所有视频均展示同一卡片收集册的不同款式和使用场景，商品和人物手部高度一致，尽管风格和背景存在可控风险，但整体可REMIX以最大化卖点覆盖。</code></li>
+</ul>
+<blockquote>所有视频均展示同一卡片收集册的不同款式和使用场景，商品和人物手部高度一致，尽管风格和背景存在可控风险，但整体可REMIX以最大化卖点覆盖。</blockquote>
+<h3>2. 输入素材关系</h3>
+<div class="table-scroll"><table><thead><tr><th>视频</th><th>商品/内容判断</th><th>角色</th><th>是否进入混剪</th><th>原因</th></tr></thead><tbody><tr><td>视频 0</td><td>卡片收集册 (薰衣草图案/粉色草莓图案)</td><td>primary</td><td>是</td><td>展示了两种不同图案的卡片收集册（薰衣草、粉色草莓），涵盖了打开、展示内页、放入卡片/纸币等核心使用场景，镜头数量最多，叙事完整，适合作为主线骨架。</td></tr><tr><td>视频 1</td><td>卡片收集册 (紫色/粉色西瓜图案)</td><td>auxiliary</td><td>是</td><td>补充展示了西瓜图案和紫色款式的卡片收集册，并强调了存钱（印尼盾）的使用场景，可作为主线的补充镜头，丰富产品展示和使用场景。</td></tr><tr><td>视频 2</td><td>卡片收集册 (紫色花朵图案)</td><td>auxiliary</td><td>是</td><td>补充展示了紫色花朵图案的卡片收集册，并强调了存放金卡、小金条等贵重物品的特殊使用场景，可作为主线的补充卖点，突出产品多功能性。</td></tr></tbody></table></div>
+<h3>3. 规则层判断</h3>
+<h4>3.1 规则层推荐结论</h4>
+<ul class="clean">
+<li>规则推荐模式：<code>REMIX</code></li>
+<li>规则推荐混剪视频：<code>[0, 1, 2]</code></li>
+<li>规则推荐单独翻译/排除视频：<code>[]</code></li>
+<li>规则置信度：<code>0.65</code></li>
+<li>规则原因：<code>全部视频存在共同核心内容类型和相近商品语义，可组合为同一商品混剪</code></li>
+</ul>
+<h4>3.2 规则层兼容性判断</h4>
+<div class="table-scroll"><table><thead><tr><th>视频组合</th><th>商品一致性</th><th>风格一致性</th><th>人物/手部一致性</th><th>视觉连续性分数</th><th>风险等级</th><th>规则决策</th></tr></thead><tbody><tr><td>0 + 1</td><td>不一致</td><td>bright/closeup/demo/lifestyle/static/studio/tabletop/ugc &lt;-&gt; bright/closeup/demo/lifestyle/static/studio/tabletop</td><td>一致</td><td>0.5</td><td>high</td><td>can_remix</td></tr><tr><td>0 + 2</td><td>不一致</td><td>bright/closeup/demo/lifestyle/static/studio/tabletop/ugc &lt;-&gt; bright/closeup/demo/lifestyle/studio/tabletop</td><td>一致</td><td>0.5</td><td>high</td><td>can_remix</td></tr><tr><td>1 + 2</td><td>不一致</td><td>bright/closeup/demo/lifestyle/static/studio/tabletop &lt;-&gt; bright/closeup/demo/lifestyle/studio/tabletop</td><td>一致</td><td>0.5</td><td>high</td><td>can_remix</td></tr></tbody></table></div>
+<h4>3.3 规则层风险说明</h4>
+<div class="table-scroll"><table><thead><tr><th>视频组合</th><th>风险类型</th><th>风险原因</th></tr></thead><tbody><tr><td>0 + 1</td><td>high</td><td>棚拍/白底与UGC手持画面风格冲突；棚拍/白底与生活方式画面风格冲突；背景变化较大，混剪连续性风险高</td></tr><tr><td>0 + 2</td><td>high</td><td>棚拍/白底与UGC手持画面风格冲突；棚拍/白底与生活方式画面风格冲突；背景变化较大，混剪连续性风险高</td></tr><tr><td>1 + 2</td><td>high</td><td>棚拍/白底与生活方式画面风格冲突；背景变化较大，混剪连续性风险高</td></tr></tbody></table></div>
+<h3>4. LLM 判断</h3>
+<h4>4.1 LLM 最终结论</h4>
+<ul class="clean">
+<li>LLM 决策模式：<code>REMIX</code></li>
+<li>LLM 选择混剪视频：<code>[0, 1, 2]</code></li>
+<li>LLM 选择单独翻译/排除视频：<code>[]</code></li>
+<li>LLM 置信度：<code>0.9</code></li>
+<li>LLM 决策原因：<code>所有视频均展示同一卡片收集册的不同款式和使用场景，商品和人物手部高度一致，尽管风格和背景存在可控风险，但整体可REMIX以最大化卖点覆盖。</code></li>
+</ul>
+<h4>4.2 LLM 候选组合评估</h4>
+<div class="table-scroll"><table><thead><tr><th>候选组合</th><th>商品一致性</th><th>风格一致性</th><th>背景一致性</th><th>人物/手部一致性</th><th>视觉风险</th><th>推荐结果</th><th>原因</th></tr></thead><tbody><tr><td>0 + 1 + 2</td><td>一致</td><td>部分一致</td><td>部分一致</td><td>一致</td><td>high</td><td>best</td><td>该组合能最全面地展示卡片收集册的不同款式和多样化使用场景（存钱、收藏金卡等），商品和卖点高度统一。尽管存在风格和背景的视觉风险，但考虑到商品一致性是最高优先级，且规则层判断为可混剪（compatible: true），风险在可控范围内（AI可辅助衔接），故选择此组合。</td></tr><tr><td>0 + 1</td><td>一致</td><td>部分一致</td><td>部分一致</td><td>一致</td><td>high</td><td>usable</td><td>此组合商品一致性高，但未能充分利用视频2提供的金卡收藏卖点，且仍存在与[0,1,2]相似的风格和背景风险，不如全量组合价值高。</td></tr><tr><td>0 + 2</td><td>一致</td><td>部分一致</td><td>部分一致</td><td>一致</td><td>high</td><td>usable</td><td>此组合商品一致性高，但未能充分利用视频1提供的存钱卖点和西瓜图案款式，且仍存在与[0,1,2]相似的风格和背景风险，不如全量组合价值高。</td></tr><tr><td>1 + 2</td><td>一致</td><td>一致</td><td>部分一致</td><td>一致</td><td>high</td><td>usable</td><td>该组合在风格上比包含视频0的组合更统一，但缺少了视频0作为主视频的丰富内容和款式展示，未能最大化利用所有可用素材的增量价值。</td></tr></tbody></table></div>
+<h4>4.3 LLM 重点说明</h4>
+<blockquote>尽管所有组合都存在视觉风险，但[0, 1, 2]组合能最全面地展示同一商品的不同款式和多样化使用场景，最大化了商品/卖点统一性这一最高优先级。规则层也明确所有视频均可混剪（compatible: true），且AI后续会补齐故事线，因此选择内容最丰富的组合。</blockquote>
+<h3>5. 规则层与 LLM 差异</h3>
+<ul class="clean">
+<li>是否存在差异：<code>否</code></li>
+<li>差异类型：<code>无</code></li>
+<li>规则层结论：<code>REMIX</code> / <code>[0, 1, 2]</code></li>
+<li>LLM 结论：<code>REMIX</code> / <code>[0, 1, 2]</code></li>
+<li>最终采用：<code>llm</code></li>
+<li>采用原因：<code>规则层与 LLM 结论一致</code></li>
+</ul>
+<h3>6. 镜头选择结果</h3>
+<ul class="clean">
+<li>识别镜头总数：<code>27</code></li>
+<li>最终使用镜头数：<code>12</code></li>
+<li>最终使用镜头：<code>[&#x27;v2_s2&#x27;, &#x27;v1_s4&#x27;, &#x27;v1_s2&#x27;, &#x27;v3_s6&#x27;, &#x27;v1_s1&#x27;, &#x27;v1_s11&#x27;, &#x27;v1_s3&#x27;, &#x27;v1_s10&#x27;, &#x27;v1_s5&#x27;, &#x27;v3_s2&#x27;, &#x27;v3_s4&#x27;, &#x27;v1_s6&#x27;]</code></li>
+<li>被过滤/丢弃镜头：<code>[&#x27;v1_s8&#x27;, &#x27;v1_s9&#x27;, &#x27;v1_s12&#x27;, &#x27;v1_s13&#x27;, &#x27;v2_s1&#x27;, &#x27;v2_s3&#x27;, &#x27;v2_s4&#x27;, &#x27;v2_s5&#x27;, &#x27;v2_s6&#x27;, &#x27;v2_s7&#x27;, &#x27;v3_s1&#x27;, &#x27;v3_s3&#x27;]</code></li>
+</ul>
+<h4>6.1 最终使用镜头</h4>
+<div class="table-scroll"><table><thead><tr><th>镜头 ID</th><th>来源视频</th><th>原始时间段</th><th>输出时间段</th><th>使用原因</th></tr></thead><tbody><tr><td><code>v2_s2</code></td><td>视频 1</td><td>1.6-4.6s</td><td>0.0-3.0s</td><td>最终时间线使用</td></tr><tr><td><code>v1_s4</code></td><td>视频 0</td><td>3.53-4.65s</td><td>3.0-4.12s</td><td>主视频骨架镜头</td></tr><tr><td><code>v1_s2</code></td><td>视频 0</td><td>1.73-2.35s</td><td>4.12-4.74s</td><td>主视频骨架镜头</td></tr><tr><td><code>v3_s6</code></td><td>视频 2</td><td>16.04-17.17s</td><td>4.74-5.87s</td><td>最终时间线使用</td></tr><tr><td><code>v1_s1</code></td><td>视频 0</td><td>0.0-1.13s</td><td>5.87-7.0s</td><td>主视频骨架镜头</td></tr><tr><td><code>v1_s11</code></td><td>视频 0</td><td>10.27-11.43s</td><td>7.0-8.16s</td><td>主视频骨架镜头</td></tr><tr><td><code>v1_s3</code></td><td>视频 0</td><td>2.43-3.45s</td><td>8.16-9.18s</td><td>主视频骨架镜头</td></tr><tr><td><code>v1_s10</code></td><td>视频 0</td><td>9.37-10.19s</td><td>9.18-10.0s</td><td>主视频骨架镜头</td></tr><tr><td><code>v1_s5</code></td><td>视频 0</td><td>4.73-5.65s</td><td>10.0-10.92s</td><td>主视频骨架镜头</td></tr><tr><td><code>v3_s2</code></td><td>视频 2</td><td>4.52-5.81s</td><td>10.92-12.21s</td><td>最终时间线使用</td></tr><tr><td><code>v3_s4</code></td><td>视频 2</td><td>10.92-12.21s</td><td>12.21-13.5s</td><td>最终时间线使用</td></tr><tr><td><code>v1_s6</code></td><td>视频 0</td><td>5.73-6.92s</td><td>13.5-14.69s</td><td>主视频骨架镜头</td></tr></tbody></table></div>
+<h4>6.2 被过滤/丢弃镜头</h4>
+<div class="table-scroll"><table><thead><tr><th>镜头 ID</th><th>来源视频</th><th>丢弃原因</th><th>相似/冲突对象</th></tr></thead><tbody><tr><td><code>v1_s8</code></td><td>视频 0</td><td>duplicate_lower_quality_same_role</td><td>v1_s2</td></tr><tr><td><code>v1_s9</code></td><td>视频 0</td><td>duplicate_lower_quality_same_role</td><td>v1_s2</td></tr><tr><td><code>v1_s12</code></td><td>视频 0</td><td>duplicate_lower_quality_same_role</td><td>v1_s2</td></tr><tr><td><code>v1_s13</code></td><td>视频 0</td><td>duplicate_lower_quality_same_role</td><td>v1_s6</td></tr><tr><td><code>v2_s1</code></td><td>视频 1</td><td>duplicate_with_primary_backbone</td><td>v1_s5</td></tr><tr><td><code>v2_s3</code></td><td>视频 1</td><td>duplicate_with_primary_backbone</td><td>v1_s6</td></tr><tr><td><code>v2_s4</code></td><td>视频 1</td><td>duplicate_with_primary_backbone</td><td>v1_s5</td></tr><tr><td><code>v2_s5</code></td><td>视频 1</td><td>duplicate_with_primary_backbone</td><td>v1_s5</td></tr><tr><td><code>v2_s6</code></td><td>视频 1</td><td>duplicate_with_primary_backbone</td><td>v1_s2</td></tr><tr><td><code>v2_s7</code></td><td>视频 1</td><td>duplicate_with_primary_backbone</td><td>v1_s2</td></tr><tr><td><code>v3_s1</code></td><td>视频 2</td><td>duplicate_with_primary_backbone</td><td>v1_s2</td></tr><tr><td><code>v3_s3</code></td><td>视频 2</td><td>duplicate_with_primary_backbone</td><td>v1_s10</td></tr></tbody></table></div>
+<h3>7. 成片结构</h3>
+<ul class="clean">
+<li>输出视频：<code>output_test_remix/002_Card_Collection_Album/final_remix_test_remix_info.mp4</code></li>
+<li>成片时长：<code>14.69s</code></li>
+<li>输出模式：<code>REMIX</code></li>
+</ul>
+<div class="table-scroll"><table><thead><tr><th>段落</th><th>时间</th><th>镜头</th><th>内容作用</th></tr></thead><tbody><tr><td><code>1</code></td><td>0.0-3.0s</td><td><code>[&#x27;v2_s2&#x27;]</code></td><td>悬念/吸引力</td></tr><tr><td><code>2</code></td><td>3.0-7.0s</td><td><code>[&#x27;v1_s4&#x27;, &#x27;v1_s2&#x27;, &#x27;v3_s6&#x27;, &#x27;v1_s1&#x27;]</code></td><td>产品名称</td></tr><tr><td><code>3</code></td><td>7.0-10.0s</td><td><code>[&#x27;v1_s11&#x27;, &#x27;v1_s3&#x27;, &#x27;v1_s10&#x27;]</code></td><td>核心卖点</td></tr><tr><td><code>4</code></td><td>10.0-13.5s</td><td><code>[&#x27;v1_s5&#x27;, &#x27;v3_s2&#x27;, &#x27;v3_s4&#x27;]</code></td><td>效果描述</td></tr><tr><td><code>5</code></td><td>13.5-14.69s</td><td><code>[&#x27;v1_s6&#x27;]</code></td><td>促销信息</td></tr></tbody></table></div></div>
+        </details>
+      </details>
+      <details class="case-detail" id="case-003" data-case-detail data-mode="PARTIAL_REMIX" data-risk="hard_reject" data-text="003 unisex slippers 003_unisex_slippers">
+        <summary>
+          <span>003 · Unisex Slippers</span>
+          <span class="summary-tags"><span class="tag mode-partial">PARTIAL_REMIX</span><span class="tag risk-hard">hard_reject</span></span>
+        </summary>
+        <div class="case-layout">
+          <div class="video-shell" data-drive-id="16ieFp1EKCSgwtWMhGTmMJ5g4BU3ga8jL">
+            <button class="load-video" type="button">加载视频</button>
+          </div>
+          <aside class="case-summary">
+            <h3>混剪结论</h3>
+            <dl class="facts compact">
+              <div><dt>规则层</dt><dd><code>PARTIAL_REMIX</code></dd></div>
+              <div><dt>LLM/最终</dt><dd><code>PARTIAL_REMIX</code></dd></div>
+              <div><dt>参与混剪</dt><dd><code>[0, 2]</code></dd></div>
+              <div><dt>未参与</dt><dd><code>[1]</code></dd></div>
+              <div><dt>成片时长</dt><dd><code>12.04s</code></dd></div>
+              <div><dt>镜头数</dt><dd><code>9</code></dd></div>
+            </dl>
+            <p>选择PARTIAL_REMIX，将视频0和视频2混剪以展示产品多角度和柔韧性卖点，视频1因与视频0存在硬禁区冲突且与视频2不兼容，故单独翻译。</p>
+            <div class="actions inline-actions">
+              <a href="https://drive.google.com/file/d/16ieFp1EKCSgwtWMhGTmMJ5g4BU3ga8jL/view?usp=drive_link" target="_blank" rel="noopener">打开 Google Drive 视频</a>
+              <a href="data/remix_report_3.md" target="_blank" rel="noopener">原始 report.md</a>
+            </div>
+          </aside>
+        </div>
+        <details class="nested-report">
+          <summary>展开完整 report.md</summary>
+          <div class="report-content"><h2>混剪测试输出说明</h2>
+<h3>1. 混剪结论</h3>
+<ul class="clean">
+<li>混剪模式：<code>PARTIAL_REMIX</code></li>
+<li>参与混剪视频：<code>[0, 2]</code></li>
+<li>单独翻译/未参与混剪视频：<code>[1]</code></li>
+<li>决策摘要：<code>选择PARTIAL_REMIX，将视频0和视频2混剪以展示产品多角度和柔韧性卖点，视频1因与视频0存在硬禁区冲突且与视频2不兼容，故单独翻译。</code></li>
+</ul>
+<blockquote>选择PARTIAL_REMIX，将视频0和视频2混剪以展示产品多角度和柔韧性卖点，视频1因与视频0存在硬禁区冲突且与视频2不兼容，故单独翻译。</blockquote>
+<h3>2. 输入素材关系</h3>
+<div class="table-scroll"><table><thead><tr><th>视频</th><th>商品/内容判断</th><th>角色</th><th>是否进入混剪</th><th>原因</th></tr></thead><tbody><tr><td>视频 0</td><td>Unisex Slippers</td><td>primary</td><td>是</td><td>展示产品开箱、多色款、多角度细节，背景统一，叙事完整，适合作为主线骨架。</td></tr><tr><td>视频 1</td><td>Unisex Slippers</td><td>auxiliary</td><td>否，单独翻译</td><td>补充展示产品柔软度卖点（EMPUK BANGET）和更多颜色选择，纯色背景突出产品。</td></tr><tr><td>视频 2</td><td>Unisex Slippers</td><td>auxiliary</td><td>是</td><td>补充展示产品柔韧性/弯曲度卖点，多角度演示产品特性。</td></tr></tbody></table></div>
+<h3>3. 规则层判断</h3>
+<h4>3.1 规则层推荐结论</h4>
+<ul class="clean">
+<li>规则推荐模式：<code>PARTIAL_REMIX</code></li>
+<li>规则推荐混剪视频：<code>[0, 2]</code></li>
+<li>规则推荐单独翻译/排除视频：<code>[1]</code></li>
+<li>规则置信度：<code>0.7</code></li>
+<li>规则原因：<code>部分视频适合混剪，其余视频商品语义或质量不匹配，单独翻译</code></li>
+</ul>
+<h4>3.2 规则层兼容性判断</h4>
+<div class="table-scroll"><table><thead><tr><th>视频组合</th><th>商品一致性</th><th>风格一致性</th><th>人物/手部一致性</th><th>视觉连续性分数</th><th>风险等级</th><th>规则决策</th></tr></thead><tbody><tr><td>0 + 1</td><td>不一致</td><td>bright/closeup/demo/lifestyle/static/studio/tabletop/ugc &lt;-&gt; bright/closeup/studio</td><td>一致</td><td>0.3</td><td>hard_reject</td><td>translate_separately</td></tr><tr><td>0 + 2</td><td>不一致</td><td>bright/closeup/demo/lifestyle/static/studio/tabletop/ugc &lt;-&gt; bright/closeup/demo/lifestyle/studio/tabletop</td><td>一致</td><td>0.5</td><td>high</td><td>can_remix</td></tr><tr><td>1 + 2</td><td>不一致</td><td>bright/closeup/studio &lt;-&gt; bright/closeup/demo/lifestyle/studio/tabletop</td><td>一致</td><td>0.4677</td><td>high</td><td>translate_separately</td></tr></tbody></table></div>
+<h4>3.3 规则层风险说明</h4>
+<div class="table-scroll"><table><thead><tr><th>视频组合</th><th>风险类型</th><th>风险原因</th></tr></thead><tbody><tr><td>0 + 2</td><td>high</td><td>棚拍/白底与UGC手持画面风格冲突；棚拍/白底与生活方式画面风格冲突；背景变化较大，混剪连续性风险高</td></tr><tr><td>1 + 2</td><td>high</td><td>两条视频背景场景差异明显；棚拍/白底与生活方式画面风格冲突</td></tr></tbody></table></div>
+<h3>4. LLM 判断</h3>
+<h4>4.1 LLM 最终结论</h4>
+<ul class="clean">
+<li>LLM 决策模式：<code>PARTIAL_REMIX</code></li>
+<li>LLM 选择混剪视频：<code>[0, 2]</code></li>
+<li>LLM 选择单独翻译/排除视频：<code>[1]</code></li>
+<li>LLM 置信度：<code>0.9</code></li>
+<li>LLM 决策原因：<code>选择PARTIAL_REMIX，将视频0和视频2混剪以展示产品多角度和柔韧性卖点，视频1因与视频0存在硬禁区冲突且与视频2不兼容，故单独翻译。</code></li>
+</ul>
+<h4>4.2 LLM 候选组合评估</h4>
+<div class="table-scroll"><table><thead><tr><th>候选组合</th><th>商品一致性</th><th>风格一致性</th><th>背景一致性</th><th>人物/手部一致性</th><th>视觉风险</th><th>推荐结果</th><th>原因</th></tr></thead><tbody><tr><td>0 + 2</td><td>一致</td><td>部分一致</td><td>不一致</td><td>一致</td><td>high</td><td>usable</td><td>该组合商品和人物高度一致，视频2补充了视频0缺乏的柔韧性卖点。尽管风格和背景存在风险，但规则层判断为可混剪（compatible: true），且风险可控，符合优先满足商品/卖点统一的原则。</td></tr><tr><td>0 + 1 + 2</td><td>一致</td><td>不一致</td><td>不一致</td><td>一致</td><td>hard_reject</td><td>reject</td><td>该组合包含硬禁区[0,1]，根据规则不能选择。</td></tr><tr><td>0 + 1</td><td>部分一致</td><td>不一致</td><td>不一致</td><td>一致</td><td>hard_reject</td><td>reject</td><td>该组合是硬禁区[0,1]，根据规则不能选择。</td></tr><tr><td>1 + 2</td><td>一致</td><td>部分一致</td><td>不一致</td><td>一致</td><td>high</td><td>reject</td><td>该组合尽管商品一致，但背景和风格差异过大，规则层明确判断为不兼容混剪（compatible: false），不应进行混剪。</td></tr></tbody></table></div>
+<h4>4.3 LLM 重点说明</h4>
+<blockquote>在排除硬禁区和不兼容组合后，[0, 2]是唯一被规则层判断为可混剪的组合，且能有效补充产品卖点。</blockquote>
+<h3>5. 规则层与 LLM 差异</h3>
+<ul class="clean">
+<li>是否存在差异：<code>否</code></li>
+<li>差异类型：<code>无</code></li>
+<li>规则层结论：<code>PARTIAL_REMIX</code> / <code>[0, 2]</code></li>
+<li>LLM 结论：<code>PARTIAL_REMIX</code> / <code>[0, 2]</code></li>
+<li>最终采用：<code>llm</code></li>
+<li>采用原因：<code>规则层与 LLM 结论一致</code></li>
+</ul>
+<h3>6. 镜头选择结果</h3>
+<ul class="clean">
+<li>识别镜头总数：<code>16</code></li>
+<li>最终使用镜头数：<code>9</code></li>
+<li>最终使用镜头：<code>[&#x27;v1_s8&#x27;, &#x27;v1_s1&#x27;, &#x27;v1_s10&#x27;, &#x27;v1_s5&#x27;, &#x27;v1_s3&#x27;, &#x27;v1_s4&#x27;, &#x27;v1_s6&#x27;, &#x27;v3_s3&#x27;, &#x27;v1_s7&#x27;]</code></li>
+<li>被过滤/丢弃镜头：<code>[&#x27;v1_s2&#x27;, &#x27;v1_s9&#x27;, &#x27;v3_s1&#x27;, &#x27;v3_s2&#x27;, &#x27;v3_s4&#x27;]</code></li>
+</ul>
+<h4>6.1 最终使用镜头</h4>
+<div class="table-scroll"><table><thead><tr><th>镜头 ID</th><th>来源视频</th><th>原始时间段</th><th>输出时间段</th><th>使用原因</th></tr></thead><tbody><tr><td><code>v1_s8</code></td><td>视频 0</td><td>11.77-13.02s</td><td>0.0-1.25s</td><td>主视频骨架镜头</td></tr><tr><td><code>v1_s1</code></td><td>视频 0</td><td>0.0-1.33s</td><td>1.25-2.58s</td><td>主视频骨架镜头</td></tr><tr><td><code>v1_s10</code></td><td>视频 0</td><td>16.23-17.56s</td><td>2.58-3.91s</td><td>主视频骨架镜头</td></tr><tr><td><code>v1_s5</code></td><td>视频 0</td><td>6.93-8.26s</td><td>3.91-5.24s</td><td>主视频骨架镜头</td></tr><tr><td><code>v1_s3</code></td><td>视频 0</td><td>2.4-3.89s</td><td>5.24-6.73s</td><td>主视频骨架镜头</td></tr><tr><td><code>v1_s4</code></td><td>视频 0</td><td>3.97-5.48s</td><td>6.73-8.24s</td><td>主视频骨架镜头</td></tr><tr><td><code>v1_s6</code></td><td>视频 0</td><td>9.37-10.16s</td><td>8.24-9.03s</td><td>主视频骨架镜头</td></tr><tr><td><code>v3_s3</code></td><td>视频 2</td><td>8.52-10.08s</td><td>9.03-10.59s</td><td>最终时间线使用</td></tr><tr><td><code>v1_s7</code></td><td>视频 0</td><td>10.23-11.68s</td><td>10.59-12.04s</td><td>主视频骨架镜头</td></tr></tbody></table></div>
+<h4>6.2 被过滤/丢弃镜头</h4>
+<div class="table-scroll"><table><thead><tr><th>镜头 ID</th><th>来源视频</th><th>丢弃原因</th><th>相似/冲突对象</th></tr></thead><tbody><tr><td><code>v1_s2</code></td><td>视频 0</td><td>duplicate_package_or_unboxing_phase</td><td>v1_s1</td></tr><tr><td><code>v1_s9</code></td><td>视频 0</td><td>duplicate_lower_quality_same_role</td><td>v1_s3</td></tr><tr><td><code>v3_s1</code></td><td>视频 2</td><td>duplicate_package_or_unboxing_phase</td><td>v1_s1</td></tr><tr><td><code>v3_s2</code></td><td>视频 2</td><td>duplicate_with_primary_backbone</td><td>v1_s6</td></tr><tr><td><code>v3_s4</code></td><td>视频 2</td><td>duplicate_with_primary_backbone</td><td>v1_s6</td></tr></tbody></table></div>
+<h3>7. 成片结构</h3>
+<ul class="clean">
+<li>输出视频：<code>output_test_remix/003_Unisex_slippers/final_remix_test_remix_info.mp4</code></li>
+<li>成片时长：<code>12.04s</code></li>
+<li>输出模式：<code>PARTIAL_REMIX</code></li>
+</ul>
+<div class="table-scroll"><table><thead><tr><th>段落</th><th>时间</th><th>镜头</th><th>内容作用</th></tr></thead><tbody><tr><td><code>1</code></td><td>0.0-1.25s</td><td><code>[&#x27;v1_s8&#x27;]</code></td><td>悬念/吸引力</td></tr><tr><td><code>2</code></td><td>1.25-5.24s</td><td><code>[&#x27;v1_s1&#x27;, &#x27;v1_s10&#x27;, &#x27;v1_s5&#x27;]</code></td><td>产品名称</td></tr><tr><td><code>3</code></td><td>5.24-8.24s</td><td><code>[&#x27;v1_s3&#x27;, &#x27;v1_s4&#x27;]</code></td><td>核心卖点</td></tr><tr><td><code>4</code></td><td>8.24-10.59s</td><td><code>[&#x27;v1_s6&#x27;, &#x27;v3_s3&#x27;]</code></td><td>效果描述</td></tr><tr><td><code>5</code></td><td>10.59-12.04s</td><td><code>[&#x27;v1_s7&#x27;]</code></td><td>促销信息</td></tr></tbody></table></div></div>
+        </details>
+      </details>
+      </div>
+    </section>
+  </main>
+  <footer class="wrap">Google Drive 视频需要对访问者开放查看权限。新增案例时，复制一个 detail/table record 并追加 report.md 即可。</footer>
+  <script>
+    const modeButtons = Array.from(document.querySelectorAll('[data-mode-filter]'));
+    const searchInput = document.getElementById('caseSearch');
+    const rows = Array.from(document.querySelectorAll('[data-case-row]'));
+    const details = Array.from(document.querySelectorAll('[data-case-detail]'));
+    let activeMode = 'all';
+
+    function matches(item) {
+      const text = (searchInput.value || '').trim().toLowerCase();
+      const modeOk = activeMode === 'all' || item.dataset.mode === activeMode;
+      const textOk = !text || item.dataset.text.includes(text);
+      return modeOk && textOk;
+    }
+
+    function applyFilters() {
+      rows.forEach((row) => { row.hidden = !matches(row); });
+      details.forEach((detail) => { detail.hidden = !matches(detail); });
+    }
+
+    modeButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        activeMode = button.dataset.modeFilter;
+        modeButtons.forEach((item) => item.classList.toggle('active', item === button));
+        applyFilters();
+      });
+    });
+    searchInput.addEventListener('input', applyFilters);
+
+    function loadVideo(shell) {
+      if (shell.dataset.loaded === 'true') return;
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://drive.google.com/file/d/${shell.dataset.driveId}/preview`;
+      iframe.allow = 'autoplay; fullscreen';
+      iframe.allowFullscreen = true;
+      iframe.loading = 'lazy';
+      shell.replaceChildren(iframe);
+      shell.dataset.loaded = 'true';
+    }
+
+    document.querySelectorAll('.load-video').forEach((button) => {
+      button.addEventListener('click', () => loadVideo(button.closest('.video-shell')));
+    });
+    document.querySelectorAll('.case-detail[open] .video-shell').forEach(loadVideo);
+  </script>
+</body>
+</html>
