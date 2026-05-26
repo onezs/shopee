@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CLEAR 去字幕耗时与效果分析</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #182025;
+      --muted: #66727c;
+      --line: #d8dee4;
+      --panel: #f7f9fb;
+      --paper: #ffffff;
+      --accent: #226f75;
+      --accent-soft: #e9f5f4;
+      --warn: #8a6424;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif; background: var(--paper); color: var(--ink); line-height: 1.58; }
+    header { padding: 58px max(24px, calc((100vw - 1180px) / 2)) 30px; border-bottom: 1px solid var(--line); }
+    main { max-width: 1180px; margin: 0 auto; padding: 28px 24px 72px; }
+    h1 { margin: 0 0 14px; font-size: clamp(34px, 5vw, 58px); line-height: 1.02; letter-spacing: 0; }
+    h2 { margin: 42px 0 16px; font-size: 26px; letter-spacing: 0; }
+    h3 { margin: 0; font-size: 17px; letter-spacing: 0; overflow-wrap: anywhere; }
+    p { margin: 0; }
+    .eyebrow { margin: 0 0 7px; color: var(--accent); font-size: 12px; font-weight: 780; letter-spacing: .08em; text-transform: uppercase; }
+    .lead { max-width: 880px; color: var(--muted); font-size: 18px; }
+    .summary { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin: 28px 0; }
+    .metric { border: 1px solid var(--line); background: var(--panel); border-radius: 8px; padding: 16px; }
+    .metric span { display: block; color: var(--muted); font-size: 13px; }
+    .metric strong { display: block; margin-top: 4px; font-size: 24px; line-height: 1.15; }
+    .callout { margin: 20px 0 30px; border-left: 4px solid var(--accent); background: var(--accent-soft); padding: 16px 18px; color: #183f42; }
+    .callout b { display: block; margin-bottom: 4px; }
+    table { width: 100%; border-collapse: collapse; margin: 12px 0 22px; font-size: 14px; }
+    th, td { border-bottom: 1px solid var(--line); padding: 11px 10px; text-align: left; vertical-align: top; }
+    th { color: var(--muted); font-weight: 720; background: #fafbfc; }
+    .notes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
+    .note { border: 1px solid var(--line); border-radius: 8px; padding: 16px; background: var(--panel); }
+    .note b { display: block; margin-bottom: 6px; }
+    .videos { display: grid; gap: 28px; }
+    .video-card { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: #fff; }
+    .video-meta { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(320px, .8fr); gap: 18px; align-items: start; padding: 16px; border-bottom: 1px solid var(--line); }
+    dl { display: grid; gap: 7px; margin: 0; }
+    .video-meta div div, dl div { display: flex; gap: 10px; justify-content: space-between; color: var(--muted); font-size: 13px; }
+    dt { font-weight: 760; color: var(--ink); }
+    dd { margin: 0; text-align: right; }
+    video { display: block; width: 100%; max-height: 86vh; background: #111; object-fit: contain; }
+    footer { margin-top: 42px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+    @media (max-width: 900px) { .summary, .notes { grid-template-columns: 1fr; } .video-meta { grid-template-columns: 1fr; } table { display: block; overflow-x: auto; white-space: nowrap; } }
+  </style>
+</head>
+<body>
+  <header>
+    <p class="eyebrow">001 Clear Phone Case · CLEAR Subtitle Removal</p>
+    <h1>CLEAR 去字幕耗时与效果分析</h1>
+    <p class="lead">本页展示 CLEAR 在 3 个手机壳视频上的完整批处理结果。每个 comparison 视频左侧为原始输入，右侧为去字幕输出；耗时来自 batch-once 记录，模型只初始化一次，三条视频连续处理。</p>
+  </header>
+  <main>
+    <section class="summary" aria-label="summary metrics">
+      <div class="metric"><span>Videos</span><strong>3</strong></div>
+      <div class="metric"><span>Input duration</span><strong>59.48s</strong></div>
+      <div class="metric"><span>Model load</span><strong>6m 44.9s</strong></div>
+      <div class="metric"><span>Process only</span><strong>19m 54.9s</strong></div>
+      <div class="metric"><span>Batch total</span><strong>27m 42.4s</strong></div>
+    </section>
+
+    <div class="callout">
+      <b>结论</b>
+      CLEAR 在这组完整视频上的纯推理耗时为 19m 54.9s；保存 cleaned/source/comparison 后，连续处理端到端耗时为 20m 57.5s。若计入 batch 开始时唯一一次模型加载 6m 44.9s，真实 batch 总耗时为 27m 42.4s。竖屏 540x960 视频的处理效率明显高于 720x1280 视频；输出帧数短于输入帧数，是 sliding window 为保证完整窗口而裁掉尾部不足窗口的帧。
+    </div>
+
+    <h2>时间明细</h2>
+    <table>
+      <thead>
+        <tr><th>视频</th><th>分辨率</th><th>FPS</th><th>输入帧</th><th>输出帧</th><th>裁掉帧</th><th>处理(s)</th><th>总计(s)</th><th>s/frame</th><th>RTF</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+        <td>id-11110124-6knan-m84sn3fukjny5e.16003251743682693</td>
+        <td>720x1280</td>
+        <td>30.00</td>
+        <td>528</td>
+        <td>489</td>
+        <td>39</td>
+        <td>656.59</td>
+        <td>689.29</td>
+        <td>1.343</td>
+        <td>37.31x</td>
+      </tr><tr>
+        <td>id-11110124-6vdv4-mefmzulpxzpi3a.default</td>
+        <td>540x960</td>
+        <td>25.00</td>
+        <td>384</td>
+        <td>353</td>
+        <td>31</td>
+        <td>191.69</td>
+        <td>203.13</td>
+        <td>0.543</td>
+        <td>12.48x</td>
+      </tr><tr>
+        <td>id-11110124-6vend-mfnu6jd1y96y8f.default</td>
+        <td>540x960</td>
+        <td>25.00</td>
+        <td>663</td>
+        <td>625</td>
+        <td>38</td>
+        <td>346.67</td>
+        <td>365.10</td>
+        <td>0.555</td>
+        <td>13.07x</td>
+      </tr>
+      </tbody>
+    </table>
+
+    <div class="notes">
+      <div class="note"><b>计时口径</b>Process 只统计 `pipeline.inference`；表格 Total 包含保存 cleaned/source/comparison 的时间，不含模型初始化；顶部 Batch total 额外计入一次模型加载。</div>
+      <div class="note"><b>配置</b>num_steps=5、cfg=1.0、denoising_strength=0.45、chunk_size=81、chunk_overlap=16、histogram match 开启。</div>
+      <div class="note"><b>检查重点</b>播放 comparison 时重点看字幕区域残影、商品边缘变形、尾部是否因裁帧变短而影响交付。</div>
+    </div>
+
+    <h2>Comparison Videos</h2>
+    <section class="videos">
+      
+      <article class="video-card">
+        <div class="video-meta">
+          <div>
+            <p class="eyebrow">Comparison 1</p>
+            <h3>id-11110124-6knan-m84sn3fukjny5e.16003251743682693</h3>
+          </div>
+          <dl>
+            <div><dt>Input</dt><dd>720x1280 · 17.60s · 528 frames</dd></div>
+            <div><dt>Output</dt><dd>489 frames · 656.59s process</dd></div>
+            <div><dt>Speed</dt><dd>1.343s/frame · RTF 37.31x</dd></div>
+          </dl>
+        </div>
+        <video controls preload="metadata" playsinline src="assets/id-11110124-6knan-m84sn3fukjny5e.16003251743682693_comparison.mp4"></video>
+      </article>
+      <article class="video-card">
+        <div class="video-meta">
+          <div>
+            <p class="eyebrow">Comparison 2</p>
+            <h3>id-11110124-6vdv4-mefmzulpxzpi3a.default</h3>
+          </div>
+          <dl>
+            <div><dt>Input</dt><dd>540x960 · 15.36s · 384 frames</dd></div>
+            <div><dt>Output</dt><dd>353 frames · 191.69s process</dd></div>
+            <div><dt>Speed</dt><dd>0.543s/frame · RTF 12.48x</dd></div>
+          </dl>
+        </div>
+        <video controls preload="metadata" playsinline src="assets/id-11110124-6vdv4-mefmzulpxzpi3a.default_comparison.mp4"></video>
+      </article>
+      <article class="video-card">
+        <div class="video-meta">
+          <div>
+            <p class="eyebrow">Comparison 3</p>
+            <h3>id-11110124-6vend-mfnu6jd1y96y8f.default</h3>
+          </div>
+          <dl>
+            <div><dt>Input</dt><dd>540x960 · 26.52s · 663 frames</dd></div>
+            <div><dt>Output</dt><dd>625 frames · 346.67s process</dd></div>
+            <div><dt>Speed</dt><dd>0.555s/frame · RTF 13.07x</dd></div>
+          </dl>
+        </div>
+        <video controls preload="metadata" playsinline src="assets/id-11110124-6vend-mfnu6jd1y96y8f.default_comparison.mp4"></video>
+      </article>
+    </section>
+
+    <footer>
+      Source data: clear_batch_once_log.csv · Full input frames: 1575 · Full output frames: 1467 · Model load included once in Batch total
+    </footer>
+  </main>
+</body>
+</html>
