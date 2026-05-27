@@ -43,6 +43,7 @@
     .tag { display: inline-flex; align-items: center; min-height: 22px; border: 1px solid var(--line); border-radius: 4px; padding: 1px 7px; background: #fafbfc; color: var(--muted); font-size: 12px; font-weight: 700; white-space: nowrap; }
     .mode-remix { border-color: #bddfcf; background: #eefaf4; color: var(--ok); }
     .mode-partial { border-color: #f0d38f; background: #fff8e8; color: var(--warn); }
+    .mode-reedit { border-color: #c9d8f0; background: #eef3fb; color: var(--accent); }
     .mode-overview { border-color: #c8d0dc; background: #f5f7fa; color: #536070; }
     .risk-high, .risk-hard { border-color: #f0b8b2; background: #fff2f0; color: var(--bad); }
     .risk-medium { border-color: #f0d38f; background: #fff8e8; color: var(--warn); }
@@ -81,8 +82,8 @@
 <body>
   <header><div class="wrap top"><h1>混剪一致性测试 Demo</h1><div class="meta"><span class="pill">run mode: <span class="mono">test-remix</span></span><span class="pill">video: Google Drive iframe</span><span class="pill">30-case overview</span></div><p class="callout">本页按 30 条案例组织。CSV 中 <code>final_remix</code> 为“不混剪”或“单输入”的案例只进入总览表，不展开具体报告；其余案例可展开查看 info 视频与最新 <code>remix_report.md</code>。</p></div></header>
   <main class="wrap">
-    <section><h2>总览</h2><div class="stats"><div class="stat"><div class="label">案例总数</div><div class="value">30</div></div><div class="stat"><div class="label">可展开 Demo</div><div class="value">22</div></div><div class="stat"><div class="label">REMIX</div><div class="value">14</div></div><div class="stat"><div class="label">PARTIAL_REMIX</div><div class="value">8</div></div><div class="stat"><div class="label">不混剪/单输入</div><div class="value">8</div></div><div class="stat"><div class="label">规则/LLM 有差异</div><div class="value">7</div></div></div></section>
-    <section class="toolbar"><h2>筛选与导航</h2><div class="filters" role="group" aria-label="mode filter"><button class="filter-btn active" type="button" data-mode-filter="all">全部</button><button class="filter-btn" type="button" data-mode-filter="REMIX">REMIX</button><button class="filter-btn" type="button" data-mode-filter="PARTIAL_REMIX">PARTIAL_REMIX</button><button class="filter-btn" type="button" data-mode-filter="OVERVIEW_ONLY">仅总览</button></div><input class="search" type="search" id="caseSearch" placeholder="搜索编号、品类或 item 名称"><div class="quick-nav"><a href="#case-001">001</a><a href="#case-002">002</a><a href="#case-003">003</a><a href="#case-004">004</a><span>005</span><a href="#case-006">006</a><a href="#case-007">007</a><a href="#case-008">008</a><a href="#case-009">009</a><span>010</span><a href="#case-011">011</a><a href="#case-012">012</a><a href="#case-013">013</a><a href="#case-014">014</a><a href="#case-015">015</a><a href="#case-016">016</a><span>017</span><a href="#case-018">018</a><a href="#case-019">019</a><span>020</span><span>021</span><a href="#case-022">022</a><a href="#case-023">023</a><a href="#case-024">024</a><a href="#case-025">025</a><span>026</span><span>027</span><a href="#case-028">028</a><a href="#case-029">029</a><span>030</span></div></section>
+    <section><h2>总览</h2><div class="stats"><div class="stat"><div class="label">案例总数</div><div class="value">30</div></div><div class="stat"><div class="label">可展开 Demo</div><div class="value">22</div></div><div class="stat"><div class="label">REMIX</div><div class="value">12</div></div><div class="stat"><div class="label">PARTIAL_REMIX</div><div class="value">7</div></div><div class="stat"><div class="label">主视频重剪</div><div class="value">3</div></div><div class="stat"><div class="label">不混剪/单输入</div><div class="value">8</div></div><div class="stat"><div class="label">规则/LLM 有差异</div><div class="value">7</div></div></div></section>
+    <section class="toolbar"><h2>筛选与导航</h2><div class="filters" role="group" aria-label="mode filter"><button class="filter-btn active" type="button" data-mode-filter="all">全部</button><button class="filter-btn" type="button" data-mode-filter="REMIX">REMIX</button><button class="filter-btn" type="button" data-mode-filter="PARTIAL_REMIX">PARTIAL_REMIX</button><button class="filter-btn" type="button" data-mode-filter="MAIN_REEDIT">主视频重剪</button><button class="filter-btn" type="button" data-mode-filter="OVERVIEW_ONLY">仅总览</button></div><input class="search" type="search" id="caseSearch" placeholder="搜索编号、品类或 item 名称"><div class="quick-nav"><a href="#case-001">001</a><a href="#case-002">002</a><a href="#case-003">003</a><a href="#case-004">004</a><span>005</span><a href="#case-006">006</a><a href="#case-007">007</a><a href="#case-008">008</a><a href="#case-009">009</a><span>010</span><a href="#case-011">011</a><a href="#case-012">012</a><a href="#case-013">013</a><a href="#case-014">014</a><a href="#case-015">015</a><a href="#case-016">016</a><span>017</span><a href="#case-018">018</a><a href="#case-019">019</a><span>020</span><span>021</span><a href="#case-022">022</a><a href="#case-023">023</a><a href="#case-024">024</a><a href="#case-025">025</a><span>026</span><span>027</span><a href="#case-028">028</a><a href="#case-029">029</a><span>030</span></div></section>
     <section><h2>案例总览表</h2><div class="table-scroll"><table><thead><tr><th>ID</th><th>品类</th><th>模式/状态</th><th>参与混剪</th><th>未参与</th><th>时长</th><th>镜头数</th><th>风险</th><th>规则/LLM差异</th><th>说明</th></tr></thead><tbody><tr data-case-row data-mode="PARTIAL_REMIX" data-risk="high" data-text="001 clear phone case 001_clear_phone_case">
 <td><a href="#case-001">001</a></td><td><strong>Clear Phone Case</strong><span>001_Clear_Phone_case</span></td><td><span class="tag mode-partial">PARTIAL_REMIX</span></td><td><code>[1, 2]</code></td><td><code>[0]</code></td><td><code>9.99s</code></td><td><code>5</code></td><td><span class="tag risk-high">high</span></td><td>是</td><td>可展开详情</td></tr>
 <tr data-case-row data-mode="REMIX" data-risk="high" data-text="002 card collection album 002_card_collection_album">
@@ -97,10 +98,10 @@
 <td><a href="#case-006">006</a></td><td><strong>100w Charging Cables</strong><span>006_100w_charging_cables</span></td><td><span class="tag mode-partial">PARTIAL_REMIX</span></td><td><code>[1, 2]</code></td><td><code>[0]</code></td><td><code>15.27s</code></td><td><code>7</code></td><td><span class="tag risk-hard">hard_reject</span></td><td>否</td><td>可展开详情</td></tr>
 <tr data-case-row data-mode="PARTIAL_REMIX" data-risk="high" data-text="007 drain cover 007_drain_cover">
 <td><a href="#case-007">007</a></td><td><strong>Drain Cover</strong><span>007_Drain_cover</span></td><td><span class="tag mode-partial">PARTIAL_REMIX</span></td><td><code>[0, 1]</code></td><td><code>[2]</code></td><td><code>15.33s</code></td><td><code>9</code></td><td><span class="tag risk-high">high</span></td><td>是</td><td>可展开详情</td></tr>
-<tr data-case-row data-mode="REMIX" data-risk="high" data-text="008 thermal lunch bag 008_thermal_lunch_bag">
-<td><a href="#case-008">008</a></td><td><strong>Thermal Lunch Bag</strong><span>008_Thermal_lunch_bag</span></td><td><span class="tag mode-remix">REMIX</span></td><td><code>[0, 1]</code></td><td><code>[]</code></td><td><code>10.64s</code></td><td><code>10</code></td><td><span class="tag risk-high">high</span></td><td>否</td><td>可展开详情</td></tr>
-<tr data-case-row data-mode="PARTIAL_REMIX" data-risk="hard_reject" data-text="009 nylon canvas belt 009_nylon_canvas_belt">
-<td><a href="#case-009">009</a></td><td><strong>Nylon Canvas Belt</strong><span>009_Nylon_canvas_belt</span></td><td><span class="tag mode-partial">PARTIAL_REMIX</span></td><td><code>[1, 2]</code></td><td><code>[0]</code></td><td><code>11.3s</code></td><td><code>7</code></td><td><span class="tag risk-hard">hard_reject</span></td><td>否</td><td>可展开详情</td></tr>
+<tr data-case-row data-mode="MAIN_REEDIT" data-risk="high" data-text="008 thermal lunch bag 008_thermal_lunch_bag">
+<td><a href="#case-008">008</a></td><td><strong>Thermal Lunch Bag</strong><span>008_Thermal_lunch_bag</span></td><td><span class="tag mode-reedit">主视频重剪</span></td><td><code>[0]</code></td><td><code>[1]</code></td><td><code>10.64s</code></td><td><code>10</code></td><td><span class="tag risk-high">high</span></td><td>否</td><td>可展开详情</td></tr>
+<tr data-case-row data-mode="MAIN_REEDIT" data-risk="hard_reject" data-text="009 nylon canvas belt 009_nylon_canvas_belt">
+<td><a href="#case-009">009</a></td><td><strong>Nylon Canvas Belt</strong><span>009_Nylon_canvas_belt</span></td><td><span class="tag mode-reedit">主视频重剪</span></td><td><code>[1]</code></td><td><code>[0, 2]</code></td><td><code>11.3s</code></td><td><code>7</code></td><td><span class="tag risk-hard">hard_reject</span></td><td>否</td><td>可展开详情</td></tr>
 <tr data-case-row data-mode="OVERVIEW_ONLY" data-risk="-" data-text="010 bag charm 010_bag_charm">
 <td>010</td><td><strong>Bag Charm</strong><span>010_Bag_charm</span></td><td><span class="tag mode-overview">不混剪</span></td><td><code>-</code></td><td><code>-</code></td><td><code>-</code></td><td><code>-</code></td><td><span class="tag ">-</span></td><td>否</td><td>仅总览：不混剪</td></tr>
 <tr data-case-row data-mode="PARTIAL_REMIX" data-risk="high" data-text="011 bed sheets 011_bed_sheets">
@@ -125,8 +126,8 @@
 <td>020</td><td><strong>Arm Sleeves</strong><span>020_Arm_Sleeves</span></td><td><span class="tag mode-overview">单输入</span></td><td><code>-</code></td><td><code>-</code></td><td><code>-</code></td><td><code>-</code></td><td><span class="tag ">-</span></td><td>否</td><td>仅总览：单输入</td></tr>
 <tr data-case-row data-mode="OVERVIEW_ONLY" data-risk="-" data-text="021 bluetooth smart watch 021_bluetooth_smart_watch">
 <td>021</td><td><strong>Bluetooth Smart Watch</strong><span>021_Bluetooth_Smart_Watch</span></td><td><span class="tag mode-overview">不混剪</span></td><td><code>-</code></td><td><code>-</code></td><td><code>-</code></td><td><code>-</code></td><td><span class="tag ">-</span></td><td>否</td><td>仅总览：不混剪</td></tr>
-<tr data-case-row data-mode="REMIX" data-risk="high" data-text="022 electric hair trimmer 022_electric_hair_trimmer">
-<td><a href="#case-022">022</a></td><td><strong>Electric Hair Trimmer</strong><span>022_Electric_Hair_Trimmer</span></td><td><span class="tag mode-remix">REMIX</span></td><td><code>[0, 1]</code></td><td><code>[]</code></td><td><code>10.27s</code></td><td><code>5</code></td><td><span class="tag risk-high">high</span></td><td>否</td><td>可展开详情</td></tr>
+<tr data-case-row data-mode="MAIN_REEDIT" data-risk="high" data-text="022 electric hair trimmer 022_electric_hair_trimmer">
+<td><a href="#case-022">022</a></td><td><strong>Electric Hair Trimmer</strong><span>022_Electric_Hair_Trimmer</span></td><td><span class="tag mode-reedit">主视频重剪</span></td><td><code>[0]</code></td><td><code>[1]</code></td><td><code>10.27s</code></td><td><code>5</code></td><td><span class="tag risk-high">high</span></td><td>否</td><td>可展开详情</td></tr>
 <tr data-case-row data-mode="REMIX" data-risk="medium" data-text="023 manicure nail clipper set 023_manicure_nail_clipper_set">
 <td><a href="#case-023">023</a></td><td><strong>Manicure Nail Clipper Set</strong><span>023_Manicure_Nail_Clipper_Set</span></td><td><span class="tag mode-remix">REMIX</span></td><td><code>[0, 1]</code></td><td><code>[]</code></td><td><code>12.27s</code></td><td><code>8</code></td><td><span class="tag risk-medium">medium</span></td><td>否</td><td>可展开详情</td></tr>
 <tr data-case-row data-mode="REMIX" data-risk="high" data-text="024 silicone strap for digital watch 024_silicone_strap_for_digital_watch">
@@ -1097,34 +1098,35 @@
 <tr><td><code>5</code></td><td>12.33-15.33s</td><td><code>[&#x27;v2_s1&#x27;, &#x27;v2_s5&#x27;]</code></td><td>促销信息</td></tr>
 </tbody></table></div></div></details>
 </details>
-<details class="case-detail" id="case-008" data-case-detail data-mode="REMIX" data-risk="high" data-text="008 thermal lunch bag 008_thermal_lunch_bag" >
-<summary><span>008 · Thermal Lunch Bag</span><span class="summary-tags"><span class="tag mode-remix">REMIX</span><span class="tag risk-high">high</span></span></summary>
+<details class="case-detail" id="case-008" data-case-detail data-mode="MAIN_REEDIT" data-risk="high" data-text="008 thermal lunch bag 008_thermal_lunch_bag" >
+<summary><span>008 · Thermal Lunch Bag</span><span class="summary-tags"><span class="tag mode-reedit">主视频重剪</span><span class="tag risk-high">high</span></span></summary>
 <div class="case-layout">
   <div class="video-shell" data-drive-id="1-UIUWHBygNDTcl_A1SQz95W_5aE1WTw-"><button class="load-video" type="button">加载视频</button></div>
   <aside class="case-summary">
     <h3>混剪结论</h3>
     <dl class="facts compact">
-      <div><dt>规则层</dt><dd><code>REMIX</code></dd></div>
-      <div><dt>LLM/最终</dt><dd><code>REMIX</code></dd></div>
-      <div><dt>参与混剪</dt><dd><code>[0, 1]</code></dd></div>
-      <div><dt>未参与</dt><dd><code>[]</code></dd></div>
+      <div><dt>规则/候选</dt><dd><code>REMIX [0, 1]</code></dd></div>
+      <div><dt>成片结论</dt><dd><code>主视频重剪</code></dd></div>
+      <div><dt>成片来源</dt><dd><code>[0]</code></dd></div>
+      <div><dt>未进入成片</dt><dd><code>[1]</code></dd></div>
       <div><dt>成片时长</dt><dd><code>10.64s</code></dd></div>
       <div><dt>镜头数</dt><dd><code>10</code></dd></div>
     </dl>
-    <p>选择REMIX，因为两个视频展示的是同一商品的多种颜色和细节，视频1能有效补充视频0的内部结构和拉链特写。尽管背景和风格存在较大差异（高风险），但商品统一性是最高优先级，且风险可通过后期剪辑和AI叙事弥补。</p>
+    <p>最终成片仅使用视频0的镜头，应标记为主视频重剪。视频1曾作为可混剪候选参与评估，但在 Stage 3 去重后未进入成片，因此当前输出不是跨视频混剪。</p>
     <div class="actions inline-actions"><a href="https://drive.google.com/file/d/1-UIUWHBygNDTcl_A1SQz95W_5aE1WTw-/view?usp=drive_link" target="_blank" rel="noopener">打开 Google Drive 视频</a><a href="data/remix_report_008.md" target="_blank" rel="noopener">原始 report.md</a></div>
   </aside>
 </div>
 <details class="nested-report"><summary>展开完整 report.md</summary><div class="report-content"><h2>混剪测试输出说明</h2>
 <h2>1. 混剪结论</h2>
 <ul class="clean">
-<li>混剪模式：<code>REMIX</code></li>
-<li>参与混剪视频：<code>[0, 1]</code></li>
-<li>单独翻译/未参与混剪视频：<code>[]</code></li>
-<li>决策摘要：<code>选择REMIX，因为两个视频展示的是同一商品的多种颜色和细节，视频1能有效补充视频0的内部结构和拉链特写。尽管背景和风格存在较大差异（高风险），但商品统一性是最高优先级，且风险可通过后期剪辑和AI叙事弥补。</code></li>
+<li>混剪模式：<code>主视频重剪</code></li>
+<li>成片来源视频：<code>[0]</code></li>
+<li>候选混剪视频：<code>[0, 1]</code></li>
+<li>未进入成片视频：<code>[1]</code></li>
+<li>决策摘要：<code>最终镜头来源分布为 {0: 10}，仅保留视频0镜头。视频1曾作为候选补充内部结构和拉链特写，但 Stage 3 去重后没有进入成片，因此最终结论应为主视频重剪，而非跨视频混剪。</code></li>
 </ul>
 <blockquote>
-<p>选择REMIX，因为两个视频展示的是同一商品的多种颜色和细节，视频1能有效补充视频0的内部结构和拉链特写。尽管背景和风格存在较大差异（高风险），但商品统一性是最高优先级，且风险可通过后期剪辑和AI叙事弥补。</p>
+<p>最终镜头来源分布为 {0: 10}，仅保留视频0镜头。视频1曾作为候选补充内部结构和拉链特写，但 Stage 3 去重后没有进入成片，因此最终结论应为主视频重剪，而非跨视频混剪。</p>
 </blockquote>
 <h2>2. 输入素材关系</h2>
 <div class="table-scroll"><table>
@@ -1237,7 +1239,7 @@
 <ul class="clean">
 <li>输出视频：<code>output_test_remix/008_Thermal_lunch_bag/final_remix_test_remix_info.mp4</code></li>
 <li>成片时长：<code>10.64s</code></li>
-<li>输出模式：<code>REMIX</code></li>
+<li>输出模式：<code>主视频重剪</code></li>
 </ul>
 <div class="table-scroll"><table>
 <thead><tr><th>段落</th><th>时间</th><th>镜头</th><th>内容作用</th></tr></thead>
@@ -1248,34 +1250,35 @@
 <tr><td><code>4</code></td><td>7.64-10.64s</td><td><code>[&#x27;v1_s11&#x27;]</code></td><td>促销信息</td></tr>
 </tbody></table></div></div></details>
 </details>
-<details class="case-detail" id="case-009" data-case-detail data-mode="PARTIAL_REMIX" data-risk="hard_reject" data-text="009 nylon canvas belt 009_nylon_canvas_belt" >
-<summary><span>009 · Nylon Canvas Belt</span><span class="summary-tags"><span class="tag mode-partial">PARTIAL_REMIX</span><span class="tag risk-hard">hard_reject</span></span></summary>
+<details class="case-detail" id="case-009" data-case-detail data-mode="MAIN_REEDIT" data-risk="hard_reject" data-text="009 nylon canvas belt 009_nylon_canvas_belt" >
+<summary><span>009 · Nylon Canvas Belt</span><span class="summary-tags"><span class="tag mode-reedit">主视频重剪</span><span class="tag risk-hard">hard_reject</span></span></summary>
 <div class="case-layout">
   <div class="video-shell" data-drive-id="1meezwR3ljXpB36_C3ImIQMO35sBVht5h"><button class="load-video" type="button">加载视频</button></div>
   <aside class="case-summary">
     <h3>混剪结论</h3>
     <dl class="facts compact">
-      <div><dt>规则层</dt><dd><code>PARTIAL_REMIX</code></dd></div>
-      <div><dt>LLM/最终</dt><dd><code>PARTIAL_REMIX</code></dd></div>
-      <div><dt>参与混剪</dt><dd><code>[1, 2]</code></dd></div>
-      <div><dt>未参与</dt><dd><code>[0]</code></dd></div>
+      <div><dt>规则/候选</dt><dd><code>PARTIAL_REMIX [1, 2]</code></dd></div>
+      <div><dt>成片结论</dt><dd><code>主视频重剪</code></dd></div>
+      <div><dt>成片来源</dt><dd><code>[1]</code></dd></div>
+      <div><dt>未进入成片</dt><dd><code>[0, 2]</code></dd></div>
       <div><dt>成片时长</dt><dd><code>11.3s</code></dd></div>
       <div><dt>镜头数</dt><dd><code>7</code></dd></div>
     </dl>
-    <p>选择PARTIAL_REMIX，将视频1和视频2混剪以展示不同颜色和细节，视频0单独翻译，以避免硬禁区和严重的视觉风格/背景冲突，同时最大化商品展示的完整性和视觉一致性。</p>
+    <p>最终成片仅使用视频1的镜头，应标记为主视频重剪。视频2曾作为可混剪候选参与评估，但在 Stage 3 去重后未进入成片；视频0仍为单独处理素材。</p>
     <div class="actions inline-actions"><a href="https://drive.google.com/file/d/1meezwR3ljXpB36_C3ImIQMO35sBVht5h/view?usp=drive_link" target="_blank" rel="noopener">打开 Google Drive 视频</a><a href="data/remix_report_009.md" target="_blank" rel="noopener">原始 report.md</a></div>
   </aside>
 </div>
 <details class="nested-report"><summary>展开完整 report.md</summary><div class="report-content"><h2>混剪测试输出说明</h2>
 <h2>1. 混剪结论</h2>
 <ul class="clean">
-<li>混剪模式：<code>PARTIAL_REMIX</code></li>
-<li>参与混剪视频：<code>[1, 2]</code></li>
-<li>单独翻译/未参与混剪视频：<code>[0]</code></li>
-<li>决策摘要：<code>选择PARTIAL_REMIX，将视频1和视频2混剪以展示不同颜色和细节，视频0单独翻译，以避免硬禁区和严重的视觉风格/背景冲突，同时最大化商品展示的完整性和视觉一致性。</code></li>
+<li>混剪模式：<code>主视频重剪</code></li>
+<li>成片来源视频：<code>[1]</code></li>
+<li>候选混剪视频：<code>[1, 2]</code></li>
+<li>未进入成片视频：<code>[0, 2]</code></li>
+<li>决策摘要：<code>最终镜头来源分布为 {1: 7}，仅保留视频1镜头。视频2曾作为候选补充不同颜色和细节，但 Stage 3 去重后没有进入成片；视频0单独处理。因此最终结论应为主视频重剪，而非部分混剪。</code></li>
 </ul>
 <blockquote>
-<p>选择PARTIAL_REMIX，将视频1和视频2混剪以展示不同颜色和细节，视频0单独翻译，以避免硬禁区和严重的视觉风格/背景冲突，同时最大化商品展示的完整性和视觉一致性。</p>
+<p>最终镜头来源分布为 {1: 7}，仅保留视频1镜头。视频2曾作为候选补充不同颜色和细节，但 Stage 3 去重后没有进入成片；视频0单独处理。因此最终结论应为主视频重剪，而非部分混剪。</p>
 </blockquote>
 <h2>2. 输入素材关系</h2>
 <div class="table-scroll"><table>
@@ -1393,7 +1396,7 @@
 <ul class="clean">
 <li>输出视频：<code>output_test_remix/009_Nylon_canvas_belt/final_remix_test_remix_info.mp4</code></li>
 <li>成片时长：<code>11.3s</code></li>
-<li>输出模式：<code>PARTIAL_REMIX</code></li>
+<li>输出模式：<code>主视频重剪</code></li>
 </ul>
 <div class="table-scroll"><table>
 <thead><tr><th>段落</th><th>时间</th><th>镜头</th><th>内容作用</th></tr></thead>
@@ -2580,34 +2583,35 @@
 <tr><td><code>3</code></td><td>6.93-9.86s</td><td><code>[&#x27;v2_s3&#x27;]</code></td><td>核心卖点</td></tr>
 </tbody></table></div></div></details>
 </details>
-<details class="case-detail" id="case-022" data-case-detail data-mode="REMIX" data-risk="high" data-text="022 electric hair trimmer 022_electric_hair_trimmer" >
-<summary><span>022 · Electric Hair Trimmer</span><span class="summary-tags"><span class="tag mode-remix">REMIX</span><span class="tag risk-high">high</span></span></summary>
+<details class="case-detail" id="case-022" data-case-detail data-mode="MAIN_REEDIT" data-risk="high" data-text="022 electric hair trimmer 022_electric_hair_trimmer" >
+<summary><span>022 · Electric Hair Trimmer</span><span class="summary-tags"><span class="tag mode-reedit">主视频重剪</span><span class="tag risk-high">high</span></span></summary>
 <div class="case-layout">
   <div class="video-shell" data-drive-id="1K--5MyETwLWCOkKP_UWNADDFKtOir_qB"><button class="load-video" type="button">加载视频</button></div>
   <aside class="case-summary">
     <h3>混剪结论</h3>
     <dl class="facts compact">
-      <div><dt>规则层</dt><dd><code>REMIX</code></dd></div>
-      <div><dt>LLM/最终</dt><dd><code>REMIX</code></dd></div>
-      <div><dt>参与混剪</dt><dd><code>[0, 1]</code></dd></div>
-      <div><dt>未参与</dt><dd><code>[]</code></dd></div>
+      <div><dt>规则/候选</dt><dd><code>REMIX [0, 1]</code></dd></div>
+      <div><dt>成片结论</dt><dd><code>主视频重剪</code></dd></div>
+      <div><dt>成片来源</dt><dd><code>[0]</code></dd></div>
+      <div><dt>未进入成片</dt><dd><code>[1]</code></dd></div>
       <div><dt>成片时长</dt><dd><code>10.27s</code></dd></div>
       <div><dt>镜头数</dt><dd><code>5</code></dd></div>
     </dl>
-    <p>选择REMIX，因为视频0和视频1展示的是同一款电动理发器的不同颜色变体（金色与黑色），商品和卖点高度统一。尽管存在人物手部特征不一致的视觉风险（男性手部 vs. 女性手部），但整体画面风格和背景高度一致，且该风险在电商短视频中通常可接受，可以通过剪辑手法弱化。混剪能有效展示产品多色可选的卖点，增加产品吸引力。</p>
+    <p>最终成片仅使用视频0的镜头，应标记为主视频重剪。视频1曾作为可混剪候选参与评估，但在 Stage 3 去重后未进入成片，因此当前输出不是跨视频混剪。</p>
     <div class="actions inline-actions"><a href="https://drive.google.com/file/d/1K--5MyETwLWCOkKP_UWNADDFKtOir_qB/view?usp=drive_link" target="_blank" rel="noopener">打开 Google Drive 视频</a><a href="data/remix_report_022.md" target="_blank" rel="noopener">原始 report.md</a></div>
   </aside>
 </div>
 <details class="nested-report"><summary>展开完整 report.md</summary><div class="report-content"><h2>混剪测试输出说明</h2>
 <h2>1. 混剪结论</h2>
 <ul class="clean">
-<li>混剪模式：<code>REMIX</code></li>
-<li>参与混剪视频：<code>[0, 1]</code></li>
-<li>单独翻译/未参与混剪视频：<code>[]</code></li>
-<li>决策摘要：<code>选择REMIX，因为视频0和视频1展示的是同一款电动理发器的不同颜色变体（金色与黑色），商品和卖点高度统一。尽管存在人物手部特征不一致的视觉风险（男性手部 vs. 女性手部），但整体画面风格和背景高度一致，且该风险在电商短视频中通常可接受，可以通过剪辑手法弱化。混剪能有效展示产品多色可选的卖点，增加产品吸引力。</code></li>
+<li>混剪模式：<code>主视频重剪</code></li>
+<li>成片来源视频：<code>[0]</code></li>
+<li>候选混剪视频：<code>[0, 1]</code></li>
+<li>未进入成片视频：<code>[1]</code></li>
+<li>决策摘要：<code>最终镜头来源分布为 {0: 5}，仅保留视频0镜头。视频1曾作为候选补充黑色款式和配件展示，但 Stage 3 去重后没有进入成片，因此最终结论应为主视频重剪，而非跨视频混剪。</code></li>
 </ul>
 <blockquote>
-<p>选择REMIX，因为视频0和视频1展示的是同一款电动理发器的不同颜色变体（金色与黑色），商品和卖点高度统一。尽管存在人物手部特征不一致的视觉风险（男性手部 vs. 女性手部），但整体画面风格和背景高度一致，且该风险在电商短视频中通常可接受，可以通过剪辑手法弱化。混剪能有效展示产品多色可选的卖点，增加产品吸引力。</p>
+<p>最终镜头来源分布为 {0: 5}，仅保留视频0镜头。视频1曾作为候选补充黑色款式和配件展示，但 Stage 3 去重后没有进入成片，因此最终结论应为主视频重剪，而非跨视频混剪。</p>
 </blockquote>
 <h2>2. 输入素材关系</h2>
 <div class="table-scroll"><table>
@@ -2711,7 +2715,7 @@
 <ul class="clean">
 <li>输出视频：<code>output_test_remix/022_Electric_Hair_Trimmer/final_remix_test_remix_info.mp4</code></li>
 <li>成片时长：<code>10.27s</code></li>
-<li>输出模式：<code>REMIX</code></li>
+<li>输出模式：<code>主视频重剪</code></li>
 </ul>
 <div class="table-scroll"><table>
 <thead><tr><th>段落</th><th>时间</th><th>镜头</th><th>内容作用</th></tr></thead>
