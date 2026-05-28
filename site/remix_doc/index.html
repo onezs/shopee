@@ -555,12 +555,16 @@ similarity &gt;= 0.88 => 留更优</pre>
           </div>
           <div class="panel">
             <h3>叙事角色数量</h3>
-            <p>数量不是固定值，而由模板、候选池、去重和时长共同决定。</p>
-            <pre>常见短视频：
-HOOK    1
-DEV     2-4
-CLIMAX  1-2
-CTA     1</pre>
+            <p>数量不是固定配额。Stage3 是按脚本模板里的 segment 逐段取镜头，而不是按角色一次性平均分配。</p>
+            <pre>AIDA 默认结构：
+HOOK      1段
+DEV       2段
+CLIMAX    1段
+CTA       1段
+
+每个 segment 默认：
+max_shots = 2</pre>
+            <p>因此 DEV 因为有两个 segment，天然更容易拿到更多镜头。实际会被候选池、去重、质量和时长限制收缩。</p>
           </div>
           <div class="panel">
             <h3>DEV / CLIMAX fallback</h3>
@@ -571,6 +575,52 @@ selected_video_indices
 quality_score &gt;= 4
 not dropped_shots</pre>
           </div>
+        </div>
+
+        <table style="margin-top:16px">
+          <thead>
+            <tr>
+              <th>叙事角色</th>
+              <th>模板段落来源</th>
+              <th>理论上限</th>
+              <th>常见实际数量</th>
+              <th>数量变化原因</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>HOOK</code></td>
+              <td>AIDA 里通常 1 个开场段。</td>
+              <td>默认最多 2 个镜头。</td>
+              <td>通常 1 个。</td>
+              <td>HOOK 太长会拖慢节奏；候选必须有强视觉冲击或文字开场，不会随便拿平淡展示镜头。</td>
+            </tr>
+            <tr>
+              <td><code>DEV</code></td>
+              <td>AIDA 里通常 2 个展开段：产品展示和功能/使用展开。</td>
+              <td>默认最多 4 个镜头。</td>
+              <td>通常 2-4 个。</td>
+              <td>DEV 承担产品认知，是最容易多选的角色；但开箱/包装全局最多 1 个，重复细节不会补回。</td>
+            </tr>
+            <tr>
+              <td><code>CLIMAX</code></td>
+              <td>AIDA 里通常 1 个卖点强化段。</td>
+              <td>默认最多 2 个镜头。</td>
+              <td>通常 1-2 个。</td>
+              <td>优先选择细节、对比、证明、核心卖点镜头；不够时可从有效 DEV/detail/usage 候选借镜头。</td>
+            </tr>
+            <tr>
+              <td><code>CTA</code></td>
+              <td>AIDA 里通常 1 个结尾引导段。</td>
+              <td>默认最多 2 个镜头。</td>
+              <td>通常 1 个。</td>
+              <td>优先最终展示、手持展示、价格/标题文字；开箱或纯细节不会轻易作为 CTA。</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout" style="margin-top:16px">
+          解释口径：最终数量 = 模板 segment 的 <code>max_shots</code> 上限 - 去重/过滤收缩 + 平台时长补足。补时不会从 <code>dropped_shots</code> 捞回重复镜头，所以素材少时宁可 QA 报 <code>duration_short</code>，也不会硬塞重复开箱。
         </div>
       </div>
     </section>
