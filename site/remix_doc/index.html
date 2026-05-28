@@ -1,0 +1,1152 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Video Remix Pipeline 项目说明</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0f1117;
+      --panel: #171a22;
+      --panel-2: #1f2430;
+      --ink: #eef2ff;
+      --muted: #a8b0c5;
+      --line: #303748;
+      --accent: #5eead4;
+      --accent-2: #fbbf24;
+      --accent-3: #93c5fd;
+      --danger: #fb7185;
+      --ok: #86efac;
+      --shadow: 0 18px 60px rgba(0, 0, 0, 0.32);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 16% 0%, rgba(94, 234, 212, 0.16), transparent 28rem),
+        radial-gradient(circle at 96% 10%, rgba(147, 197, 253, 0.12), transparent 24rem),
+        var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    code {
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.055);
+      color: #dbeafe;
+      padding: 0.12rem 0.34rem;
+      font-size: 0.92em;
+    }
+
+    .shell {
+      width: min(1180px, calc(100% - 36px));
+      margin: 0 auto;
+    }
+
+    .hero {
+      min-height: 84vh;
+      display: grid;
+      align-items: center;
+      padding: 54px 0 38px;
+    }
+
+    .eyebrow {
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      max-width: 920px;
+      margin: 0;
+      font-size: clamp(3rem, 7.2vw, 6.8rem);
+      line-height: 0.95;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 780px;
+      margin: 26px 0 0;
+      color: var(--muted);
+      font-size: clamp(1.08rem, 2vw, 1.32rem);
+    }
+
+    .hero-metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 42px;
+    }
+
+    .metric {
+      min-height: 112px;
+      border: 1px solid var(--line);
+      background: rgba(23, 26, 34, 0.72);
+      border-radius: 8px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 1.8rem;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    .metric span { color: var(--muted); font-size: 0.94rem; }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(18px);
+      background: rgba(15, 17, 23, 0.82);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .nav-inner {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 10px 0;
+    }
+
+    .nav-inner a {
+      white-space: nowrap;
+      color: var(--muted);
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 0.92rem;
+    }
+
+    .nav-inner a:hover { color: var(--ink); background: rgba(255, 255, 255, 0.07); }
+
+    section { padding: 56px 0; }
+    h2 {
+      margin: 0 0 18px;
+      font-size: clamp(1.75rem, 3vw, 2.7rem);
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 0 0 12px;
+      font-size: 1.14rem;
+      letter-spacing: 0;
+    }
+
+    .section-intro {
+      max-width: 820px;
+      margin: 0 0 28px;
+      color: var(--muted);
+      font-size: 1.04rem;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      counter-reset: stage;
+    }
+
+    .stage-card {
+      position: relative;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(31, 36, 48, 0.94), rgba(23, 26, 34, 0.96));
+      border-radius: 8px;
+      padding: 18px;
+      min-height: 212px;
+    }
+
+    .stage-card::before {
+      counter-increment: stage;
+      content: counter(stage);
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(94, 234, 212, 0.13);
+      color: var(--accent);
+      border: 1px solid rgba(94, 234, 212, 0.42);
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .stage-card p, .stage-card li { color: var(--muted); font-size: 0.95rem; }
+    .stage-card ul { padding-left: 1.1rem; margin: 10px 0 0; }
+
+    .pipeline-line {
+      margin-top: 24px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(23, 26, 34, 0.74);
+      padding: 18px;
+      overflow-x: auto;
+    }
+
+    .pipeline-line .steps {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(112px, 1fr));
+      gap: 10px;
+      min-width: 880px;
+    }
+
+    .step {
+      min-height: 74px;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 7px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 12px;
+      font-size: 0.9rem;
+    }
+
+    .step b { display: block; color: var(--accent-3); margin-bottom: 4px; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      background: rgba(23, 26, 34, 0.78);
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    .panel p, .panel li { color: var(--muted); }
+    .panel ul { margin: 10px 0 0; padding-left: 1.2rem; }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 28px;
+      padding: 0 9px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      color: var(--muted);
+      font-size: 0.84rem;
+      margin: 4px 4px 0 0;
+    }
+
+    .tag.accent { color: var(--accent); border-color: rgba(94, 234, 212, 0.36); }
+    .tag.warn { color: var(--accent-2); border-color: rgba(251, 191, 36, 0.36); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(23, 26, 34, 0.74);
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 13px 14px;
+      text-align: left;
+      vertical-align: top;
+      font-size: 0.94rem;
+    }
+
+    th {
+      background: rgba(255, 255, 255, 0.055);
+      color: var(--ink);
+      font-weight: 800;
+    }
+
+    td { color: var(--muted); }
+    tr:last-child td { border-bottom: 0; }
+
+    .prompt-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(23, 26, 34, 0.82);
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+
+    .prompt-head {
+      display: grid;
+      grid-template-columns: 96px 1fr auto;
+      gap: 14px;
+      align-items: center;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.045);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .prompt-stage {
+      color: var(--accent);
+      font-weight: 800;
+      font-size: 0.88rem;
+    }
+
+    .prompt-title { font-weight: 800; }
+    .prompt-use { color: var(--muted); font-size: 0.9rem; }
+
+    .prompt-body {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+      gap: 0;
+    }
+
+    .prompt-body > div {
+      padding: 16px;
+      border-right: 1px solid var(--line);
+    }
+
+    .prompt-body > div:last-child { border-right: 0; }
+
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: #dbeafe;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      background: rgba(0, 0, 0, 0.22);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 7px;
+      padding: 12px;
+    }
+
+    .logic-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .logic-item {
+      border-left: 3px solid var(--accent);
+      background: rgba(255, 255, 255, 0.045);
+      padding: 14px 16px;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .logic-item strong { display: block; margin-bottom: 4px; }
+    .logic-item span { color: var(--muted); }
+
+    .callout {
+      border: 1px solid rgba(94, 234, 212, 0.32);
+      background: rgba(94, 234, 212, 0.08);
+      border-radius: 8px;
+      padding: 18px;
+      color: #dffdf8;
+    }
+
+    footer {
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      padding: 34px 0 52px;
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 960px) {
+      .hero-metrics, .flow, .grid-3, .grid-2 { grid-template-columns: 1fr; }
+      .prompt-head { grid-template-columns: 1fr; }
+      .prompt-body { grid-template-columns: 1fr; }
+      .prompt-body > div { border-right: 0; border-bottom: 1px solid var(--line); }
+      .prompt-body > div:last-child { border-bottom: 0; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="shell">
+      <div class="eyebrow">Creative Video Remix · Meeting Brief</div>
+      <h1>Video Remix Pipeline 项目说明</h1>
+      <p class="lead">
+        一个面向跨境电商素材的多阶段 Agent 链路：先清理素材，再理解镜头，判断视频能否混剪，
+        最后按广告叙事结构选镜头、去重、拼接、字幕渲染和质检。
+      </p>
+      <div class="hero-metrics">
+        <div class="metric"><strong>8</strong><span>主流程阶段，从字幕清理到报告输出</span></div>
+        <div class="metric"><strong>7</strong><span>实际 LLM prompt，用于视觉打标、策略判断和文案生成</span></div>
+        <div class="metric"><strong>3</strong><span>成片模式：REMIX / PARTIAL_REMIX / TRANSLATE_ALL</span></div>
+        <div class="metric"><strong>30fps</strong><span>Stage4 CFR 按帧裁切，减少段首闪帧</span></div>
+      </div>
+    </div>
+  </header>
+
+  <nav>
+    <div class="shell nav-inner">
+      <a href="#overview">总览</a>
+      <a href="#stages">阶段逻辑</a>
+      <a href="#selection">选片与去重</a>
+      <a href="#thresholds">关键阈值</a>
+      <a href="#metrics">指标计算</a>
+      <a href="#stage1-tags">Stage1 标签</a>
+      <a href="#prompts">Prompt</a>
+      <a href="#llm-output">LLM 输出</a>
+      <a href="#modes">测试模式</a>
+      <a href="#takeaways">结论</a>
+    </div>
+  </nav>
+
+  <main>
+    <section id="overview">
+      <div class="shell">
+        <h2>链路总览</h2>
+        <p class="section-intro">
+          系统的核心设计是“规则证据 + LLM 编导 + 可解释产物”。LLM 不直接随机决定一切，
+          而是在结构化镜头标签、视频 pair 分数、候选组合和硬禁区的基础上做广告编导判断。
+        </p>
+        <div class="pipeline-line" aria-label="pipeline flow">
+          <div class="steps">
+            <div class="step"><b>Stage0</b>字幕/水印清理</div>
+            <div class="step"><b>Stage1</b>切镜头 + 视觉打标</div>
+            <div class="step"><b>Stage2</b>视频级成片策略</div>
+            <div class="step"><b>Stage3</b>镜头编排 + 口播</div>
+            <div class="step"><b>Stage4</b>CFR 裁切拼接</div>
+            <div class="step"><b>Stage4.5</b>Remotion 字幕</div>
+            <div class="step"><b>Stage5</b>QA 质检</div>
+            <div class="step"><b>Stage6</b>报告与断点</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="stages">
+      <div class="shell">
+        <h2>各阶段逻辑</h2>
+        <p class="section-intro">每个阶段都输出可复盘的 JSON 或中间产物，方便定位问题：是 OCR、打标、视频组合、镜头去重，还是最终拼接。</p>
+        <div class="flow">
+          <article class="stage-card">
+            <h3>Stage0 字幕清理</h3>
+            <p>OCR 检测硬字幕、水印、顶部花字，生成 mask 后交给 inpainting backend。</p>
+            <ul>
+              <li>LaMa：快，适合快速基线</li>
+              <li>DiffuEraser：质量更稳但慢</li>
+              <li>ProPainter：字幕/水印小 mask 的快方案</li>
+            </ul>
+          </article>
+          <article class="stage-card">
+            <h3>Stage1 镜头理解</h3>
+            <p>切分视频镜头，对关键帧或 clip fallback 调视觉 LLM，输出结构化标签。</p>
+            <ul>
+              <li>质量、景别、内容类型</li>
+              <li>动作、状态、叙事阶段</li>
+              <li>卖点、可见文字、去重签名</li>
+            </ul>
+          </article>
+          <article class="stage-card">
+            <h3>Stage2 策略规划</h3>
+            <p>先用规则层算视频 pair 兼容，再让 LLM 基于证据决定成片模式。</p>
+            <ul>
+              <li>商品语义重叠</li>
+              <li>视觉/背景/人物一致性</li>
+              <li>硬禁区不可被 LLM 覆盖</li>
+            </ul>
+          </article>
+          <article class="stage-card">
+            <h3>Stage3 脚本生成</h3>
+            <p>主视频骨架优先，辅助视频只补缺口；按 AIDA 结构选镜头、去重并生成口播。</p>
+            <ul>
+              <li>HOOK / DEV / CLIMAX / CTA</li>
+              <li>开箱最多一个</li>
+              <li>重复镜头不再补回</li>
+            </ul>
+          </article>
+          <article class="stage-card">
+            <h3>Stage4 混剪组装</h3>
+            <p>先转 CFR 30fps 中间源，再按帧号 trim，降低 VFR 和 GOP seek 带来的闪帧。</p>
+            <ul>
+              <li><code>stage4_cfr_sources</code></li>
+              <li><code>edge_guard_frames=3</code></li>
+              <li>失败回退按秒裁切</li>
+            </ul>
+          </article>
+          <article class="stage-card">
+            <h3>Stage4.5 字幕渲染</h3>
+            <p>Remotion 渲染口播字幕和原字幕翻译回填；水印类文本擦除但不渲染。</p>
+            <ul>
+              <li>口播字幕</li>
+              <li>OCR 原字幕翻译</li>
+              <li><code>skip_render</code> 水印过滤</li>
+            </ul>
+          </article>
+          <article class="stage-card">
+            <h3>Stage5 质检</h3>
+            <p>检查平台时长、HOOK/CTA、镜头数、脚本结构，输出 violation 和建议。</p>
+            <ul>
+              <li>duration_short</li>
+              <li>hook_missing</li>
+              <li>cta_missing</li>
+            </ul>
+          </article>
+          <article class="stage-card">
+            <h3>Stage6 报告</h3>
+            <p>汇总最终视频、shots index、stage JSON、KB 引用和 QA log，用于人工复盘。</p>
+            <ul>
+              <li><code>remix_report.md</code></li>
+              <li><code>stage*_*.json</code></li>
+              <li><code>shots_index.json</code></li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="selection">
+      <div class="shell">
+        <h2>视频丢弃与镜头选取</h2>
+        <div class="grid-2">
+          <div class="panel">
+            <h3>视频级：Stage2 决定能不能混</h3>
+            <p>每两个视频先算兼容分，低语义或严重视觉冲突会被排除。</p>
+            <pre>score =
+  token_score * 0.34
++ style_score * 0.24
++ background_score * 0.18
++ human_score * 0.12
++ type_score * 0.06
++ quality_score * 0.06
+
+token_score &lt; 0.12
+=> 商品语义重叠过低
+=> hard reject</pre>
+            <div class="tag warn">REMIX</div>
+            <div class="tag warn">PARTIAL_REMIX</div>
+            <div class="tag warn">TRANSLATE_ALL</div>
+          </div>
+          <div class="panel">
+            <h3>镜头级：Stage3 决定哪些镜头留下</h3>
+            <p>先定主视频骨架，再用辅助视频补充新的动作、状态、卖点或 CTA 画面。</p>
+            <pre>基础过滤：
+quality_score &gt;= 4
+content_type 不属于：
+BACKGROUND / TRANSITION / EMPTY / OTHER
+
+辅助镜头重复：
+similarity &gt;= 0.72 => 丢
+
+同角色重复：
+similarity &gt;= 0.88 => 留更优</pre>
+            <div class="tag accent">primary backbone</div>
+            <div class="tag accent">auxiliary inserts</div>
+          </div>
+        </div>
+        <div class="grid-3" style="margin-top:16px">
+          <div class="panel">
+            <h3>duplicate_signature</h3>
+            <p>Stage1 输出的稳定短签名，用小写英文和下划线概括商品、动作、状态、背景和手部线索。</p>
+            <pre>clear_case_magsafe_detail_tabletop_hand</pre>
+            <p>如果两个镜头签名完全相同，Stage3 相似度直接给到 <code>0.95</code>。</p>
+          </div>
+          <div class="panel">
+            <h3>叙事角色数量</h3>
+            <p>数量不是固定值，而由模板、候选池、去重和时长共同决定。</p>
+            <pre>常见短视频：
+HOOK    1
+DEV     2-4
+CLIMAX  1-2
+CTA     1</pre>
+          </div>
+          <div class="panel">
+            <h3>DEV / CLIMAX fallback</h3>
+            <p>当前角色候选不够时，从其它有效角色候选池借镜头，不从 dropped_shots 捞回重复镜头。</p>
+            <pre>可借范围：
+available_shots
+selected_video_indices
+quality_score &gt;= 4
+not dropped_shots</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="thresholds">
+      <div class="shell">
+        <h2>关键阈值</h2>
+        <p class="section-intro">
+          这些阈值是当前链路里最影响结果的规则开关。会上如果要解释“为什么这条视频没混”“为什么这个镜头被丢”，优先看这张表。
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>位置</th>
+              <th>规则</th>
+              <th>含义</th>
+              <th>结果</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Stage2 视频 pair</td>
+              <td><code>token_score &lt; 0.12</code></td>
+              <td>两条视频商品语义重叠过低，可能不是同一商品或卖点不连续。</td>
+              <td>进入 <code>hard_reject_pairs</code>，LLM 不能选择该 pair。</td>
+            </tr>
+            <tr>
+              <td>Stage2 视频 pair</td>
+              <td><code>score &gt;= 0.48</code></td>
+              <td>综合商品语义、风格、背景、人物/手部、内容类型和质量后达到混剪线。</td>
+              <td>该 pair 可作为 <code>REMIX</code> 或 <code>PARTIAL_REMIX</code> 候选。</td>
+            </tr>
+            <tr>
+              <td>Stage2 视频 pair</td>
+              <td><code>quality_score &lt; 0.60</code></td>
+              <td>视频组里较弱一侧的平均质量低于可用线。</td>
+              <td>降分并加入拒绝原因：素材质量不可用。</td>
+            </tr>
+            <tr>
+              <td>Stage2 视频 pair</td>
+              <td><code>severe_visual_count &gt;= 2</code></td>
+              <td>风格、背景、人物/手部三类视觉风险中至少两类严重冲突。</td>
+              <td>判为严重视觉冲突叠加，pair 不适合混剪。</td>
+            </tr>
+            <tr>
+              <td>Stage3 基础过滤</td>
+              <td><code>quality_score &gt;= 4</code></td>
+              <td>镜头质量至少达到可用线，避免模糊、构图差、主体不清晰素材进入成片。</td>
+              <td>低于该值的镜头不进入 Stage3 候选池。</td>
+            </tr>
+            <tr>
+              <td>Stage3 基础过滤</td>
+              <td><code>content_type</code> 排除背景/转场/空镜</td>
+              <td><code>BACKGROUND</code>、<code>TRANSITION</code>、<code>EMPTY</code>、<code>OTHER</code> 不承担商品叙事。</td>
+              <td>直接排除，不参与 HOOK/DEV/CLIMAX/CTA 分配。</td>
+            </tr>
+            <tr>
+              <td>Stage3 辅助镜头去重</td>
+              <td><code>similarity &gt;= 0.72</code></td>
+              <td>辅助视频镜头与主视频同角色镜头高度相似，且没有新增信息量。</td>
+              <td>丢辅助镜头，记录 <code>duplicate_with_primary_backbone</code>。</td>
+            </tr>
+            <tr>
+              <td>Stage3 同角色去重</td>
+              <td><code>similarity &gt;= 0.88</code></td>
+              <td>同一叙事角色里两个镜头重复度很高。</td>
+              <td>只保留质量更高、主视频优先或时间更早的一个。</td>
+            </tr>
+            <tr>
+              <td>Stage3 签名去重</td>
+              <td><code>duplicate_signature</code> 相同</td>
+              <td>Stage1 认为两个镜头是同一类商品动作/状态/背景组合。</td>
+              <td>相似度直接设为 <code>0.95</code>，通常会被去重。</td>
+            </tr>
+            <tr>
+              <td>Stage3 包装/开箱</td>
+              <td>包装阶段最多保留 1 个</td>
+              <td><code>intro_packaging</code>、<code>unboxing</code>、<code>in_package</code> 都视为包装/开箱阶段。</td>
+              <td>后续包装镜头丢弃，记录 <code>duplicate_package_or_unboxing_phase</code>。</td>
+            </tr>
+            <tr>
+              <td>Stage4 CFR 裁切</td>
+              <td><code>edge_guard_frames = 3</code></td>
+              <td>按帧裁切时，段首段尾各避开 3 帧。</td>
+              <td>减少 GOP/VFR 边界带来的黑帧、闪帧和残帧。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="metrics">
+      <div class="shell">
+        <h2>指标如何计算</h2>
+        <p class="section-intro">
+          指标分两类：Stage2 是视频级 pair 兼容分，用来判断视频能不能混；Stage3 是镜头级 similarity，用来判断镜头是否重复。
+        </p>
+        <div class="grid-2">
+          <div class="panel">
+            <h3>Stage2 视频级兼容分</h3>
+            <p>每两个视频会先提取各自的镜头集合，再计算商品语义、风格、背景、人物/手部、类型和质量分。</p>
+            <pre>pair_score =
+  token_score      * 0.34
++ style_score      * 0.24
++ background_score * 0.18
++ human_score      * 0.12
++ type_score       * 0.06
++ quality_score    * 0.06</pre>
+            <p>这个分数只是规则证据。最终 Stage2 LLM 可以覆盖软风险，但不能选择 <code>hard_reject_pairs</code>。</p>
+          </div>
+          <div class="panel">
+            <h3>Stage3 镜头相似度</h3>
+            <p>镜头相似度用于去重。签名完全相同时直接高相似，否则按 token、类型、主体、景别和叙事阶段加权。</p>
+            <pre>if duplicate_signature 相同:
+  similarity = 0.95
+
+else:
+  similarity =
+    token_score * 0.42
+  + type_score  * 0.18
+  + focus_score * 0.10
+  + scale_score * 0.05
+  + phase_score * 0.25</pre>
+            <p>细节镜头如果同阶段且 token 重叠达到 <code>0.30</code>，相似度最低抬到 <code>0.78</code>，避免重复细节过多。</p>
+          </div>
+        </div>
+
+        <table style="margin-top:16px">
+          <thead>
+            <tr>
+              <th>指标</th>
+              <th>计算方式</th>
+              <th>依赖字段</th>
+              <th>解释</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>token_score</code></td>
+              <td>两个 token 集合的 Jaccard 相似度：交集 / 并集。</td>
+              <td><code>description</code>、<code>selling_points</code>、<code>duplicate_signature</code>、<code>visible_text</code>、<code>product_state</code></td>
+              <td>衡量两条视频或两个镜头是否在讲同一商品、同一卖点或同一状态。</td>
+            </tr>
+            <tr>
+              <td><code>style_score</code></td>
+              <td>先抽取风格 token，再算 Jaccard 相似度。</td>
+              <td><code>visual_style</code>、<code>lighting</code>、<code>background</code>、<code>scale</code>、<code>content_type</code></td>
+              <td>风格 token 包括 <code>studio</code>、<code>ugc</code>、<code>tabletop</code>、<code>lifestyle</code>、<code>bright</code>、<code>dark</code>、<code>static</code>、<code>motion</code> 等。</td>
+            </tr>
+            <tr>
+              <td><code>background_score</code></td>
+              <td>背景/光线 token 的 Jaccard 相似度；如果某视频内部背景不稳定，最高压到 <code>0.35</code>。</td>
+              <td><code>background</code>、<code>lighting</code>、<code>description</code></td>
+              <td>背景 token 包括 <code>plain</code>、<code>tabletop</code>、<code>home</code>、<code>outdoor</code>、<code>office</code>、<code>store</code>、<code>bright</code>、<code>dark</code>。</td>
+            </tr>
+            <tr>
+              <td><code>human_score</code></td>
+              <td>先判断人物/手部一致性，再映射成分数。</td>
+              <td><code>human_presence</code>、<code>hand_gender</code>、<code>hand_features</code>、<code>people</code>、<code>model</code>、<code>hands</code></td>
+              <td>无人物或一致得高分；女性手/男性手明显冲突会被标记为人物/手部特征不一致。</td>
+            </tr>
+            <tr>
+              <td><code>type_score</code></td>
+              <td>两边 <code>content_type</code> 集合的 Jaccard 相似度。</td>
+              <td><code>content_type</code></td>
+              <td>衡量两条视频是否都包含产品展示、细节、使用演示、包装等相似镜头类型。</td>
+            </tr>
+            <tr>
+              <td><code>quality_score</code></td>
+              <td>先算每条视频平均镜头质量，再取较低一侧；归一化为 <code>min_quality / 5</code>，上限 1。</td>
+              <td><code>quality_score</code></td>
+              <td>确保两条视频里较弱的一条也达到可用质量，不让单条低质视频拖垮成片。</td>
+            </tr>
+            <tr>
+              <td><code>visual_risk_level</code></td>
+              <td>综合风格冲突、背景冲突、人物/手部冲突分级。</td>
+              <td><code>style_score</code>、<code>background_score</code>、<code>human_consistency</code></td>
+              <td>用于提示 LLM 视觉连续性风险。高风险不一定硬拒绝，但必须解释为什么可接受。</td>
+            </tr>
+            <tr>
+              <td><code>dedupe_phase</code></td>
+              <td>根据结构化标签归类为 <code>package</code>、<code>detail</code>、<code>usage</code>、<code>product</code>、<code>other</code>。</td>
+              <td><code>scene_phase</code>、<code>product_action</code>、<code>product_state</code>、<code>content_type</code></td>
+              <td>只有同阶段镜头才更容易被去重。包装/开箱阶段最多保留一个。</td>
+            </tr>
+            <tr>
+              <td><code>focus_score</code> / <code>scale_score</code></td>
+              <td>字段完全相同则为 1，否则为 0。</td>
+              <td><code>focus_point</code>、<code>scale</code></td>
+              <td>辅助判断两个镜头是不是同主体、同景别的重复表达。</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout" style="margin-top:16px">
+          解释口径：Stage2 的指标回答“这些视频能不能放在同一条广告里”，Stage3 的指标回答“这些镜头是不是重复表达”。两层分数服务不同，不要混用。
+        </div>
+      </div>
+    </section>
+
+    <section id="stage1-tags">
+      <div class="shell">
+        <h2>Stage1 标签字段解释</h2>
+        <p class="section-intro">
+          Stage1 的结构化标签是后续所有规则的基础。描述文本给人看，结构化字段给机器排序、去重和判断叙事角色。
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>字段</th>
+              <th>含义</th>
+              <th>典型取值</th>
+              <th>后续作用</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>description</code></td>
+              <td>一句话描述镜头内容。</td>
+              <td>手持透明手机壳展示 MagSafe 磁环细节</td>
+              <td>用于人工复盘，也参与 Stage2/Stage3 语义 token。</td>
+            </tr>
+            <tr>
+              <td><code>content_type</code></td>
+              <td>镜头内容大类。</td>
+              <td><code>PRODUCT_SHOW</code>、<code>DETAIL</code>、<code>USAGE_DEMO</code>、<code>PACKAGE_SHOW</code></td>
+              <td>决定镜头是否可用，以及初始叙事角色。</td>
+            </tr>
+            <tr>
+              <td><code>quality_score</code></td>
+              <td>1-10 的画面质量评分。</td>
+              <td>7、8、9</td>
+              <td>Stage3 要求 <code>&gt;= 4</code>，同类重复时优先保留高质量镜头。</td>
+            </tr>
+            <tr>
+              <td><code>suitable_for</code></td>
+              <td>LLM 判断镜头适合的叙事位置。</td>
+              <td><code>HOOK</code>、<code>DEV</code>、<code>CLIMAX</code>、<code>CTA</code></td>
+              <td>作为旧版角色分配和 fallback 的依据。</td>
+            </tr>
+            <tr>
+              <td><code>narrative_role_scores</code></td>
+              <td>每个叙事角色的适配分。</td>
+              <td><code>{"HOOK": 0.2, "DEV": 0.8, "CLIMAX": 0.5, "CTA": 0.1}</code></td>
+              <td>Stage3 优先用它判断镜头归属，而不是只看关键词。</td>
+            </tr>
+            <tr>
+              <td><code>product_action</code></td>
+              <td>商品动作。</td>
+              <td><code>unboxing</code>、<code>install</code>、<code>hold</code>、<code>closeup</code>、<code>final_display</code></td>
+              <td>识别开箱、安装、细节、最终展示，影响排序和去重。</td>
+            </tr>
+            <tr>
+              <td><code>product_state</code></td>
+              <td>商品当前状态。</td>
+              <td><code>in_package</code>、<code>installed_on_phone</code>、<code>detail_only</code>、<code>final_showcase</code></td>
+              <td>帮助判断镜头阶段，避免把开箱或纯细节误选为 CTA。</td>
+            </tr>
+            <tr>
+              <td><code>scene_phase</code></td>
+              <td>镜头在商品叙事里的阶段。</td>
+              <td><code>intro_packaging</code>、<code>product_reveal</code>、<code>install_or_usage</code>、<code>detail_demo</code>、<code>proof</code>、<code>final_showcase</code></td>
+              <td>Stage3 排序状态机的核心字段。</td>
+            </tr>
+            <tr>
+              <td><code>selling_points</code></td>
+              <td>画面表达的卖点短标签。</td>
+              <td><code>magsafe</code>、<code>anti_yellowing</code>、<code>anti_slip</code>、<code>large_capacity</code></td>
+              <td>用于判断辅助镜头是否有新增信息量，也参与重复判断。</td>
+            </tr>
+            <tr>
+              <td><code>visible_text</code></td>
+              <td>LLM 从画面中识别到的短文字。</td>
+              <td><code>["SALE", "MagSafe", "10K"]</code></td>
+              <td>补充 OCR 之外的视觉文字线索，参与语义匹配和 CTA 判断。</td>
+            </tr>
+            <tr>
+              <td><code>ocr_text_type</code></td>
+              <td>画面文字类型。</td>
+              <td><code>title_overlay</code>、<code>subtitle</code>、<code>price_text</code>、<code>watermark</code></td>
+              <td>帮助区分标题、字幕、水印、价格，引导 CTA 和字幕渲染策略。</td>
+            </tr>
+            <tr>
+              <td><code>duplicate_signature</code></td>
+              <td>稳定去重短签名。</td>
+              <td><code>clear_case_magsafe_detail_tabletop_hand</code></td>
+              <td>签名相同直接给高相似度；签名 tokens 也参与 Stage2/Stage3 语义判断。</td>
+            </tr>
+            <tr>
+              <td><code>visual_style</code> / <code>background</code> / <code>human_presence</code></td>
+              <td>风格、背景和人物/手部线索。</td>
+              <td><code>ugc</code>、<code>tabletop bright</code>、<code>hand</code></td>
+              <td>Stage2 判断视频之间是否视觉连续，避免棚拍/生活方式/不同人物手部硬混。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="prompts">
+      <div class="shell">
+        <h2>Prompt 清单</h2>
+        <p class="section-intro">当前真正调用 <code>generate_content()</code> 的 LLM prompt 有 7 个。它们分别负责视觉理解、策略判断和文本生成。</p>
+
+        <article class="prompt-card">
+          <div class="prompt-head">
+            <div class="prompt-stage">Stage1</div>
+            <div><div class="prompt-title">关键帧视觉打标</div><div class="prompt-use">输入单张关键帧，输出镜头结构化标签。</div></div>
+            <code>services/compass_client.py</code>
+          </div>
+          <div class="prompt-body">
+            <div>
+              <h3>Prompt 摘要</h3>
+              <pre>你是一个专业的电商视频剪辑分析师。
+请分析这张图片（来自商品视频片段），输出JSON格式的打标结果。
+
+shot_context: ...
+
+请输出以下字段的JSON（不要其他内容）</pre>
+            </div>
+            <div>
+              <h3>输出与作用</h3>
+              <p>输出 <code>scale</code>、<code>content_type</code>、<code>quality_score</code>、<code>product_action</code>、<code>scene_phase</code>、<code>duplicate_signature</code> 等字段。用于 Stage2 视频兼容判断和 Stage3 镜头去重/排序。</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="prompt-card">
+          <div class="prompt-head">
+            <div class="prompt-stage">Stage1</div>
+            <div><div class="prompt-title">视频片段 fallback 打标</div><div class="prompt-use">关键帧缺失或打标失败时，直接分析 clip。</div></div>
+            <code>services/compass_client.py</code>
+          </div>
+          <div class="prompt-body">
+            <div>
+              <h3>Prompt 摘要</h3>
+              <pre>你是一个专业的电商视频剪辑分析师。
+请分析这个视频片段（来自商品视频），输出JSON格式的打标结果。
+
+视频片段时长: ...秒</pre>
+            </div>
+            <div>
+              <h3>输出与作用</h3>
+              <p>字段与关键帧打标一致，保证 Stage1 在抽帧失败时仍能产出可用镜头标签。</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="prompt-card">
+          <div class="prompt-head">
+            <div class="prompt-stage">Stage2</div>
+            <div><div class="prompt-title">品类推断</div><div class="prompt-use">KB 中没有品类配置时，根据镜头样本推断品类。</div></div>
+            <code>agents/strategy_planner.py</code>
+          </div>
+          <div class="prompt-body">
+            <div>
+              <h3>Prompt 摘要</h3>
+              <pre>你是一个专业的电商品类分析师。
+以下是从商品视频中提取的镜头样本：
+
+请根据这些镜头内容，推断该商品属于哪个品类，
+并给出该品类的视频制作规范。</pre>
+            </div>
+            <div>
+              <h3>输出与作用</h3>
+              <p>输出 <code>category_code</code>、中文品类名、典型商品、推荐景别、推荐内容类型、光线、TTS 语气和音乐能量。用于补齐内容策略。</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="prompt-card">
+          <div class="prompt-head">
+            <div class="prompt-stage">Stage2</div>
+            <div><div class="prompt-title">多视频 SKU / 主线分析</div><div class="prompt-use">判断每条视频是主线、辅助、独立翻译还是拒绝。</div></div>
+            <code>agents/strategy_planner.py</code>
+          </div>
+          <div class="prompt-body">
+            <div>
+              <h3>Prompt 摘要</h3>
+              <pre>你是一个专业的电商视频素材编导。
+请分析所有输入视频之间的 SKU / 商品关系和主线价值。
+
+不要预设所有视频来自同一商品。
+primary_video_idx 选择商品展示最完整、叙事最清楚、
+最适合作为成片骨架的视频。</pre>
+            </div>
+            <div>
+              <h3>输出与作用</h3>
+              <p>输出 <code>primary_video_idx</code>、<code>video_sku_info</code>、<code>cross_references</code>、<code>storyline_hint</code>。后续用它确定主视频骨架和辅助视频可补充位置。</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="prompt-card">
+          <div class="prompt-head">
+            <div class="prompt-stage">Stage2</div>
+            <div><div class="prompt-title">成片模式判断</div><div class="prompt-use">基于规则证据决定 REMIX / PARTIAL_REMIX / TRANSLATE_ALL。</div></div>
+            <code>agents/strategy_planner.py</code>
+          </div>
+          <div class="prompt-body">
+            <div>
+              <h3>Prompt 摘要</h3>
+              <pre>你是一个电商短视频编导专家。
+请基于规则层证据，主导判断这些视频最终应该
+REMIX、PARTIAL_REMIX 还是 TRANSLATE_ALL。
+
+hard_reject_pairs 是唯一禁止选择的 pair。
+不要因为素材重复度高在视频级排除更一致的视频。</pre>
+            </div>
+            <div>
+              <h3>输出与作用</h3>
+              <p>输出 <code>mode</code>、<code>selected_video_indices</code>、<code>translation_video_indices</code>、候选组合评估和决策理由。它决定哪些视频参与主混剪。</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="prompt-card">
+          <div class="prompt-head">
+            <div class="prompt-stage">Stage3</div>
+            <div><div class="prompt-title">口播文案生成</div><div class="prompt-use">给每个 segment 或完整翻译视频生成目标市场口播。</div></div>
+            <code>agents/script_generator.py</code>
+          </div>
+          <div class="prompt-body">
+            <div>
+              <h3>Prompt 摘要</h3>
+              <pre>你是跨境电商短视频本地化口播编导。
+请基于镜头内容生成自然、连贯、
+适合 TTS 朗读的目标市场口播文案。
+
+只输出 JSON。
+不要承诺素材里看不到的功能或效果。</pre>
+            </div>
+            <div>
+              <h3>输出与作用</h3>
+              <p>输出 <code>segments[].text</code> 和 <code>translation_items[].text</code>。用于 TTS 和 Remotion 字幕渲染，是最终用户听到/看到的本地化卖点文案。</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="prompt-card">
+          <div class="prompt-head">
+            <div class="prompt-stage">Stage3</div>
+            <div><div class="prompt-title">原字幕翻译回填</div><div class="prompt-use">把 Stage0 OCR 到的原视频字幕翻译成目标语言。</div></div>
+            <code>agents/script_generator.py</code>
+          </div>
+          <div class="prompt-body">
+            <div>
+              <h3>Prompt 摘要</h3>
+              <pre>你是跨境电商视频字幕本地化译审。
+请把 OCR 识别到的原视频字幕翻译成目标市场语言，
+用于贴回原字幕区域。
+
+译文要短，适合原字幕区域显示；
+保留数字、品牌、价格、型号和符号。</pre>
+            </div>
+            <div>
+              <h3>输出与作用</h3>
+              <p>输出 <code>{"items": [{"id": "...", "text": "..."}]}</code>。用于擦除原字幕后在相同区域回填本地化字幕；水印类文本会跳过渲染。</p>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="llm-output">
+      <div class="shell">
+        <h2>LLM 输出如何被使用</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>阶段</th>
+              <th>LLM 输出</th>
+              <th>后续作用</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Stage1 视觉打标</td>
+              <td>镜头内容、质量分、叙事角色、动作/状态/阶段、卖点、可见文字、去重签名</td>
+              <td>支持 Stage2 视频兼容评分，支持 Stage3 镜头排序、去重、CTA 选择和 debug 复盘</td>
+            </tr>
+            <tr>
+              <td>Stage2 品类推断</td>
+              <td>品类名称、推荐景别、内容类型、TTS/音乐偏好</td>
+              <td>补齐知识库缺失品类，让后续策略可以继续运行</td>
+            </tr>
+            <tr>
+              <td>Stage2 SKU 分析</td>
+              <td>主视频、辅助视频、独立翻译视频、跨视频补充建议</td>
+              <td>决定主视频骨架和辅助视频插入策略</td>
+            </tr>
+            <tr>
+              <td>Stage2 成片模式</td>
+              <td>REMIX / PARTIAL_REMIX / TRANSLATE_ALL 及候选评估</td>
+              <td>决定哪些视频进入混剪，哪些视频只做翻译输出</td>
+            </tr>
+            <tr>
+              <td>Stage3 口播</td>
+              <td>每个 segment 的自然本地化短口播</td>
+              <td>进入 TTS、Remotion 字幕和最终报告</td>
+            </tr>
+            <tr>
+              <td>Stage3 原字幕翻译</td>
+              <td>OCR 字幕短译文</td>
+              <td>擦除原字幕后回填本地化字幕；水印不回填</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="modes">
+      <div class="shell">
+        <h2>测试模式</h2>
+        <div class="grid-2">
+          <div class="panel">
+            <h3><code>test-remix</code></h3>
+            <p>只做原视频混剪 demo，用于快速看镜头选择和拼接效果。</p>
+            <ul>
+              <li>不做字幕清理</li>
+              <li>不做翻译视频</li>
+              <li>不渲染字幕</li>
+              <li>不生成 TTS/BGM</li>
+              <li>输出到 <code>output_test_remix/&lt;item&gt;</code></li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h3><code>test-clean</code></h3>
+            <p>只测试字幕清理 backend，输出可被完整链路断点复用的 clean inputs。</p>
+            <ul>
+              <li>可跑 <code>lama</code> / <code>diffueraser</code> / <code>propainter</code></li>
+              <li>输出 <code>clean_inputs/&lt;backend&gt;</code></li>
+              <li>输出 <code>stage0_subtitle_clean_*.json</code></li>
+              <li>不进入 Stage1-6</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="takeaways">
+      <div class="shell">
+        <h2>会议结论</h2>
+        <div class="logic-list">
+          <div class="logic-item">
+            <strong>1. 混剪不是随机拼接。</strong>
+            <span>系统先选主视频骨架，再用辅助视频补充缺失动作、卖点或 CTA 画面。</span>
+          </div>
+          <div class="logic-item">
+            <strong>2. 视频能不能混，主要看商品语义和视觉连续性。</strong>
+            <span><code>hard_reject_pairs</code> 是不可覆盖硬禁区，LLM 只能在风险 pair 中做编导判断。</span>
+          </div>
+          <div class="logic-item">
+            <strong>3. 镜头能不能留，主要看叙事角色、质量、去重和新增信息量。</strong>
+            <span>重复开箱、重复细节、与主视频高度相似的辅助镜头都会被记录到 dropped_shots。</span>
+          </div>
+          <div class="logic-item">
+            <strong>4. Prompt 的职责边界清晰。</strong>
+            <span>Stage1 理解画面，Stage2 做成片策略，Stage3 做本地化文案；规则代码负责约束和兜底。</span>
+          </div>
+          <div class="logic-item">
+            <strong>5. 工程方向是可解释、可复盘、可测试。</strong>
+            <span>每个阶段都有断点文件和 debug 字段，便于定位问题来自 OCR、打标、成片策略、镜头去重还是拼接。</span>
+          </div>
+        </div>
+        <div class="callout" style="margin-top:20px">
+          汇报收尾建议：我们正在把“纯 LLM 判断”收敛成“规则证据 + LLM 编导 + 可解释产物”的工程链路，让视频混剪从效果调参变成可复盘的生产流程。
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="shell">
+      Video Remix Pipeline 项目说明 · Updated for meeting review · 本页为静态 HTML，可直接通过 GitHub Pages 发布。
+    </div>
+  </footer>
+</body>
+</html>
