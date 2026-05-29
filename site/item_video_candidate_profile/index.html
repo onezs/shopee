@@ -136,6 +136,34 @@
       align-items: start;
     }
 
+    .layer-map {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      margin: 18px 0 30px;
+    }
+
+    .layer-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: #fff;
+    }
+
+    .layer-card strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--teal);
+      font-size: 13px;
+    }
+
+    .layer-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
     .panel {
       border: 1px solid var(--line);
       border-radius: 8px;
@@ -268,7 +296,7 @@
     }
 
     @media (max-width: 900px) {
-      .summary, .grid, .insights {
+      .summary, .grid, .insights, .layer-map {
         grid-template-columns: 1fr;
       }
 
@@ -321,17 +349,26 @@
       SG 与 ID 的候选视频池都呈长尾分布，但 ID 明显更厚：SG 平均每个 item 2.33 条候选视频，ID 为 6.30 条。若直接按 video_url 非空、cover_url 非空、10 &lt; duration &lt; 40 做硬拦截，SG 会导致 21.38% 商品无可用视频，ID 为 11.96%。因此拦截规则建议先标签化或降权化，再进入优选排序。
     </div>
 
-    <h2>数据范围</h2>
+    <h2>分层结构</h2>
+    <section class="layer-map" aria-label="report layers">
+      <div class="layer-card"><strong>L0 数据口径</strong><span>定义表、日期、站点、视频形态和基础过滤口径。</span></div>
+      <div class="layer-card"><strong>L1 跨站点总览</strong><span>先比较 SG / ID 的规模、候选厚度和拦截损失。</span></div>
+      <div class="layer-card"><strong>L2 SG 明细</strong><span>展开 SG 的候选分布、质量问题、拦截影响和类目差异。</span></div>
+      <div class="layer-card"><strong>L3 ID 明细</strong><span>展开 ID 的候选分布、质量问题、拦截影响和类目差异。</span></div>
+      <div class="layer-card"><strong>L4 策略建议</strong><span>基于覆盖损失和候选厚度决定拦截与优选策略。</span></div>
+    </section>
+
+    <h2>L0 数据口径</h2>
     <div class="grid">
       <section class="panel">
         <h3>分析口径</h3>
-        <p>商品表与 CP 视频底表通过 itemid 关联，筛选 SG 站点、竖版 9:16 视频。本页用于视频优选前置诊断，不产出最终优选视频。</p>
+        <p>商品表与 CP 视频底表通过 itemid 关联，分别筛选 SG 与 ID 站点、竖版 9:16 视频。本页用于视频优选前置诊断，不产出最终优选视频。</p>
         <div class="formula">
 item table = opa_ads_creative.dim_item__item_info__df<br>
 video table = opa_ads_creative.dim_cp__video_info__df<br>
 item_grass_date = '2026-05-15'<br>
 video_grass_date = '2026-05-17'<br>
-grass_region = 'SG'<br>
+grass_region in ('SG', 'ID')<br>
 video_shape = '9:16'
         </div>
       </section>
@@ -342,7 +379,49 @@ video_shape = '9:16'
       </section>
     </div>
 
-    <h2>候选视频池规模</h2>
+    <h2>L1 跨站点总览</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Region</th>
+          <th>item_video_rows</th>
+          <th>item_cnt</th>
+          <th>avg_video_cnt</th>
+          <th>p50</th>
+          <th>p95</th>
+          <th>p99</th>
+          <th>max</th>
+          <th>no_video_after_filter</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>SG</td>
+          <td class="num">3,182,879</td>
+          <td class="num">1,363,135</td>
+          <td class="num">2.33</td>
+          <td class="num">1</td>
+          <td class="num">6</td>
+          <td class="num">27</td>
+          <td class="num">858</td>
+          <td class="num">21.38%</td>
+        </tr>
+        <tr>
+          <td>ID</td>
+          <td class="num">139,706,196</td>
+          <td class="num">22,165,176</td>
+          <td class="num">6.30</td>
+          <td class="num">1</td>
+          <td class="num">21</td>
+          <td class="num">87</td>
+          <td class="num">24,002</td>
+          <td class="num">11.96%</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>L2 SG 明细</h2>
+    <h2>L2.1 SG 候选视频池规模</h2>
     <table>
       <thead>
         <tr>
@@ -375,7 +454,7 @@ video_shape = '9:16'
       </tbody>
     </table>
 
-    <h2>每个商品的视频候选量级</h2>
+    <h2>L2.2 SG 每个商品的视频候选量级</h2>
     <div class="grid">
       <section class="panel">
         <h3>分桶分布</h3>
@@ -433,7 +512,7 @@ video_shape = '9:16'
       </tbody>
     </table>
 
-    <h2>视频基础质量问题</h2>
+    <h2>L2.3 SG 视频基础质量问题</h2>
     <div class="grid">
       <section class="panel">
         <h3>质量问题数量</h3>
@@ -463,7 +542,7 @@ video_shape = '9:16'
       </section>
     </div>
 
-    <h2>基础拦截影响</h2>
+    <h2>L2.4 SG 基础拦截影响</h2>
     <div class="grid">
       <section class="panel">
         <h3>拦截规则</h3>
@@ -510,7 +589,7 @@ duration &gt; 10 and duration &lt; 40
       </tbody>
     </table>
 
-    <h2>类目分布</h2>
+    <h2>L2.5 SG 类目分布</h2>
     <p>类目差异明显：Home Appliances、Audio、Mobile Phones、Kitchen Appliances 等类目候选视频更丰富；服饰、Fashion Accessories、Collectibles 等类目多数仍偏单候选。</p>
     <table>
       <thead>
@@ -543,13 +622,13 @@ duration &gt; 10 and duration &lt; 40
       </tbody>
     </table>
 
-    <h2>ID 分析</h2>
+    <h2>L3 ID 明细</h2>
     <div class="callout">
       <b>ID 核心结论</b>
       ID 候选视频池显著厚于 SG：覆盖 22,165,176 个 item，平均每个 item 有 6.30 条候选视频，P95=21，P99=87，max=24,002。基础拦截后无视频 item 比例为 11.96%，低于 SG 的 21.38%，说明 ID 更适合进入后续 topN 优选实验。
     </div>
 
-    <h2>ID 候选视频池规模</h2>
+    <h2>L3.1 ID 候选视频池规模</h2>
     <table>
       <thead>
         <tr>
@@ -582,7 +661,7 @@ duration &gt; 10 and duration &lt; 40
       </tbody>
     </table>
 
-    <h2>ID 每个商品的视频候选量级</h2>
+    <h2>L3.2 ID 每个商品的视频候选量级</h2>
     <div class="grid">
       <section class="panel">
         <h3>分桶分布</h3>
@@ -640,7 +719,7 @@ duration &gt; 10 and duration &lt; 40
       </tbody>
     </table>
 
-    <h2>ID 视频基础质量问题</h2>
+    <h2>L3.3 ID 视频基础质量问题</h2>
     <div class="grid">
       <section class="panel">
         <h3>质量问题数量</h3>
@@ -669,7 +748,7 @@ duration &gt; 10 and duration &lt; 40
       </section>
     </div>
 
-    <h2>ID 基础拦截影响</h2>
+    <h2>L3.4 ID 基础拦截影响</h2>
     <div class="grid">
       <section class="panel">
         <h3>拦截规则</h3>
@@ -716,7 +795,7 @@ duration &gt; 10 and duration &lt; 40
       </tbody>
     </table>
 
-    <h2>ID 类目分布</h2>
+    <h2>L3.5 ID 类目分布</h2>
     <p>ID 类目候选量级整体高于 SG，Beauty、Home &amp; Living、Mom &amp; Baby、Mobile Phones 等类目的候选池更厚；Beauty Makeup 的 max 达 24,002，是明显长尾类目。</p>
     <table>
       <thead>
@@ -747,7 +826,7 @@ duration &gt; 10 and duration &lt; 40
       </tbody>
     </table>
 
-    <h2>建议 Next Step</h2>
+    <h2>L4 策略建议</h2>
     <div class="insights">
       <div class="insight">
         <b>1. 统一使用 CP 视频底表口径</b>
