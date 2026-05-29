@@ -1,0 +1,711 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SG 视频素材缺失影响分析</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #18222b;
+      --muted: #65717f;
+      --paper: #ffffff;
+      --panel: #f6f8fa;
+      --line: #d8e0e7;
+      --teal: #176d6a;
+      --teal-soft: #e8f4f2;
+      --amber: #936b18;
+      --amber-soft: #fff6df;
+      --red: #a94035;
+      --red-soft: #fff0ee;
+      --blue: #2457a6;
+      --blue-soft: #eef4ff;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.58;
+    }
+
+    header {
+      border-bottom: 1px solid var(--line);
+      padding: 56px max(24px, calc((100vw - 1160px) / 2)) 28px;
+      background: #fbfcfd;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, .96);
+      backdrop-filter: blur(10px);
+    }
+
+    nav .nav-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 10px 24px;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+    }
+
+    nav a {
+      flex: 0 0 auto;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 11px;
+      color: #34404b;
+      font-size: 13px;
+      text-decoration: none;
+      background: #fff;
+    }
+
+    nav a:hover {
+      border-color: #a9bac9;
+      color: var(--teal);
+    }
+
+    main {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 30px 24px 74px;
+    }
+
+    section {
+      scroll-margin-top: 76px;
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      max-width: 980px;
+      font-size: clamp(32px, 5vw, 56px);
+      line-height: 1.04;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin: 44px 0 16px;
+      font-size: 25px;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      font-size: 17px;
+      letter-spacing: 0;
+    }
+
+    p { margin: 0; }
+
+    .eyebrow {
+      margin-bottom: 8px;
+      color: var(--teal);
+      font-size: 12px;
+      font-weight: 780;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .lead {
+      max-width: 920px;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .back {
+      display: inline-flex;
+      margin-bottom: 16px;
+      color: var(--teal);
+      font-size: 14px;
+      text-decoration: none;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 0 0 24px;
+    }
+
+    .metric {
+      min-height: 112px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      background: var(--panel);
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 8px;
+      font-size: clamp(24px, 3vw, 34px);
+      line-height: 1.08;
+      letter-spacing: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .metric small {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .callout {
+      margin: 18px 0 28px;
+      border-left: 4px solid var(--amber);
+      background: var(--amber-soft);
+      padding: 16px 18px;
+      color: #4c3b15;
+    }
+
+    .callout b {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      background: #fff;
+    }
+
+    .panel.teal {
+      background: var(--teal-soft);
+      border-color: #b9d9d5;
+    }
+
+    .panel.blue {
+      background: var(--blue-soft);
+      border-color: #cbdaf5;
+    }
+
+    .panel.red {
+      background: var(--red-soft);
+      border-color: #efc9c4;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 22px;
+      font-size: 14px;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 11px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--muted);
+      font-weight: 720;
+      background: #fafbfc;
+    }
+
+    .num {
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .bar-list {
+      display: grid;
+      gap: 13px;
+      margin-top: 16px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 152px minmax(180px, 1fr) 92px;
+      gap: 12px;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .bar-label {
+      color: var(--muted);
+      overflow-wrap: anywhere;
+    }
+
+    .bar-track {
+      height: 14px;
+      border-radius: 999px;
+      background: #ecf0f3;
+      overflow: hidden;
+    }
+
+    .bar {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--teal);
+    }
+
+    .bar.warn { background: var(--amber); }
+    .bar.danger { background: var(--red); }
+    .bar.blue { background: var(--blue); }
+
+    .insights {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .insight {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      background: var(--panel);
+    }
+
+    .insight b {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .tag {
+      display: inline-block;
+      margin-right: 6px;
+      margin-bottom: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 10px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .formula {
+      margin-top: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #f9fafb;
+      color: #34404b;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.7;
+      overflow-x: auto;
+    }
+
+    footer {
+      margin-top: 42px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 900px) {
+      .summary, .grid, .insights {
+        grid-template-columns: 1fr;
+      }
+
+      .bar-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+
+      table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="back" href="index.html">← 返回分析入口</a>
+    <p class="eyebrow">Video Selection Preparation · SG · Google performance window 2026-05-18 to 2026-05-24</p>
+    <h1>SG 视频素材缺失影响分析</h1>
+    <p class="lead">本页基于有 Google 广告表现的 SG 商品，评估 CP 视频候选池、基础视频质量拦截后的素材缺失规模，以及缺失素材商品对 impression、cost 和 L1 类目的影响。</p>
+  </header>
+
+  <nav aria-label="quick navigation">
+    <div class="nav-inner">
+      <a href="#summary">结论</a>
+      <a href="#scope">口径</a>
+      <a href="#candidate">候选池</a>
+      <a href="#performance">表现分层</a>
+      <a href="#quality">质量拦截</a>
+      <a href="#missing">缺素材影响</a>
+      <a href="#l1">L1 类目</a>
+      <a href="#examples">样例</a>
+      <a href="#next">建议</a>
+    </div>
+  </nav>
+
+  <main>
+    <section id="summary">
+      <section class="summary" aria-label="summary metrics">
+        <div class="metric">
+          <span>Performance items</span>
+          <strong>286,822</strong>
+          <small>Google SG, impressions &gt; 0</small>
+        </div>
+        <div class="metric">
+          <span>Total impressions</span>
+          <strong>53.51M</strong>
+          <small>2026-05-18 to 2026-05-24</small>
+        </div>
+        <div class="metric">
+          <span>Missing usable video items</span>
+          <strong>42,639</strong>
+          <small>14.87% of performance items</small>
+        </div>
+        <div class="metric">
+          <span>Missing impression share</span>
+          <strong>10.46%</strong>
+          <small>cost share 10.02%</small>
+        </div>
+      </section>
+
+      <div class="callout">
+        <b>核心结论</b>
+        SG 有广告表现的商品中，14.87% 在基础视频质量拦截后没有可用视频素材；这部分商品贡献 10.46% impressions 和 10.02% cost。缺素材商品的流量占比低于商品数占比，说明问题更偏低曝光商品，但仍有 5.60M impressions 和 9.33K USD cost 受影响，值得按 L1 类目优先补素材或放宽拦截。
+      </div>
+
+      <div class="insights">
+        <div class="insight">
+          <b>候选池比全量口径更厚</b>
+          <p>有表现商品平均 5.18 条候选视频，P95=20，P99=67。高曝光商品候选更厚，impressions &gt;= 10k 的 item 平均 18.67 条候选视频。</p>
+        </div>
+        <div class="insight">
+          <b>拦截影响随曝光下降而上升</b>
+          <p>高曝光 item 的无视频比例为 7.63%，低曝光 item 为 16.06%。这说明硬拦截主要伤害长尾低曝光商品。</p>
+        </div>
+        <div class="insight">
+          <b>L1 优先看流量而不是 item 数</b>
+          <p>缺素材 impressions 最高的是 Food &amp; Beverages、Home &amp; Living、Mobile &amp; Gadgets、Health 和 Beauty。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="scope">
+      <h2>1. 数据口径</h2>
+      <div class="grid">
+        <section class="panel">
+          <h3>分析范围</h3>
+          <p>本页只分析 SG，有 Google 广告表现且 impressions &gt; 0 的商品。商品与视频候选池通过 itemid 关联，视频来源为 CP 视频底表。</p>
+          <div class="formula">
+item table = opa_ads_creative.dim_item__item_info__df<br>
+video table = opa_ads_creative.dim_cp__video_info__df<br>
+performance table = opa_ads_creative.dwd_item__attr_window_7d_google_adgroup_item_performance__df<br>
+item_grass_date = '2026-05-15'<br>
+video_grass_date = '2026-05-17'<br>
+performance window = '2026-05-18' ~ '2026-05-24'<br>
+grass_region = 'SG'<br>
+video_ratio = '9:16'
+          </div>
+        </section>
+        <section class="panel teal">
+          <h3>可用视频定义</h3>
+          <p>基础质量拦截只用于评估素材可用性，不代表最终上线规则。这里把缺可用视频定义为 item 在拦截后 after_video_cnt = 0。</p>
+          <div class="formula">
+video_url is not null and trim(video_url) != ''<br>
+cover_url is not null and trim(cover_url) != ''<br>
+duration &gt; 10 and duration &lt; 40
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section id="candidate">
+      <h2>2. 表现过滤后的候选视频池</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Value</th>
+            <th>Interpretation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>item_video_row_cnt</td><td class="num">1,484,993</td><td>performance-filtered item-video 记录数。</td></tr>
+          <tr><td>item_cnt</td><td class="num">286,822</td><td>有 Google SG 表现且关联到候选视频池的商品数。</td></tr>
+          <tr><td>distinct_video_url_cnt</td><td class="num">973,566</td><td>去重后的视频 URL 数。</td></tr>
+          <tr><td>distinct_item_video_cnt</td><td class="num">1,484,993</td><td>去重 item-video 关系数。</td></tr>
+        </tbody>
+      </table>
+
+      <div class="grid">
+        <section class="panel">
+          <h3>候选视频数量分桶</h3>
+          <table>
+            <thead>
+              <tr><th>Bucket</th><th>item_cnt</th><th>Share</th><th>avg_video_cnt</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>1 video</td><td class="num">151,769</td><td class="num">52.91%</td><td class="num">1.00</td></tr>
+              <tr><td>2-3 videos</td><td class="num">64,946</td><td class="num">22.64%</td><td class="num">2.32</td></tr>
+              <tr><td>4-5 videos</td><td class="num">21,508</td><td class="num">7.50%</td><td class="num">4.41</td></tr>
+              <tr><td>6-10 videos</td><td class="num">21,220</td><td class="num">7.40%</td><td class="num">7.57</td></tr>
+              <tr><td>11-20 videos</td><td class="num">13,671</td><td class="num">4.77%</td><td class="num">14.54</td></tr>
+              <tr><td>&gt;20 videos</td><td class="num">13,708</td><td class="num">4.78%</td><td class="num">53.15</td></tr>
+            </tbody>
+          </table>
+        </section>
+        <section class="panel">
+          <h3>候选视频分位数</h3>
+          <table>
+            <thead>
+              <tr><th>item_cnt</th><th>avg</th><th>p50</th><th>p75</th><th>p90</th><th>p95</th><th>p99</th><th>max</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="num">286,822</td>
+                <td class="num">5.18</td>
+                <td class="num">1</td>
+                <td class="num">3</td>
+                <td class="num">10</td>
+                <td class="num">20</td>
+                <td class="num">67</td>
+                <td class="num">858</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>解读：有表现商品的候选池明显更厚，但仍有 52.91% item 只有 1 条候选视频。</p>
+        </section>
+      </div>
+    </section>
+
+    <section id="performance">
+      <h2>3. 按广告表现分层看候选池</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Impression bucket</th>
+            <th>item_cnt</th>
+            <th>avg_video_cnt</th>
+            <th>p50</th>
+            <th>p90</th>
+            <th>p95</th>
+            <th>impressions</th>
+            <th>cost_usd</th>
+            <th>gmv_usd</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>&gt;= 10,000</td><td class="num">236</td><td class="num">18.67</td><td class="num">5</td><td class="num">41</td><td class="num">90</td><td class="num">4,699,666</td><td class="num">8,355.53</td><td class="num">222,679.27</td></tr>
+          <tr><td>1,000-9,999</td><td class="num">9,966</td><td class="num">14.52</td><td class="num">3</td><td class="num">35</td><td class="num">68</td><td class="num">22,099,608</td><td class="num">43,594.10</td><td class="num">934,387.59</td></tr>
+          <tr><td>100-999</td><td class="num">70,060</td><td class="num">8.02</td><td class="num">2</td><td class="num">17</td><td class="num">34</td><td class="num">21,374,265</td><td class="num">34,687.14</td><td class="num">711,299.06</td></tr>
+          <tr><td>&lt; 100</td><td class="num">206,560</td><td class="num">3.75</td><td class="num">1</td><td class="num">7</td><td class="num">13</td><td class="num">5,339,012</td><td class="num">6,436.58</td><td class="num">136,469.19</td></tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        <b>分析</b>
+        高曝光商品的视频候选池明显更厚，说明后续 topN 优选可以优先在高曝光和中高曝光商品上做收益验证；低曝光商品数量最多，但候选池更薄，更适合先做弱拦截和补召回策略。
+      </div>
+    </section>
+
+    <section id="quality">
+      <h2>4. 视频质量问题与基础拦截</h2>
+      <div class="grid">
+        <section class="panel">
+          <h3>质量问题数量</h3>
+          <table>
+            <thead>
+              <tr><th>Issue</th><th>Count</th><th>Share of rows</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>empty video_url</td><td class="num">0</td><td class="num">0.00%</td></tr>
+              <tr><td>empty cover_url</td><td class="num">801</td><td class="num">0.05%</td></tr>
+              <tr><td>null duration</td><td class="num">0</td><td class="num">0.00%</td></tr>
+              <tr><td>duration &lt;= 5s</td><td class="num">1,935</td><td class="num">0.13%</td></tr>
+              <tr><td>duration &lt;= 10s</td><td class="num">183,959</td><td class="num">12.39%</td></tr>
+              <tr><td>duration &gt;= 40s</td><td class="num">185,533</td><td class="num">12.49%</td></tr>
+              <tr><td>duration &gt;= 60s</td><td class="num">22,184</td><td class="num">1.49%</td></tr>
+            </tbody>
+          </table>
+        </section>
+        <section class="panel">
+          <h3>拦截前后候选池</h3>
+          <table>
+            <thead>
+              <tr><th>Metric</th><th>Before</th><th>After</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>items with videos</td><td class="num">286,822</td><td class="num">244,183</td></tr>
+              <tr><td>items without usable videos</td><td class="num">0</td><td class="num">42,639</td></tr>
+              <tr><td>avg videos / item</td><td class="num">5.18</td><td class="num">3.89</td></tr>
+              <tr><td>coverage loss</td><td class="num">0.00%</td><td class="num">14.87%</td></tr>
+            </tbody>
+          </table>
+        </section>
+      </div>
+
+      <h3>拦截后剩余视频数量</h3>
+      <table>
+        <thead>
+          <tr><th>After-filter bucket</th><th>item_cnt</th><th>Share</th><th>Interpretation</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>0 videos</td><td class="num">42,639</td><td class="num">14.87%</td><td>缺可用视频素材。</td></tr>
+          <tr><td>1 video</td><td class="num">131,466</td><td class="num">45.84%</td><td>仍是单候选，优选空间有限。</td></tr>
+          <tr><td>2-3 videos</td><td class="num">56,606</td><td class="num">19.74%</td><td>有基础排序空间。</td></tr>
+          <tr><td>4-5 videos</td><td class="num">17,929</td><td class="num">6.25%</td><td>适合 topN 实验。</td></tr>
+          <tr><td>6-10 videos</td><td class="num">17,491</td><td class="num">6.10%</td><td>优选空间较充分。</td></tr>
+          <tr><td>11-20 videos</td><td class="num">10,879</td><td class="num">3.79%</td><td>高候选池 item。</td></tr>
+          <tr><td>&gt;20 videos</td><td class="num">9,812</td><td class="num">3.42%</td><td>长尾高候选池 item。</td></tr>
+        </tbody>
+      </table>
+
+      <h3>按曝光分层的拦截影响</h3>
+      <table>
+        <thead>
+          <tr><th>Impression bucket</th><th>items before</th><th>items after</th><th>no-video items</th><th>no-video ratio</th><th>avg before</th><th>avg after</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>&gt;= 10,000</td><td class="num">236</td><td class="num">218</td><td class="num">18</td><td class="num">7.63%</td><td class="num">18.67</td><td class="num">13.34</td></tr>
+          <tr><td>1,000-9,999</td><td class="num">9,966</td><td class="num">9,015</td><td class="num">951</td><td class="num">9.54%</td><td class="num">14.52</td><td class="num">10.64</td></tr>
+          <tr><td>100-999</td><td class="num">70,060</td><td class="num">61,564</td><td class="num">8,496</td><td class="num">12.13%</td><td class="num">8.02</td><td class="num">5.95</td></tr>
+          <tr><td>&lt; 100</td><td class="num">206,560</td><td class="num">173,386</td><td class="num">33,174</td><td class="num">16.06%</td><td class="num">3.75</td><td class="num">2.85</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="missing">
+      <h2>5. 缺素材商品的广告影响</h2>
+      <div class="grid">
+        <section class="panel red">
+          <h3>缺素材总体影响</h3>
+          <table>
+            <tbody>
+              <tr><th>perf_item_cnt</th><td class="num">286,822</td></tr>
+              <tr><th>missing_material_item_cnt</th><td class="num">42,639</td></tr>
+              <tr><th>missing_material_item_ratio</th><td class="num">14.87%</td></tr>
+              <tr><th>missing_material_impressions</th><td class="num">5,597,229</td></tr>
+              <tr><th>missing_material_impression_share</th><td class="num">10.46%</td></tr>
+              <tr><th>missing_material_cost_usd</th><td class="num">9,325.15</td></tr>
+              <tr><th>missing_material_cost_share</th><td class="num">10.02%</td></tr>
+            </tbody>
+          </table>
+        </section>
+        <section class="panel">
+          <h3>有无素材对比</h3>
+          <table>
+            <thead>
+              <tr><th>Status</th><th>item_cnt</th><th>impressions</th><th>cost_usd</th><th>conversions</th><th>gmv_usd</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Missing usable video</td><td class="num">42,639</td><td class="num">5,597,229</td><td class="num">9,325.15</td><td class="num">5,948</td><td class="num">183,012.60</td></tr>
+              <tr><td>Has usable video</td><td class="num">244,183</td><td class="num">47,915,322</td><td class="num">83,748.20</td><td class="num">52,404.13</td><td class="num">1,821,822.52</td></tr>
+            </tbody>
+          </table>
+          <p>CTR 接近：缺素材 0.72%，有素材 0.70%；CPC 缺素材略低，0.2311 vs 0.2489 USD。</p>
+        </section>
+      </div>
+    </section>
+
+    <section id="l1">
+      <h2>6. L1 类目影响</h2>
+      <p>下表按缺素材 impressions 排序。优先看 impression / cost 规模，而不是只看 item 数。</p>
+      <table>
+        <thead>
+          <tr>
+            <th>L1 category</th>
+            <th>total_items</th>
+            <th>missing_items</th>
+            <th>missing_item_ratio</th>
+            <th>missing_impressions</th>
+            <th>missing_impr_share</th>
+            <th>missing_cost_usd</th>
+            <th>missing_cost_share</th>
+            <th>missing_gmv_usd</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Food &amp; Beverages</td><td class="num">19,319</td><td class="num">2,671</td><td class="num">13.83%</td><td class="num">797,475</td><td class="num">11.15%</td><td class="num">1,224.01</td><td class="num">11.14%</td><td class="num">22,234.76</td></tr>
+          <tr><td>Home &amp; Living</td><td class="num">67,165</td><td class="num">9,488</td><td class="num">14.13%</td><td class="num">787,927</td><td class="num">12.18%</td><td class="num">1,356.38</td><td class="num">12.61%</td><td class="num">26,565.89</td></tr>
+          <tr><td>Mobile &amp; Gadgets</td><td class="num">16,549</td><td class="num">2,574</td><td class="num">15.55%</td><td class="num">471,711</td><td class="num">6.96%</td><td class="num">756.00</td><td class="num">6.75%</td><td class="num">14,689.04</td></tr>
+          <tr><td>Health</td><td class="num">9,686</td><td class="num">1,045</td><td class="num">10.79%</td><td class="num">457,497</td><td class="num">9.25%</td><td class="num">865.70</td><td class="num">8.81%</td><td class="num">17,940.25</td></tr>
+          <tr><td>Beauty</td><td class="num">36,517</td><td class="num">5,491</td><td class="num">15.04%</td><td class="num">410,844</td><td class="num">10.21%</td><td class="num">666.62</td><td class="num">9.59%</td><td class="num">12,005.57</td></tr>
+          <tr><td>Mom &amp; Baby</td><td class="num">18,751</td><td class="num">2,713</td><td class="num">14.47%</td><td class="num">351,732</td><td class="num">13.40%</td><td class="num">626.22</td><td class="num">12.14%</td><td class="num">18,204.56</td></tr>
+          <tr><td>Home Appliances</td><td class="num">13,668</td><td class="num">1,649</td><td class="num">12.06%</td><td class="num">342,705</td><td class="num">6.89%</td><td class="num">748.59</td><td class="num">6.37%</td><td class="num">15,871.77</td></tr>
+          <tr><td>Hobbies &amp; Collections</td><td class="num">8,300</td><td class="num">1,953</td><td class="num">23.53%</td><td class="num">328,599</td><td class="num">19.64%</td><td class="num">427.03</td><td class="num">17.93%</td><td class="num">9,136.48</td></tr>
+          <tr><td>Computers &amp; Accessories</td><td class="num">6,545</td><td class="num">953</td><td class="num">14.56%</td><td class="num">209,270</td><td class="num">11.18%</td><td class="num">457.99</td><td class="num">10.09%</td><td class="num">8,854.33</td></tr>
+          <tr><td>Fashion Accessories</td><td class="num">9,225</td><td class="num">1,319</td><td class="num">14.30%</td><td class="num">177,227</td><td class="num">13.92%</td><td class="num">279.60</td><td class="num">13.65%</td><td class="num">3,592.80</td></tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        <b>L1 解读</b>
+        Food &amp; Beverages 和 Home &amp; Living 是缺素材 impression / cost 最大的两个类目，适合优先排查素材补召回；Hobbies &amp; Collections 的缺素材 item ratio 和 impression share 都偏高，是结构性风险类目。
+      </div>
+    </section>
+
+    <section id="examples">
+      <h2>7. 高曝光缺素材样例</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>itemid</th>
+            <th>title</th>
+            <th>L1</th>
+            <th>L2</th>
+            <th>before</th>
+            <th>after</th>
+            <th>impressions</th>
+            <th>cost_usd</th>
+            <th>gmv_usd</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="num">19250708044</td><td>Luckybabys 1:12 Dollhouse kitchen electrical model simulation rice cooker new</td><td>Mom &amp; Baby</td><td>Toys</td><td class="num">1</td><td class="num">0</td><td class="num">38,958</td><td class="num">23.82</td><td class="num">1,665.46</td></tr>
+          <tr><td class="num">21373045713</td><td>Samsung S26 Ultra I S26+ I S26 I S25 Ultra I Brand New</td><td>Mobile &amp; Gadgets</td><td>Mobile Phones</td><td class="num">3</td><td class="num">0</td><td class="num">27,826</td><td class="num">111.59</td><td class="num">6,002.73</td></tr>
+          <tr><td class="num">42678163609</td><td>Pokemon TCG: Mega Evolution Chaos Rising 3 Pack Blister</td><td>Hobbies &amp; Collections</td><td>Toys &amp; Games</td><td class="num">1</td><td class="num">0</td><td class="num">21,398</td><td class="num">38.70</td><td class="num">883.34</td></tr>
+          <tr><td class="num">26577563666</td><td>Invisible Folding Bracket Phone Case for Samsung Galaxy S25/S24/S23</td><td>Mobile &amp; Gadgets</td><td>Accessories</td><td class="num">1</td><td class="num">0</td><td class="num">20,449</td><td class="num">9.91</td><td class="num">56.98</td></tr>
+          <tr><td class="num">21958531518</td><td>Halal Party Mini Sandwiches 18pcs</td><td>Food &amp; Beverages</td><td>Bakery</td><td class="num">1</td><td class="num">0</td><td class="num">17,032</td><td class="num">44.11</td><td class="num">770.15</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="next">
+      <h2>8. 建议 Next Step</h2>
+      <div class="insights">
+        <div class="insight">
+          <b>1. 不建议直接硬拦截</b>
+          <p>基础规则会让 14.87% 有表现商品无可用视频，影响 10.46% impressions。建议先将过短、过长、空封面作为质量标签或降权因子。</p>
+        </div>
+        <div class="insight">
+          <b>2. 优先处理高影响 L1</b>
+          <p>优先看 Food &amp; Beverages、Home &amp; Living、Mobile &amp; Gadgets、Health、Beauty，按 missing impressions 和 missing cost 排查素材补召回。</p>
+        </div>
+        <div class="insight">
+          <b>3. 分层推进优选</b>
+          <p>高曝光商品候选池足够厚，可优先做 topN 排序实验；低曝光单候选商品更适合做补召回和弱拦截。</p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      Source: CSV results in /Users/haoran.zhang/Downloads/video-missing-analysis. Report generated for SG video material availability analysis on 2026-05-29.
+    </footer>
+  </main>
+</body>
+</html>
