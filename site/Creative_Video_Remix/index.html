@@ -1,0 +1,1840 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Creative Video Remix 技术方案</title>
+    <style>
+      :root {
+        --ink: #17211f;
+        --muted: #5d6863;
+        --line: #d9ded7;
+        --paper: #fbfcf8;
+        --soft: #f2f5ef;
+        --dark: #101816;
+        --teal: #106b5c;
+        --coral: #c84f3d;
+        --amber: #98711d;
+        --green: #3f7b45;
+        --blue: #355c7d;
+        --shadow: 0 18px 50px rgba(18, 30, 27, 0.12);
+        --radius: 8px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+          "Microsoft YaHei", Arial, sans-serif;
+        line-height: 1.65;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        padding: 14px clamp(18px, 4vw, 56px);
+        border-bottom: 1px solid rgba(217, 222, 215, 0.78);
+        background: rgba(251, 252, 248, 0.92);
+        backdrop-filter: blur(16px);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 780;
+        letter-spacing: 0;
+      }
+
+      .brand-mark {
+        display: grid;
+        width: 32px;
+        height: 32px;
+        place-items: center;
+        border-radius: 7px;
+        background: var(--dark);
+        color: #fff;
+        font-size: 13px;
+      }
+
+      .topbar nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 16px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .topbar nav a:hover {
+        color: var(--teal);
+      }
+
+      .hero {
+        position: relative;
+        min-height: min(760px, 78vh);
+        display: flex;
+        align-items: end;
+        overflow: hidden;
+        background:
+          linear-gradient(90deg, rgba(16, 24, 22, 0.96) 0%, rgba(16, 24, 22, 0.88) 48%, rgba(16, 24, 22, 0.72) 100%);
+        background-position: center;
+        background-size: cover;
+      }
+
+      .hero::after {
+        content: "";
+        position: absolute;
+        inset: auto 0 0;
+        height: 170px;
+        background: linear-gradient(180deg, rgba(251, 252, 248, 0), var(--paper));
+        pointer-events: none;
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 1;
+        width: min(1120px, calc(100% - 36px));
+        margin: 0 auto;
+        padding: 90px 0 96px;
+        color: #fff;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 22px;
+        color: #e9eee7;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0;
+      }
+
+      .eyebrow::before {
+        content: "";
+        width: 34px;
+        height: 2px;
+        background: var(--coral);
+      }
+
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        line-height: 1.18;
+        letter-spacing: 0;
+      }
+
+      h1 {
+        max-width: 880px;
+        font-size: clamp(40px, 6vw, 78px);
+        font-weight: 850;
+      }
+
+      .hero-lede {
+        max-width: 760px;
+        margin: 24px 0 0;
+        color: rgba(255, 255, 255, 0.84);
+        font-size: clamp(17px, 2vw, 22px);
+      }
+
+      .hero-metrics {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1px;
+        width: min(880px, 100%);
+        margin-top: 38px;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        background: rgba(255, 255, 255, 0.18);
+      }
+
+      .metric {
+        min-height: 118px;
+        padding: 20px;
+        background: rgba(16, 24, 22, 0.54);
+      }
+
+      .metric strong {
+        display: block;
+        color: #fff;
+        font-size: clamp(24px, 3vw, 40px);
+        line-height: 1.05;
+      }
+
+      .metric span {
+        display: block;
+        margin-top: 10px;
+        color: rgba(255, 255, 255, 0.76);
+        font-size: 14px;
+      }
+
+      .page {
+        display: grid;
+        grid-template-columns: 170px minmax(0, 1fr);
+        gap: clamp(20px, 3vw, 38px);
+        width: min(1180px, calc(100% - 36px));
+        margin: 0 auto;
+        padding: 46px 0 80px;
+      }
+
+      .toc {
+        position: sticky;
+        top: 80px;
+        align-self: start;
+        padding: 18px 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .toc-title {
+        margin-bottom: 12px;
+        color: var(--ink);
+        font-size: 13px;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+
+      .toc a {
+        display: block;
+        padding: 8px 0;
+        border-bottom: 1px solid transparent;
+      }
+
+      .toc a:hover {
+        color: var(--teal);
+        border-bottom-color: var(--line);
+      }
+
+      .content {
+        min-width: 0;
+      }
+
+      section {
+        padding: 54px 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      section:first-child {
+        padding-top: 18px;
+      }
+
+      .section-kicker {
+        margin-bottom: 12px;
+        color: var(--coral);
+        font-size: 13px;
+        font-weight: 820;
+      }
+
+      h2 {
+        max-width: 880px;
+        font-size: clamp(28px, 4vw, 44px);
+      }
+
+      .section-lede {
+        max-width: 880px;
+        margin: 16px 0 0;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .grid-3,
+      .grid-2 {
+        display: grid;
+        gap: 16px;
+        margin-top: 26px;
+      }
+
+      .grid-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .grid-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .panel,
+      .case-card,
+      .mode-card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: #fff;
+        box-shadow: var(--shadow);
+      }
+
+      .panel {
+        padding: 22px;
+      }
+
+      .panel h3,
+      .mode-card h3 {
+        margin-bottom: 10px;
+        font-size: 20px;
+      }
+
+      .panel p,
+      .mode-card p,
+      .case-card p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .tag {
+        display: inline-block;
+        margin-bottom: 14px;
+        padding: 4px 9px;
+        border-radius: 999px;
+        background: var(--soft);
+        color: var(--teal);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .flow {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 28px;
+      }
+
+      .architecture-diagram {
+        margin: 28px 0 0;
+        padding: 18px;
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: #fff;
+        box-shadow: var(--shadow);
+      }
+
+      .architecture-diagram img {
+        display: block;
+        width: min(100%, 920px);
+        min-width: 720px;
+        height: auto;
+        margin: 0 auto;
+      }
+
+      .stage {
+        min-height: 136px;
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-left: 4px solid var(--teal);
+        border-radius: var(--radius);
+        background: #fff;
+      }
+
+      .stage:nth-child(2n) {
+        border-left-color: var(--coral);
+      }
+
+      .stage:nth-child(3n) {
+        border-left-color: var(--amber);
+      }
+
+      .stage strong {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 15px;
+      }
+
+      .stage span {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .table-wrap {
+        margin-top: 24px;
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: #fff;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 720px;
+      }
+
+      th,
+      td {
+        padding: 15px 16px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        background: var(--soft);
+        color: var(--ink);
+        font-size: 13px;
+      }
+
+      td {
+        color: var(--muted);
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .accent-band {
+        margin-top: 28px;
+        padding: 28px;
+        border-radius: var(--radius);
+        background: var(--dark);
+        color: #fff;
+      }
+
+      .accent-band h3 {
+        font-size: 24px;
+      }
+
+      .accent-band p {
+        margin: 12px 0 0;
+        color: rgba(255, 255, 255, 0.74);
+      }
+
+      .highlight-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 22px;
+      }
+
+      .highlight-list div {
+        padding: 14px 16px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: var(--radius);
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .mode-card {
+        min-height: 210px;
+        padding: 22px;
+        border-top: 5px solid var(--teal);
+      }
+
+      .mode-card.partial {
+        border-top-color: var(--coral);
+      }
+
+      .mode-card.translate {
+        border-top-color: var(--amber);
+      }
+
+      .case-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 26px;
+      }
+
+      .case-card {
+        overflow: hidden;
+      }
+
+      .case-card img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 9 / 14;
+        object-fit: cover;
+        background: var(--soft);
+      }
+
+      .demo-section {
+        margin-top: 30px;
+      }
+
+      .demo-section h3 {
+        font-size: 24px;
+      }
+
+      .demo-section > p {
+        max-width: 820px;
+        margin: 10px 0 0;
+        color: var(--muted);
+      }
+
+      .demo-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+        margin-top: 18px;
+      }
+
+      .demo-card {
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: #fff;
+        box-shadow: var(--shadow);
+      }
+
+      .case-list,
+      .clean-demo-list {
+        display: grid;
+        gap: 18px;
+        margin-top: 18px;
+      }
+
+      .analysis-strip {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 20px;
+      }
+
+      .analysis-metric {
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: #fff;
+        box-shadow: var(--shadow);
+      }
+
+      .analysis-metric strong {
+        display: block;
+        font-size: 28px;
+        line-height: 1.1;
+      }
+
+      .analysis-metric span {
+        display: block;
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .analysis-table {
+        margin-top: 18px;
+      }
+
+      .case-detail {
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: #fff;
+        box-shadow: var(--shadow);
+      }
+
+      .case-detail > summary {
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--line);
+        background: var(--soft);
+        font-size: 16px;
+        font-weight: 800;
+      }
+
+      .summary-tags {
+        display: inline-flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .mode-remix {
+        border-color: #bddfcf;
+        background: #eefaf4;
+        color: var(--green);
+      }
+
+      .mode-partial,
+      .risk-medium {
+        border-color: #ead09a;
+        background: #fff7e6;
+        color: var(--amber);
+      }
+
+      .risk-high,
+      .risk-hard {
+        border-color: #efb2a8;
+        background: #fff1ef;
+        color: var(--coral);
+      }
+
+      .case-layout {
+        display: grid;
+        grid-template-columns: minmax(240px, 340px) minmax(0, 1fr);
+        gap: 18px;
+        padding: 18px;
+      }
+
+      .video-shell {
+        aspect-ratio: 9 / 16;
+        overflow: hidden;
+        border-radius: var(--radius);
+        background: #101816;
+      }
+
+      .video-shell iframe {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border: 0;
+      }
+
+      .case-summary {
+        display: grid;
+        align-content: start;
+        gap: 14px;
+      }
+
+      .facts {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        margin: 0;
+      }
+
+      .facts div {
+        min-width: 0;
+        padding: 10px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: #fbfcf7;
+      }
+
+      .facts dt {
+        margin-bottom: 4px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .facts dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .actions a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 34px;
+        padding: 6px 10px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: #fbfcf7;
+        color: var(--teal);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .nested-report {
+        margin: 0 18px 18px;
+        padding-top: 14px;
+        border-top: 1px solid var(--line);
+      }
+
+      .nested-report > summary {
+        cursor: pointer;
+        color: var(--teal);
+        font-weight: 800;
+      }
+
+      .report-content {
+        display: grid;
+        gap: 12px;
+        margin-top: 14px;
+      }
+
+      .report-content h2 {
+        margin-top: 12px;
+        font-size: 20px;
+      }
+
+      .report-content h3 {
+        margin-top: 8px;
+        font-size: 16px;
+      }
+
+      .report-content p {
+        margin: 0;
+      }
+
+      .clean {
+        margin: 0;
+        padding-left: 18px;
+      }
+
+      .clean li + li {
+        margin-top: 5px;
+      }
+
+      blockquote {
+        margin: 0;
+        padding: 10px 14px;
+        border-left: 4px solid var(--teal);
+        background: #fbfcf7;
+        color: var(--muted);
+      }
+
+      .table-scroll {
+        width: 100%;
+        overflow-x: auto;
+      }
+
+      .clean-demo-row {
+        display: block;
+      }
+
+      .clean-demo-video {
+        display: block;
+        width: 100%;
+        height: auto;
+        min-height: 520px;
+        max-height: 78vh;
+        background: #101816;
+        object-fit: contain;
+      }
+
+      .demo-media {
+        display: block;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        border: 0;
+        background: #101816;
+      }
+
+      video.demo-media {
+        object-fit: contain;
+      }
+
+      .demo-body {
+        padding: 15px;
+      }
+
+      .demo-body h4 {
+        margin: 0;
+        font-size: 16px;
+        line-height: 1.25;
+      }
+
+      .demo-body p {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .case-body {
+        padding: 15px;
+      }
+
+      .case-body h3 {
+        font-size: 16px;
+      }
+
+      .case-body p {
+        margin-top: 8px;
+        font-size: 13px;
+      }
+
+      .status {
+        display: inline-block;
+        margin-top: 12px;
+        padding: 3px 8px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .pass {
+        background: #e6f3e6;
+        color: var(--green);
+      }
+
+      .fail {
+        background: #fae9e5;
+        color: var(--coral);
+      }
+
+      .neutral {
+        background: #eee8d8;
+        color: var(--amber);
+      }
+
+      .code-block {
+        margin-top: 24px;
+        padding: 18px;
+        overflow-x: auto;
+        border-radius: var(--radius);
+        background: #111817;
+        color: #dce8df;
+        font: 14px/1.7 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      }
+
+      .roadmap {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 16px;
+        margin-top: 26px;
+      }
+
+      .roadmap .panel {
+        border-top: 4px solid var(--blue);
+      }
+
+      .roadmap .panel:nth-child(2) {
+        border-top-color: var(--teal);
+      }
+
+      .roadmap .panel:nth-child(3) {
+        border-top-color: var(--coral);
+      }
+
+      .note {
+        margin-top: 22px;
+        padding: 18px 20px;
+        border-left: 4px solid var(--coral);
+        background: #fff;
+        color: var(--muted);
+      }
+
+      footer {
+        padding: 34px clamp(18px, 4vw, 56px) 48px;
+        background: var(--dark);
+        color: rgba(255, 255, 255, 0.72);
+      }
+
+      footer strong {
+        display: block;
+        color: #fff;
+      }
+
+      @media (max-width: 980px) {
+        .topbar {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .topbar nav {
+          justify-content: flex-start;
+        }
+
+        .page {
+          display: block;
+        }
+
+        .toc {
+          display: none;
+        }
+
+        .grid-3,
+        .grid-2,
+        .roadmap {
+          grid-template-columns: 1fr;
+        }
+
+        .flow {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .case-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .demo-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .analysis-strip {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .case-layout,
+        .clean-demo-row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .hero {
+          min-height: 720px;
+          background-position: 58% center;
+        }
+
+        .hero-content {
+          padding: 72px 0 84px;
+        }
+
+        .hero-metrics,
+        .flow,
+        .highlight-list,
+        .case-grid,
+        .demo-grid,
+        .facts,
+        .analysis-strip {
+          grid-template-columns: 1fr;
+        }
+
+        .case-detail > summary {
+          display: grid;
+        }
+
+        .metric {
+          min-height: auto;
+        }
+
+        section {
+          padding: 42px 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="Creative Video Remix">
+        <span class="brand-mark">CVR</span>
+        <span>Creative Video Remix</span>
+      </a>
+      <nav aria-label="页面导航">
+        <a href="#scope">背景</a>
+        <a href="#architecture">架构</a>
+        <a href="#clean">清洗</a>
+        <a href="#decision">决策</a>
+        <a href="#compose">合成</a>
+        <a href="#qa">QA</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-label="方案首页">
+        <div class="hero-content">
+          <div class="eyebrow">视频优选 + 跨市场素材混剪链路</div>
+          <h1>把高潜素材选出来，并剪成目标市场可投视频</h1>
+          <p class="hero-lede">
+            项目由两个平等任务组成：视频优选负责从全量素材中找到值得迁移的高潜视频，混剪链路负责把这些跨市场素材清理、解析、重组、本地化并通过 QA。
+          </p>
+        </div>
+      </section>
+
+      <div class="page">
+        <aside class="toc" aria-label="章节目录">
+          <div class="toc-title">Contents</div>
+          <a href="#scope">1. 项目背景</a>
+          <a href="#architecture">2. 总体架构</a>
+          <a href="#clean">3. 脏素材清理</a>
+          <a href="#analysis">4. 镜头解析</a>
+          <a href="#decision">5. 混剪决策</a>
+          <a href="#script">6. 脚本字幕</a>
+          <a href="#compose">7. 合成渲染</a>
+          <a href="#qa">8. QA 报告</a>
+          <a href="#case">9. 案例</a>
+        </aside>
+
+        <div class="content">
+          <section id="scope">
+            <div class="section-kicker">01 / Background</div>
+            <h2>项目背景：从供给、选材、落地三类问题，衍生出视频优选和混剪两个任务</h2>
+            <p class="section-lede">
+              业务要解决的不只是“剪一条视频”，而是先找到值得迁移的高潜素材，再把跨地区、跨品迁移来的素材处理成目标市场可投放视频。因此项目拆成两个平等任务：视频优选负责“选什么”，混剪链路负责“怎么迁移干净并成片”。
+            </p>
+            <div class="grid-3">
+              <article class="panel">
+                <span class="tag">问题一 / 供给不足</span>
+                <h3>大量品没有视频可投</h3>
+                <p>跨地区素材供给不均，AR 少、ID 多；同地区长尾品几乎没有可用视频。单靠业务或 KOL 拍摄补不上，需要通过跨地区、跨品迁移批量补量。</p>
+              </article>
+              <article class="panel">
+                <span class="tag">问题二 / 选材有偏</span>
+                <h3>人工手选不一定是最优</h3>
+                <p>业务主要凭主观经验挑素材，容易选到 view 偏少的视频，真正的爆款素材没有被系统性捞出。因此需要基于全量数据自动召回和排序高潜视频。</p>
+              </article>
+              <article class="panel">
+                <span class="tag">问题三 / 落地卡口</span>
+                <h3>迁移素材自带源市场痕迹</h3>
+                <p>跨地区、跨品迁移的源视频常带原地区水印、原文字幕和源语言，这是 MPI QC 第一大拒因，约占 52%，也直接压低当前通过率 70.13%。能否清干净，决定迁移能否真正放量。</p>
+              </article>
+            </div>
+            <div class="grid-2">
+              <article class="panel">
+                <span class="tag">任务一 / 视频优选</span>
+                <h3>解决“拿什么素材迁移”</h3>
+                <p>从全量素材中结合表现数据、商品相关性、目标市场需求和素材质量自动捞爆款候选，避免只依赖人工经验，提升候选视频的上限。</p>
+              </article>
+              <article class="panel">
+                <span class="tag">任务二 / 素材混剪</span>
+                <h3>解决“如何迁移成可投视频”</h3>
+                <p>对优选候选视频做源市场痕迹清理、镜头解析、混剪策略、目标市场脚本字幕、视频合成和 QA，让跨市场/跨品迁移能批量落地。</p>
+              </article>
+            </div>
+            <div class="note">
+              这两个任务是同一闭环的两端：供给不足要求迁移补量，选材有偏要求视频优选，素材脏则要求混剪链路具备清洗、本地化和质检能力。
+            </div>
+          </section>
+
+          <section id="architecture">
+            <div class="section-kicker">02 / Architecture</div>
+            <h2>从商品视频文件夹到可投放视频的 Stage 1-8 链路</h2>
+            <p class="section-lede">
+              链路由 `pipeline.py` 串联，所有阶段都有 checkpoint，既支持完整跑通，也支持只测清洗或只测混剪策略。
+            </p>
+            <figure class="architecture-diagram" aria-label="Creative Video Remix 总体流程图">
+              <img src="remix_v2.drawio.svg" alt="Creative Video Remix 从素材输入、视频优选到八阶段混剪链路的总体流程图" loading="lazy">
+            </figure>
+            <div class="flow" aria-label="处理阶段">
+              <div class="stage"><strong>Stage 1 字幕清理</strong><span>PaddleOCR 检测字幕/水印，生成 mask，DiffuEraser/LaMa/ProPainter 修补画面。</span></div>
+              <div class="stage"><strong>Stage 2 镜头解析</strong><span>PySceneDetect 切镜头，抽关键帧和片段，Compass 视觉模型结构化打标。</span></div>
+              <div class="stage"><strong>Stage 3 策略规划</strong><span>规则层生成候选、硬禁区和风险对；LLM 在证据上做最终编导判断。</span></div>
+              <div class="stage"><strong>Stage 4 脚本生成</strong><span>分配镜头到叙事段落，生成目标市场口播、字幕和原字幕翻译回填。</span></div>
+              <div class="stage"><strong>Stage 5 视频合成</strong><span>FFmpeg 统一帧率、画幅和编码，按 timeline 裁切拼接并生成音频。</span></div>
+              <div class="stage"><strong>Stage 6 字幕渲染</strong><span>Remotion 将卖点字幕和已翻译原字幕烧录到主视频和翻译视频。</span></div>
+              <div class="stage"><strong>Stage 7 QA 检查</strong><span>检查时长、HOOK、CTA、音频、输出完整性、模式一致性和风险归因。</span></div>
+              <div class="stage"><strong>Stage 8 报告生成</strong><span>输出 Markdown/JSON 复盘，保留决策依据、镜头详情、技术参数和 QA 结果。</span></div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>输入</th>
+                    <th>关键配置</th>
+                    <th>主要输出</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>一个商品文件夹中的任意数量视频，支持 mp4、mov、webm、avi、mkv 等格式。</td>
+                    <td>目标市场、平台、叙事类型、清洗后端、TTS/BGM、Remotion 字幕渲染开关。</td>
+                    <td>`final_remix.mp4`、`translations/`、`stage*.json`、`remix_report.md`、`qa_log.json`。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="clean">
+            <div class="section-kicker">03 / Stage 1</div>
+            <h2>先把迁移素材清干净，再做任何视觉理解</h2>
+            <p class="section-lede">
+              清洗作为 Stage 1，是因为原文字幕、水印和标题贴片会干扰后续视觉理解，也会直接触发 MPI QC。这里不是简单裁掉画面，而是检测文字、生成时序 mask，再对局部区域进行视频补全。
+            </p>
+            <div class="accent-band">
+              <h3>Stage 1 的目标</h3>
+              <p>最大化擦除原地区语言和水印，同时保护商品主体不被修坏，并把可翻译的原字幕轨道保留下来供目标市场回填。</p>
+              <div class="highlight-list">
+                <div>OCR ROI：top/bottom 双区域，支持 full frame fallback 和动态 ROI。</div>
+                <div>水印过滤：`tiktok`、`shopee`、`@`、`bycase` 等模式过滤。</div>
+                <div>Mask 稳定：dilation、morphology、track、persistence 降低闪烁。</div>
+                <div>商品保护：SAM3 product mask 避免把商品细节一起擦掉。</div>
+              </div>
+            </div>
+            <div class="grid-2">
+              <article class="panel">
+                <h3>检测与分类</h3>
+                <p>PaddleOCR 输出文本框后，按字幕、标题贴片、source watermark、非字幕文字分类。支持同语言检测，目标市场语言相同的视频可以跳过擦除并直接保留。</p>
+              </article>
+              <article class="panel">
+                <h3>修补后端</h3>
+                <p>默认使用 DiffuEraser，并支持 `single_union_band` 裁剪加速；LaMa 作为轻量后端，带黑块修复和时序平滑；ProPainter/VSR 用于实验对比。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="analysis">
+            <div class="section-kicker">04 / Stage 2</div>
+            <h2>把视频拆成可检索、可组合、可复盘的镜头索引</h2>
+            <p class="section-lede">
+              `agents/video_analyzer.py` 负责镜头分割和视觉打标。每个镜头不仅有开始/结束时间，还会记录质量分、景别、节奏、内容类型、叙事角色、卖点、重复签名和可用片段路径。
+            </p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>字段</th>
+                    <th>用途</th>
+                    <th>下游消费方</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>`content_type`、`scale`、`rhythm`</td>
+                    <td>判断是商品展示、细节、使用演示、生活方式，确定镜头能放在哪个叙事位置。</td>
+                    <td>Stage 3 过滤，Stage 4 分镜。</td>
+                  </tr>
+                  <tr>
+                    <td>`quality_score`、`quality_reason`</td>
+                    <td>过滤低质镜头，保留可用于投放的视觉片段。</td>
+                    <td>Stage 3 可用镜头白名单。</td>
+                  </tr>
+                  <tr>
+                    <td>`primary_narrative_role`、`selling_points`</td>
+                    <td>把镜头对齐 HOOK/DEV/CLIMAX/CTA 以及具体商品卖点。</td>
+                    <td>Stage 4 脚本和字幕。</td>
+                  </tr>
+                  <tr>
+                    <td>`duplicate_signature`</td>
+                    <td>识别同质镜头，避免混剪只是在重复同一个画面。</td>
+                    <td>Stage 4 去重和主视频骨架编排。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="decision">
+            <div class="section-kicker">05 / Stage 3</div>
+            <h2>不硬混剪，先判断哪些视频适合合在一起</h2>
+            <p class="section-lede">
+              成片模式决策是链路的核心分水岭。这里不是让 LLM 直接“拍脑袋选视频”，而是先用规则层把视频关系算清楚，再让 LLM 在候选组合、硬禁区和风险证据上做最终编导判断。
+            </p>
+            <div class="grid-2">
+              <article class="panel">
+                <span class="tag">Rule Layer</span>
+                <h3>先给出可解释边界</h3>
+                <p>读取 `shots_index` 后按 video_idx 聚合镜头，过滤有效镜头不足或质量分低于阈值的视频；再对视频两两计算商品语义、内容类型、风格、背景、人物/手部和质量一致性，输出 `pair_consistency`、`remix_groups`、`hard_reject_pairs` 和 `risk_pairs`。</p>
+              </article>
+              <article class="panel">
+                <span class="tag">LLM Layer</span>
+                <h3>再做编导选择</h3>
+                <p>LLM 看到视频摘要、规则候选组、SKU 分析、硬禁区和风险对后，逐一评估候选组合，决定 `REMIX`、`PARTIAL_REMIX` 或 `TRANSLATE_ALL`。它可以覆盖规则推荐，但不能选择 `hard_reject_pairs`，选择 `risk_pairs` 时必须说明风险为什么可控。</p>
+              </article>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>步骤</th>
+                    <th>主要逻辑</th>
+                    <th>关键输出</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>规则候选</td>
+                    <td>有效视频不足两条直接 `TRANSLATE_ALL`；可混组合覆盖全部视频则 `REMIX`；只覆盖部分视频则 `PARTIAL_REMIX`。</td>
+                    <td>`mode`、`selected_video_indices`、`translation_video_indices`、`remix_groups`。</td>
+                  </tr>
+                  <tr>
+                    <td>风险分层</td>
+                    <td>商品语义过低、素材不可用、明显不同品类、严重视觉冲突进入硬禁区；人物/手部、背景、风格差异默认是风险而非绝对禁止。</td>
+                    <td>`hard_reject_pairs`、`risk_pairs`、`visual_risk_level`。</td>
+                  </tr>
+                  <tr>
+                    <td>LLM 裁判</td>
+                    <td>按商品/卖点统一、风格一致、背景/人物连续性可控、质量可用的优先级选择候选，并输出每个候选为什么选或不选。</td>
+                    <td>`candidate_evaluations`、`selected_candidate_reason`、`decision_reason`。</td>
+                  </tr>
+                  <tr>
+                    <td>结果保护</td>
+                    <td>`normalize` 修正非法 mode、缺失索引和 hard reject 选择；`visual_guard` 在 LLM 选中高风险组合且存在更安全高分组合时自动改选。</td>
+                    <td>最终 `assembly_decision.json`，供 Stage 4 脚本生成消费。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="grid-3">
+              <article class="mode-card">
+                <span class="tag">REMIX</span>
+                <h3>全部视频混剪</h3>
+                <p>所有输入视频商品语义统一，风格、背景、人物或手部连续性风险可控，输出一条主混剪视频。</p>
+              </article>
+              <article class="mode-card partial">
+                <span class="tag">PARTIAL_REMIX</span>
+                <h3>部分混剪加逐条翻译</h3>
+                <p>最适合当前业务迁移场景。可混的视频进入主混剪，风险较高或 SKU 不一致的视频保留完整画面并翻译。</p>
+              </article>
+              <article class="mode-card translate">
+                <span class="tag">TRANSLATE_ALL</span>
+                <h3>全部完整翻译</h3>
+                <p>当有效视频不足、商品差异太大或视觉连续性不可控时，不做重排，逐条输出目标市场翻译视频。</p>
+              </article>
+            </div>
+            <div class="note">
+              当前策略特别避免两个常见误区：不因为素材数量多就强行混剪，也不因为素材重复度高就在视频级排除更一致的视频。重复问题交给 Stage 4 镜头级去重处理。
+            </div>
+          </section>
+
+          <section id="script">
+            <div class="section-kicker">06 / Stage 4</div>
+            <h2>用市场知识库和镜头标签生成目标市场脚本</h2>
+            <p class="section-lede">
+              `agents/script_generator.py` 读取市场、平台、品类和脚本知识库，把可用镜头分配到叙事段落，并生成本地化口播、字幕项和翻译视频条目。
+            </p>
+            <div class="grid-2">
+              <article class="panel">
+                <h3>混剪脚本</h3>
+                <p>支持 AIDA、PAS、STORY 等模板。主视频作为骨架，辅助视频只插入有增量价值的镜头，按 HOOK 到 CTA 建立 timeline。</p>
+              </article>
+              <article class="panel">
+                <h3>原字幕回填</h3>
+                <p>Stage 1 检出的原字幕会被过滤水印和噪声，再翻译成目标市场语言。Remotion 渲染时会避让卖点字幕，减少遮挡。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="compose">
+            <div class="section-kicker">07 / Stage 5 + 6</div>
+            <h2>FFmpeg 负责视频骨架，TTS 和 Remotion 补齐投放表达</h2>
+            <p class="section-lede">
+              合成阶段不是只拼片段。它要统一帧率、画幅、编码和边界保护，生成目标市场 TTS，处理 BGM 或静音 fallback，并给主视频与翻译视频烧录字幕。
+            </p>
+            <div class="grid-3">
+              <article class="panel">
+                <h3>视频拼接</h3>
+                <p>按 timeline 裁切镜头，生成 CFR source，统一 30fps、9:16、H.264/AAC，避免拼接后音画不同步或边缘黑帧。</p>
+              </article>
+              <article class="panel">
+                <h3>音频策略</h3>
+                <p>Edge TTS 负责目标市场口播；BGM 可接 MusicGen，目前支持静音兜底；原视频音频可静音，TTS 作为主语音。</p>
+              </article>
+              <article class="panel">
+                <h3>字幕渲染</h3>
+                <p>Remotion 读取 `subtitle_items.json`，把卖点字幕和原字幕翻译回填烧入主混剪及 translations 输出。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="qa">
+            <div class="section-kicker">08 / Stage 7 + 8</div>
+            <h2>生成之后必须能解释为什么通过或失败</h2>
+            <p class="section-lede">
+              QA 采用 Observe、Think、Act、Reflect 的闭环结构，当前已能输出 PASS/FAIL、违规类型、严重度和责任层级。报告会把模式判断、镜头选择、字幕渲染、音频策略和 QA 明细串起来。
+            </p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>检查项</th>
+                    <th>典型问题</th>
+                    <th>责任归因</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>结构完整性</td>
+                    <td>缺少 HOOK、CTA，或者段落为空。</td>
+                    <td>Stage 2 镜头解析，Stage 4 脚本生成。</td>
+                  </tr>
+                  <tr>
+                    <td>时长约束</td>
+                    <td>低于 TikTok 15 秒下限，或超过平台目标时长。</td>
+                    <td>Stage 4 脚本生成，Stage 5 视频合成。</td>
+                  </tr>
+                  <tr>
+                    <td>输出完整性</td>
+                    <td>主视频、翻译视频、音频流、字幕渲染缺失。</td>
+                    <td>Stage 5 视频合成，Stage 6 字幕渲染。</td>
+                  </tr>
+                  <tr>
+                    <td>模式一致性</td>
+                    <td>PARTIAL_REMIX 未生成未混剪视频的完整翻译。</td>
+                    <td>Stage 3 策略规划，Stage 5 视频合成。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="case">
+            <div class="section-kicker">09 / Case Evidence</div>
+            <h2>Demo 案例：混剪成片与去字幕清洗</h2>
+            <p class="section-lede">
+              本节拆成两组可播放样例：混剪 demo 保留 remix_test 里的完整案例卡片、结论表和 report；去字幕 demo 展示 Stage 1 在不同商品素材上的清洗前后对比。
+            </p>
+
+            <div class="demo-section" aria-label="混剪 demo">
+              <h3>混剪 demo</h3>
+              <p>每个案例一整行，保留视频、混剪结论、外部链接和完整 report.md 折叠报告。</p>
+              <div class="analysis-strip" aria-label="三个混剪 demo 汇总指标">
+                <div class="analysis-metric">
+                  <strong>61</strong>
+                  <span>识别镜头总数</span>
+                </div>
+                <div class="analysis-metric">
+                  <strong>28</strong>
+                  <span>最终使用镜头数</span>
+                </div>
+                <div class="analysis-metric">
+                  <strong>45.9%</strong>
+                  <span>镜头通过率 = 使用 / 识别</span>
+                </div>
+                <div class="analysis-metric">
+                  <strong>77.8%</strong>
+                  <span>素材进入混剪率 = 7 / 9</span>
+                </div>
+              </div>
+              <div class="table-wrap analysis-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>案例</th>
+                      <th>模式</th>
+                      <th>识别镜头</th>
+                      <th>使用镜头</th>
+                      <th>镜头通过率</th>
+                      <th>丢弃镜头</th>
+                      <th>素材进入混剪</th>
+                      <th>成片时长</th>
+                      <th>分析要点</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>002 · Card Collection Album</td>
+                      <td><span class="tag mode-remix">REMIX</span></td>
+                      <td><code>27</code></td>
+                      <td><code>12</code></td>
+                      <td><code>44.4%</code></td>
+                      <td><code>3</code></td>
+                      <td><code>3 / 3</code></td>
+                      <td><code>14.78s</code></td>
+                      <td>三条素材全部可混，镜头选择偏向主视频骨架，并用辅视频补充不同款式和使用场景。</td>
+                    </tr>
+                    <tr>
+                      <td>006 · 100w Charging Cables</td>
+                      <td><span class="tag mode-partial">PARTIAL_REMIX</span></td>
+                      <td><code>17</code></td>
+                      <td><code>7</code></td>
+                      <td><code>41.2%</code></td>
+                      <td><code>4</code></td>
+                      <td><code>2 / 3</code></td>
+                      <td><code>15.27s</code></td>
+                      <td>视频 0 进入硬禁区单独翻译；视频 1/2 人物和商品一致，靠较少镜头覆盖核心卖点。</td>
+                    </tr>
+                    <tr>
+                      <td>012 · Ladies Sling Bag</td>
+                      <td><span class="tag mode-partial">PARTIAL_REMIX</span></td>
+                      <td><code>17</code></td>
+                      <td><code>9</code></td>
+                      <td><code>52.9%</code></td>
+                      <td><code>3</code></td>
+                      <td><code>2 / 3</code></td>
+                      <td><code>16.20s</code></td>
+                      <td>LLM 从规则层全混剪改判为部分混剪，排除不同色商品，保留棕色包素材组合。</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="case-list">
+                <details class="case-detail" id="case-002" data-case-detail data-mode="REMIX" data-risk="high" data-text="002 card collection album 002_card_collection_album"  open>
+                <summary><span>002 · Card Collection Album</span><span class="summary-tags"><span class="tag mode-remix">REMIX</span><span class="tag risk-high">high</span></span></summary>
+                <div class="case-layout">
+                  <div class="video-shell"><iframe src="https://drive.google.com/file/d/1_1xoqnmKJebbEkiQRIZL6b5gTpSi-EFn/preview" allow="autoplay; fullscreen" allowfullscreen loading="lazy" title="case-002 混剪 demo"></iframe></div>
+                  <aside class="case-summary">
+                    <h3>混剪结论</h3>
+                    <dl class="facts compact">
+                      <div><dt>规则层</dt><dd><code>REMIX</code></dd></div>
+                      <div><dt>LLM/最终</dt><dd><code>REMIX</code></dd></div>
+                      <div><dt>参与混剪</dt><dd><code>[0, 1, 2]</code></dd></div>
+                      <div><dt>未参与</dt><dd><code>[]</code></dd></div>
+                      <div><dt>成片时长</dt><dd><code>14.78s</code></dd></div>
+                      <div><dt>镜头数</dt><dd><code>12</code></dd></div>
+                    </dl>
+                    <p>所有视频均展示同一卡片收集册的不同款式和使用场景，商品和人物手部高度一致，尽管风格和背景存在可控风险，但整体可REMIX以最大化卖点覆盖。</p>
+                    <div class="actions inline-actions"><a href="https://drive.google.com/file/d/1_1xoqnmKJebbEkiQRIZL6b5gTpSi-EFn/view?usp=drive_link" target="_blank" rel="noopener">打开 Google Drive 视频</a><a href="data/remix_report_002.md" target="_blank" rel="noopener">原始 report.md</a></div>
+                  </aside>
+                </div>
+                <details class="nested-report"><summary>展开完整 report.md</summary><div class="report-content"><h2>混剪测试输出说明</h2>
+                <h2>1. 混剪结论</h2>
+                <ul class="clean">
+                <li>混剪模式：<code>REMIX</code></li>
+                <li>参与混剪视频：<code>[0, 1, 2]</code></li>
+                <li>单独翻译/未参与混剪视频：<code>[]</code></li>
+                <li>决策摘要：<code>所有视频均展示同一卡片收集册的不同款式和使用场景，商品和人物手部高度一致，尽管风格和背景存在可控风险，但整体可REMIX以最大化卖点覆盖。</code></li>
+                </ul>
+                <blockquote>
+                <p>所有视频均展示同一卡片收集册的不同款式和使用场景，商品和人物手部高度一致，尽管风格和背景存在可控风险，但整体可REMIX以最大化卖点覆盖。</p>
+                </blockquote>
+                <h2>2. 输入素材关系</h2>
+                <div class="table-scroll"><table>
+                <thead><tr><th>视频</th><th>商品/内容判断</th><th>角色</th><th>是否进入混剪</th><th>原因</th></tr></thead>
+                <tbody>
+                <tr><td>视频 0</td><td>卡片收集册 (薰衣草图案/粉色草莓图案)</td><td>primary</td><td>是</td><td>展示了两种不同图案的卡片收集册（薰衣草、粉色草莓），涵盖了打开、展示内页、放入卡片/纸币等核心使用场景，镜头数量最多，叙事完整，适合作为主线骨架。</td></tr>
+                <tr><td>视频 1</td><td>卡片收集册 (紫色/粉色西瓜图案)</td><td>auxiliary</td><td>是</td><td>补充展示了西瓜图案和紫色款式的卡片收集册，并强调了存钱（印尼盾）的使用场景，可作为主线的补充镜头，丰富产品展示和使用场景。</td></tr>
+                <tr><td>视频 2</td><td>卡片收集册 (紫色花朵图案)</td><td>auxiliary</td><td>是</td><td>补充展示了紫色花朵图案的卡片收集册，并强调了存放金卡、小金条等贵重物品的特殊使用场景，可作为主线的补充卖点，突出产品多功能性。</td></tr>
+                </tbody></table></div>
+                <h2>3. 规则层判断</h2>
+                <h3>3.1 规则层推荐结论</h3>
+                <ul class="clean">
+                <li>规则推荐模式：<code>REMIX</code></li>
+                <li>规则推荐混剪视频：<code>[0, 1, 2]</code></li>
+                <li>规则推荐单独翻译/排除视频：<code>[]</code></li>
+                <li>规则置信度：<code>0.65</code></li>
+                <li>规则原因：<code>全部视频存在共同核心内容类型和相近商品语义，可组合为同一商品混剪</code></li>
+                </ul>
+                <h3>3.2 规则层兼容性判断</h3>
+                <div class="table-scroll"><table>
+                <thead><tr><th>视频组合</th><th>商品一致性</th><th>风格一致性</th><th>人物/手部一致性</th><th>视觉连续性分数</th><th>风险等级</th><th>规则决策</th></tr></thead>
+                <tbody>
+                <tr><td>0 + 1</td><td>不一致</td><td>bright/closeup/demo/lifestyle/static/studio/tabletop/ugc &lt;-&gt; bright/closeup/demo/lifestyle/static/studio/tabletop</td><td>一致</td><td>0.5</td><td>high</td><td>can_remix</td></tr>
+                <tr><td>0 + 2</td><td>不一致</td><td>bright/closeup/demo/lifestyle/static/studio/tabletop/ugc &lt;-&gt; bright/closeup/demo/lifestyle/studio/tabletop</td><td>一致</td><td>0.5</td><td>high</td><td>can_remix</td></tr>
+                <tr><td>1 + 2</td><td>不一致</td><td>bright/closeup/demo/lifestyle/static/studio/tabletop &lt;-&gt; bright/closeup/demo/lifestyle/studio/tabletop</td><td>一致</td><td>0.5</td><td>high</td><td>can_remix</td></tr>
+                </tbody></table></div>
+                <h3>3.3 规则层风险说明</h3>
+                <div class="table-scroll"><table>
+                <thead><tr><th>视频组合</th><th>风险类型</th><th>风险原因</th></tr></thead>
+                <tbody>
+                <tr><td>0 + 1</td><td>high</td><td>棚拍/白底与UGC手持画面风格冲突；棚拍/白底与生活方式画面风格冲突；背景变化较大，混剪连续性风险高</td></tr>
+                <tr><td>0 + 2</td><td>high</td><td>棚拍/白底与UGC手持画面风格冲突；棚拍/白底与生活方式画面风格冲突；背景变化较大，混剪连续性风险高</td></tr>
+                <tr><td>1 + 2</td><td>high</td><td>棚拍/白底与生活方式画面风格冲突；背景变化较大，混剪连续性风险高</td></tr>
+                </tbody></table></div>
+                <h2>4. LLM 判断</h2>
+                <h3>4.1 LLM 最终结论</h3>
+                <ul class="clean">
+                <li>LLM 决策模式：<code>REMIX</code></li>
+                <li>LLM 选择混剪视频：<code>[0, 1, 2]</code></li>
+                <li>LLM 选择单独翻译/排除视频：<code>[]</code></li>
+                <li>LLM 置信度：<code>0.9</code></li>
+                <li>LLM 决策原因：<code>所有视频均展示同一卡片收集册的不同款式和使用场景，商品和人物手部高度一致，尽管风格和背景存在可控风险，但整体可REMIX以最大化卖点覆盖。</code></li>
+                </ul>
+                <h3>4.2 LLM 候选组合评估</h3>
+                <div class="table-scroll"><table>
+                <thead><tr><th>候选组合</th><th>商品一致性</th><th>风格一致性</th><th>背景一致性</th><th>人物/手部一致性</th><th>视觉风险</th><th>推荐结果</th><th>原因</th></tr></thead>
+                <tbody>
+                <tr><td>0 + 1 + 2</td><td>一致</td><td>部分一致</td><td>部分一致</td><td>一致</td><td>high</td><td>best</td><td>该组合能最全面地展示卡片收集册的不同款式和多样化使用场景（存钱、收藏金卡等），商品和卖点高度统一。尽管存在风格和背景的视觉风险，但考虑到商品一致性是最高优先级，且规则层判断为可混剪（compatible: true），风险在可控范围内（AI可辅助衔接），故选择此组合。</td></tr>
+                <tr><td>0 + 1</td><td>一致</td><td>部分一致</td><td>部分一致</td><td>一致</td><td>high</td><td>usable</td><td>此组合商品一致性高，但未能充分利用视频2提供的金卡收藏卖点，且仍存在与[0,1,2]相似的风格和背景风险，不如全量组合价值高。</td></tr>
+                <tr><td>0 + 2</td><td>一致</td><td>部分一致</td><td>部分一致</td><td>一致</td><td>high</td><td>usable</td><td>此组合商品一致性高，但未能充分利用视频1提供的存钱卖点和西瓜图案款式，且仍存在与[0,1,2]相似的风格和背景风险，不如全量组合价值高。</td></tr>
+                <tr><td>1 + 2</td><td>一致</td><td>一致</td><td>部分一致</td><td>一致</td><td>high</td><td>usable</td><td>该组合在风格上比包含视频0的组合更统一，但缺少了视频0作为主视频的丰富内容和款式展示，未能最大化利用所有可用素材的增量价值。</td></tr>
+                </tbody></table></div>
+                <h3>4.3 LLM 重点说明</h3>
+                <blockquote>
+                <p>尽管所有组合都存在视觉风险，但[0, 1, 2]组合能最全面地展示同一商品的不同款式和多样化使用场景，最大化了商品/卖点统一性这一最高优先级。规则层也明确所有视频均可混剪（compatible: true），且AI后续会补齐故事线，因此选择内容最丰富的组合。</p>
+                </blockquote>
+                <h2>5. 规则层与 LLM 差异</h2>
+                <ul class="clean">
+                <li>是否存在差异：<code>否</code></li>
+                <li>差异类型：<code>无</code></li>
+                <li>规则层结论：<code>REMIX</code> / <code>[0, 1, 2]</code></li>
+                <li>LLM 结论：<code>REMIX</code> / <code>[0, 1, 2]</code></li>
+                <li>最终采用：<code>llm</code></li>
+                <li>采用原因：<code>规则层与 LLM 结论一致</code></li>
+                </ul>
+                <h2>6. Stage 3 故事线策略</h2>
+                <ul class="clean">
+                <li>主视频骨架：<code>视频 0</code></li>
+                <li>辅视频插入策略：<code>primary_backbone_with_role_dedupe</code></li>
+                <li>辅视频候选：<code>[1, 2]</code></li>
+                <li>最终镜头来源分布：<code>{1: 1, 0: 8, 2: 3}</code></li>
+                <li>去重策略：<code>同阶段 + 同动作/卖点/视角才丢弃；包装/开箱阶段最多保留一个</code></li>
+                <li>去重结果：<code>dedupe_groups=3, dropped=3</code></li>
+                <li>时长补齐策略：<code>优先补辅视频、未覆盖卖点/动作、可用时长更长的镜头</code></li>
+                <li>时长补齐复用镜头：<code>0</code></li>
+                </ul>
+                <div class="table-scroll"><table>
+                <thead><tr><th>段落</th><th>目标作用</th><th>选择镜头</th><th>来源视频</th><th>选择原因</th></tr></thead>
+                <tbody>
+                <tr><td>HOOK</td><td>悬念/吸引力</td><td><code>[&#x27;v2_s2&#x27;]</code></td><td>视频 1</td><td>v2_s2: 辅视频增量/补充</td></tr>
+                <tr><td>DEV</td><td>产品名称</td><td><code>[&#x27;v1_s4&#x27;, &#x27;v1_s2&#x27;, &#x27;v3_s6&#x27;, &#x27;v1_s1&#x27;]</code></td><td>视频 0，视频 0，视频 2，视频 0</td><td>v1_s4: 主视频骨架；v1_s2: 主视频骨架；v3_s6: 辅视频增量/补充；v1_s1: 主视频骨架</td></tr>
+                <tr><td>DEV</td><td>核心卖点</td><td><code>[&#x27;v1_s11&#x27;, &#x27;v1_s3&#x27;, &#x27;v1_s10&#x27;]</code></td><td>视频 0，视频 0，视频 0</td><td>v1_s11: 主视频骨架；v1_s3: 主视频骨架；v1_s10: 主视频骨架</td></tr>
+                <tr><td>CLIMAX</td><td>效果描述</td><td><code>[&#x27;v1_s5&#x27;, &#x27;v1_s7&#x27;, &#x27;v3_s2&#x27;, &#x27;v3_s4&#x27;]</code></td><td>视频 0，视频 -，视频 2，视频 2</td><td>v1_s5: 主视频骨架；v1_s7: 辅视频增量/补充；v3_s2: 辅视频增量/补充；v3_s4: 辅视频增量/补充</td></tr>
+                <tr><td>CTA</td><td>促销信息</td><td><code>[&#x27;v1_s6&#x27;]</code></td><td>视频 0</td><td>v1_s6: 主视频骨架</td></tr>
+                </tbody></table></div>
+                <h2>7. 镜头选择结果</h2>
+                <ul class="clean">
+                <li>识别镜头总数：<code>27</code></li>
+                <li>最终使用镜头数：<code>12</code></li>
+                <li>最终使用镜头：<code>[&#x27;v2_s2&#x27;, &#x27;v1_s4&#x27;, &#x27;v1_s2&#x27;, &#x27;v3_s6&#x27;, &#x27;v1_s1&#x27;, &#x27;v1_s11&#x27;, &#x27;v1_s3&#x27;, &#x27;v1_s10&#x27;, &#x27;v1_s5&#x27;, &#x27;v3_s2&#x27;, &#x27;v3_s4&#x27;, &#x27;v1_s6&#x27;]</code></li>
+                <li>被过滤/丢弃镜头：<code>[&#x27;v2_s2&#x27;, &#x27;v1_s7&#x27;, &#x27;v2_s4&#x27;]</code></li>
+                </ul>
+                <h3>7.1 最终使用镜头</h3>
+                <div class="table-scroll"><table>
+                <thead><tr><th>镜头 ID</th><th>来源视频</th><th>原始时间段</th><th>输出时间段</th><th>使用原因</th></tr></thead>
+                <tbody>
+                <tr><td><code>v2_s2</code></td><td>视频 1</td><td>1.6-4.6s</td><td>0.0-3.0s</td><td>辅视频增量插入：补充不同来源视角/卖点</td></tr>
+                <tr><td><code>v1_s4</code></td><td>视频 0</td><td>3.53-4.66s</td><td>3.0-4.13s</td><td>主视频骨架：保证故事连续性</td></tr>
+                <tr><td><code>v1_s2</code></td><td>视频 0</td><td>1.73-2.36s</td><td>4.13-4.76s</td><td>主视频骨架：保证故事连续性</td></tr>
+                <tr><td><code>v3_s6</code></td><td>视频 2</td><td>16.04-17.17s</td><td>4.76-5.89s</td><td>辅视频增量插入：补充不同来源视角/卖点</td></tr>
+                <tr><td><code>v1_s1</code></td><td>视频 0</td><td>0.0-1.13s</td><td>5.89-7.02s</td><td>主视频骨架：保证故事连续性</td></tr>
+                <tr><td><code>v1_s11</code></td><td>视频 0</td><td>10.27-11.44s</td><td>7.02-8.19s</td><td>主视频骨架：保证故事连续性</td></tr>
+                <tr><td><code>v1_s3</code></td><td>视频 0</td><td>2.43-3.46s</td><td>8.19-9.22s</td><td>主视频骨架：保证故事连续性</td></tr>
+                <tr><td><code>v1_s10</code></td><td>视频 0</td><td>9.37-10.2s</td><td>9.22-10.05s</td><td>主视频骨架：保证故事连续性</td></tr>
+                <tr><td><code>v1_s5</code></td><td>视频 0</td><td>4.73-5.66s</td><td>10.05-10.98s</td><td>主视频骨架：保证故事连续性</td></tr>
+                <tr><td><code>v3_s2</code></td><td>视频 2</td><td>4.52-5.82s</td><td>10.98-12.28s</td><td>辅视频增量插入：补充不同来源视角/卖点</td></tr>
+                <tr><td><code>v3_s4</code></td><td>视频 2</td><td>10.92-12.22s</td><td>12.28-13.58s</td><td>辅视频增量插入：补充不同来源视角/卖点</td></tr>
+                <tr><td><code>v1_s6</code></td><td>视频 0</td><td>5.73-6.93s</td><td>13.58-14.78s</td><td>主视频骨架：保证故事连续性</td></tr>
+                </tbody></table></div>
+                <h3>7.2 被过滤/丢弃镜头</h3>
+                <div class="table-scroll"><table>
+                <thead><tr><th>镜头 ID</th><th>来源视频</th><th>丢弃原因</th><th>相似/冲突对象</th></tr></thead>
+                <tbody>
+                <tr><td><code>v2_s2</code></td><td>视频 1</td><td>duplicate_lower_quality_same_role</td><td>v1_s6</td></tr>
+                <tr><td><code>v1_s7</code></td><td>视频 0</td><td>duplicate_lower_quality_same_role</td><td>v2_s3</td></tr>
+                <tr><td><code>v2_s4</code></td><td>视频 1</td><td>duplicate_lower_quality_same_role</td><td>v1_s9</td></tr>
+                </tbody></table></div>
+                <h2>8. 成片结构</h2>
+                <ul class="clean">
+                <li>输出视频：<code>output_test_remix/002_Card_Collection_Album/final_remix_test_remix_info.mp4</code></li>
+                <li>成片时长：<code>14.78s</code></li>
+                <li>输出模式：<code>REMIX</code></li>
+                </ul>
+                <div class="table-scroll"><table>
+                <thead><tr><th>段落</th><th>时间</th><th>镜头</th><th>内容作用</th></tr></thead>
+                <tbody>
+                <tr><td><code>1</code></td><td>0.0-3.0s</td><td><code>[&#x27;v2_s2&#x27;]</code></td><td>悬念/吸引力</td></tr>
+                <tr><td><code>2</code></td><td>3.0-7.02s</td><td><code>[&#x27;v1_s4&#x27;, &#x27;v1_s2&#x27;, &#x27;v3_s6&#x27;, &#x27;v1_s1&#x27;]</code></td><td>产品名称</td></tr>
+                <tr><td><code>3</code></td><td>7.02-10.05s</td><td><code>[&#x27;v1_s11&#x27;, &#x27;v1_s3&#x27;, &#x27;v1_s10&#x27;]</code></td><td>核心卖点</td></tr>
+                <tr><td><code>4</code></td><td>10.05-13.58s</td><td><code>[&#x27;v1_s5&#x27;, &#x27;v3_s2&#x27;, &#x27;v3_s4&#x27;]</code></td><td>效果描述</td></tr>
+                <tr><td><code>5</code></td><td>13.58-14.78s</td><td><code>[&#x27;v1_s6&#x27;]</code></td><td>促销信息</td></tr>
+                </tbody></table></div></div></details>
+                </details>
+                <details class="case-detail" id="case-006" data-case-detail data-mode="PARTIAL_REMIX" data-risk="hard_reject" data-text="006 100w charging cables 006_100w_charging_cables"  open>
+                <summary><span>006 · 100w Charging Cables</span><span class="summary-tags"><span class="tag mode-partial">PARTIAL_REMIX</span><span class="tag risk-hard">hard_reject</span></span></summary>
+                <div class="case-layout">
+                  <div class="video-shell"><iframe src="https://drive.google.com/file/d/1WPhF-zebrDpgUAeO3ufnXz7A7rHgVYYH/preview" allow="autoplay; fullscreen" allowfullscreen loading="lazy" title="case-006 混剪 demo"></iframe></div>
+                  <aside class="case-summary">
+                    <h3>混剪结论</h3>
+                    <dl class="facts compact">
+                      <div><dt>规则层</dt><dd><code>PARTIAL_REMIX</code></dd></div>
+                      <div><dt>LLM/最终</dt><dd><code>PARTIAL_REMIX</code></dd></div>
+                      <div><dt>参与混剪</dt><dd><code>[1, 2]</code></dd></div>
+                      <div><dt>未参与</dt><dd><code>[0]</code></dd></div>
+                      <div><dt>成片时长</dt><dd><code>15.27s</code></dd></div>
+                      <div><dt>镜头数</dt><dd><code>7</code></dd></div>
+                    </dl>
+                    <p>视频0因与视频1、视频2存在严重视觉冲突（硬禁区），需单独翻译。视频1和视频2商品、人物一致，卖点互补，风格差异可控，适合进行混剪以丰富内容。</p>
+                    <div class="actions inline-actions"><a href="https://drive.google.com/file/d/1WPhF-zebrDpgUAeO3ufnXz7A7rHgVYYH/view?usp=drive_link" target="_blank" rel="noopener">打开 Google Drive 视频</a><a href="data/remix_report_006.md" target="_blank" rel="noopener">原始 report.md</a></div>
+                  </aside>
+                </div>
+                <details class="nested-report"><summary>展开完整 report.md</summary><div class="report-content"><h2>混剪测试输出说明</h2>
+                <h2>1. 混剪结论</h2>
+                <ul class="clean">
+                <li>混剪模式：<code>PARTIAL_REMIX</code></li>
+                <li>参与混剪视频：<code>[1, 2]</code></li>
+                <li>单独翻译/未参与混剪视频：<code>[0]</code></li>
+                <li>决策摘要：<code>视频0因与视频1、视频2存在严重视觉冲突（硬禁区），需单独翻译。视频1和视频2商品、人物一致，卖点互补，风格差异可控，适合进行混剪以丰富内容。</code></li>
+                </ul>
+                <blockquote>
+                <p>视频0因与视频1、视频2存在严重视觉冲突（硬禁区），需单独翻译。视频1和视频2商品、人物一致，卖点互补，风格差异可控，适合进行混剪以丰富内容。</p>
+                </blockquote>
+                <h2>2. 输入素材关系</h2>
+                <div class="table-scroll"><table>
+                <thead><tr><th>视频</th><th>商品/内容判断</th><th>角色</th><th>是否进入混剪</th><th>原因</th></tr></thead>
+                <tbody>
+                <tr><td>视频 0</td><td>100w充电线 (男性展示，70%充电)</td><td>primary</td><td>否，单独翻译</td><td>作为主线骨架，开篇展示充电效果（70%）和线材本体细节（100w，编织，接口），叙事清晰，适合作为产品介绍的起点。</td></tr>
+                <tr><td>视频 1</td><td>100w充电线 (女性展示，多色，收纳，柔韧，包装)</td><td>auxiliary</td><td>是</td><td>可补充主线中未展示的卖点，如魔术贴收纳、线材柔韧性（打结）、多颜色选择和产品包装。与主线商品一致，但背景和人物不同，可作为功能或款式补充。</td></tr>
+                <tr><td>视频 2</td><td>100w充电线 (女性展示，76%快充，数据传输，USB-C，柔韧)</td><td>auxiliary</td><td>是</td><td>可补充主线中未详细说明的卖点，如快充（76%）、数据传输功能、USB Type C接口、以及更详细的柔韧性展示和使用场景（插入手机）。与主线商品一致，但背景和人物不同，可作为功能深度介绍。</td></tr>
+                </tbody></table></div>
+                <h2>3. 规则层判断</h2>
+                <h3>3.1 规则层推荐结论</h3>
+                <ul class="clean">
+                <li>规则推荐模式：<code>PARTIAL_REMIX</code></li>
+                <li>规则推荐混剪视频：<code>[1, 2]</code></li>
+                <li>规则推荐单独翻译/排除视频：<code>[0]</code></li>
+                <li>规则置信度：<code>0.7</code></li>
+                <li>规则原因：<code>部分视频适合混剪，其余视频商品语义或质量不匹配，单独翻译</code></li>
+                </ul>
+                <h3>3.2 规则层兼容性判断</h3>
+                <div class="table-scroll"><table>
+                <thead><tr><th>视频组合</th><th>商品一致性</th><th>风格一致性</th><th>人物/手部一致性</th><th>视觉连续性分数</th><th>风险等级</th><th>规则决策</th></tr></thead>
+                <tbody>
+                <tr><td>0 + 1</td><td>不一致</td><td>bright/closeup/dark/demo/studio/tabletop/ugc &lt;-&gt; bright/closeup/demo/static/studio/tabletop</td><td>不一致</td><td>0.3</td><td>hard_reject</td><td>translate_separately</td></tr>
+                <tr><td>0 + 2</td><td>不一致</td><td>bright/closeup/dark/demo/studio/tabletop/ugc &lt;-&gt; bright/closeup/demo/lifestyle/static/studio/tabletop/ugc</td><td>不一致</td><td>0.3</td><td>hard_reject</td><td>translate_separately</td></tr>
+                <tr><td>1 + 2</td><td>不一致</td><td>bright/closeup/demo/static/studio/tabletop &lt;-&gt; bright/closeup/demo/lifestyle/static/studio/tabletop/ugc</td><td>一致</td><td>0.5</td><td>medium</td><td>can_remix</td></tr>
+                </tbody></table></div>
+                <h3>3.3 规则层风险说明</h3>
+                <div class="table-scroll"><table>
+                <thead><tr><th>视频组合</th><th>风险类型</th><th>风险原因</th></tr></thead>
+                <tbody>
+                <tr><td>1 + 2</td><td>medium</td><td>棚拍/白底与UGC手持画面风格冲突；棚拍/白底与生活方式画面风格冲突</td></tr>
+                </tbody></table></div>
+                <h2>4. LLM 判断</h2>
+                <h3>4.1 LLM 最终结论</h3>
+                <ul class="clean">
+                <li>LLM 决策模式：<code>PARTIAL_REMIX</code></li>
+                <li>LLM 选择混剪视频：<code>[1, 2]</code></li>
+                <li>LLM 选择单独翻译/排除视频：<code>[0]</code></li>
+                <li>LLM 置信度：<code>0.9</code></li>
+                <li>LLM 决策原因：<code>视频0因与视频1、视频2存在严重视觉冲突（硬禁区），需单独翻译。视频1和视频2商品、人物一致，卖点互补，风格差异可控，适合进行混剪以丰富内容。</code></li>
+                </ul>
+                <h3>4.2 LLM 候选组合评估</h3>
+                <div class="table-scroll"><table>
+                <thead><tr><th>候选组合</th><th>商品一致性</th><th>风格一致性</th><th>背景一致性</th><th>人物/手部一致性</th><th>视觉风险</th><th>推荐结果</th><th>原因</th></tr></thead>
+                <tbody>
+                <tr><td>1 + 2</td><td>一致</td><td>部分一致</td><td>部分一致</td><td>一致</td><td>medium</td><td>usable</td><td>该组合商品、人物（女性手部）一致，卖点互补。虽然风格和背景存在中等风险，但考虑到产品展示的优先级，这些差异在可接受范围内，可进行混剪。</td></tr>
+                <tr><td>0 + 1 + 2</td><td>一致</td><td>不一致</td><td>不一致</td><td>不一致</td><td>hard_reject</td><td>reject</td><td>该组合包含硬禁区 [0, 1] 和 [0, 2]，视觉冲突严重，无法混剪。</td></tr>
+                <tr><td>0 + 1</td><td>一致</td><td>不一致</td><td>不一致</td><td>不一致</td><td>hard_reject</td><td>reject</td><td>该组合是硬禁区 [0, 1]，视觉冲突严重，无法混剪。</td></tr>
+                <tr><td>0 + 2</td><td>一致</td><td>不一致</td><td>不一致</td><td>不一致</td><td>hard_reject</td><td>reject</td><td>该组合是硬禁区 [0, 2]，视觉冲突严重，无法混剪。</td></tr>
+                </tbody></table></div>
+                <h3>4.3 LLM 重点说明</h3>
+                <blockquote>
+                <p>根据规则层证据，视频0与视频1、视频0与视频2均属于硬禁区，无法混剪。因此，视频0必须单独翻译。视频1和视频2虽然存在中等视觉风险，但商品、人物（女性手部）一致，且卖点互补，风格差异在可接受范围内，是唯一可行的混剪组合。优先选择视觉一致性更好的组合 [1, 2] 进行混剪，并单独处理视频0。</p>
+                </blockquote>
+                <h2>5. 规则层与 LLM 差异</h2>
+                <ul class="clean">
+                <li>是否存在差异：<code>否</code></li>
+                <li>差异类型：<code>无</code></li>
+                <li>规则层结论：<code>PARTIAL_REMIX</code> / <code>[1, 2]</code></li>
+                <li>LLM 结论：<code>PARTIAL_REMIX</code> / <code>[1, 2]</code></li>
+                <li>最终采用：<code>llm</code></li>
+                <li>采用原因：<code>规则层与 LLM 结论一致</code></li>
+                </ul>
+                <h2>6. Stage 3 故事线策略</h2>
+                <ul class="clean">
+                <li>主视频骨架：<code>视频 2</code></li>
+                <li>辅视频插入策略：<code>primary_backbone_with_role_dedupe</code></li>
+                <li>辅视频候选：<code>[1]</code></li>
+                <li>最终镜头来源分布：<code>{1: 2, 2: 5}</code></li>
+                <li>去重策略：<code>同阶段 + 同动作/卖点/视角才丢弃；包装/开箱阶段最多保留一个</code></li>
+                <li>去重结果：<code>dedupe_groups=4, dropped=4</code></li>
+                <li>时长补齐策略：<code>优先补辅视频、未覆盖卖点/动作、可用时长更长的镜头</code></li>
+                <li>时长补齐复用镜头：<code>0</code></li>
+                </ul>
+                <div class="table-scroll"><table>
+                <thead><tr><th>段落</th><th>目标作用</th><th>选择镜头</th><th>来源视频</th><th>选择原因</th></tr></thead>
+                <tbody>
+                <tr><td>HOOK</td><td>悬念/吸引力</td><td><code>[&#x27;v2_s2&#x27;]</code></td><td>视频 1</td><td>v2_s2: 辅视频增量/补充</td></tr>
+                <tr><td>DEV</td><td>产品名称</td><td><code>[&#x27;v3_s8&#x27;, &#x27;v2_s7&#x27;]</code></td><td>视频 2，视频 1</td><td>v3_s8: 主视频骨架；v2_s7: 辅视频增量/补充</td></tr>
+                <tr><td>DEV</td><td>核心卖点</td><td><code>[&#x27;v3_s1&#x27;, &#x27;v3_s6&#x27;]</code></td><td>视频 2，视频 -</td><td>v3_s1: 主视频骨架；v3_s6: 辅视频增量/补充</td></tr>
+                <tr><td>CLIMAX</td><td>效果描述</td><td><code>[&#x27;v3_s5&#x27;, &#x27;v3_s3&#x27;]</code></td><td>视频 2，视频 2</td><td>v3_s5: 主视频骨架；v3_s3: 主视频骨架</td></tr>
+                <tr><td>CTA</td><td>促销信息</td><td><code>[&#x27;v3_s7&#x27;]</code></td><td>视频 2</td><td>v3_s7: 主视频骨架</td></tr>
+                </tbody></table></div>
+                <h2>7. 镜头选择结果</h2>
+                <ul class="clean">
+                <li>识别镜头总数：<code>17</code></li>
+                <li>最终使用镜头数：<code>7</code></li>
+                <li>最终使用镜头：<code>[&#x27;v2_s2&#x27;, &#x27;v3_s8&#x27;, &#x27;v2_s7&#x27;, &#x27;v3_s1&#x27;, &#x27;v3_s5&#x27;, &#x27;v3_s3&#x27;, &#x27;v3_s7&#x27;]</code></li>
+                <li>被过滤/丢弃镜头：<code>[&#x27;v2_s1&#x27;, &#x27;v2_s3&#x27;, &#x27;v2_s4&#x27;, &#x27;v2_s5&#x27;]</code></li>
+                </ul>
+                <h3>7.1 最终使用镜头</h3>
+                <div class="table-scroll"><table>
+                <thead><tr><th>镜头 ID</th><th>来源视频</th><th>原始时间段</th><th>输出时间段</th><th>使用原因</th></tr></thead>
+                <tbody>
+                <tr><td><code>v2_s2</code></td><td>视频 1</td><td>7.77-9.57s</td><td>0.0-1.8s</td><td>辅视频增量插入：补充不同来源视角/卖点</td></tr>
+                <tr><td><code>v3_s8</code></td><td>视频 2</td><td>17.33-19.33s</td><td>1.8-3.8s</td><td>主视频骨架：保证故事连续性</td></tr>
+                <tr><td><code>v2_s7</code></td><td>视频 1</td><td>26.83-28.83s</td><td>3.8-5.8s</td><td>辅视频增量插入：补充不同来源视角/卖点</td></tr>
+                <tr><td><code>v3_s1</code></td><td>视频 2</td><td>0.0-2.47s</td><td>5.8-8.27s</td><td>主视频骨架：保证故事连续性</td></tr>
+                <tr><td><code>v3_s5</code></td><td>视频 2</td><td>11.5-13.23s</td><td>8.27-10.0s</td><td>主视频骨架：保证故事连续性</td></tr>
+                <tr><td><code>v3_s3</code></td><td>视频 2</td><td>5.9-8.17s</td><td>10.0-12.27s</td><td>主视频骨架：保证故事连续性</td></tr>
+                <tr><td><code>v3_s7</code></td><td>视频 2</td><td>13.93-16.93s</td><td>12.27-15.27s</td><td>主视频骨架：保证故事连续性</td></tr>
+                </tbody></table></div>
+                <h3>7.2 被过滤/丢弃镜头</h3>
+                <div class="table-scroll"><table>
+                <thead><tr><th>镜头 ID</th><th>来源视频</th><th>丢弃原因</th><th>相似/冲突对象</th></tr></thead>
+                <tbody>
+                <tr><td><code>v2_s1</code></td><td>视频 1</td><td>duplicate_with_primary_backbone</td><td>v3_s2</td></tr>
+                <tr><td><code>v2_s3</code></td><td>视频 1</td><td>duplicate_with_primary_backbone</td><td>v3_s2</td></tr>
+                <tr><td><code>v2_s4</code></td><td>视频 1</td><td>duplicate_with_primary_backbone</td><td>v3_s2</td></tr>
+                <tr><td><code>v2_s5</code></td><td>视频 1</td><td>duplicate_with_primary_backbone</td><td>v3_s3</td></tr>
+                </tbody></table></div>
+                <h2>8. 成片结构</h2>
+                <ul class="clean">
+                <li>输出视频：<code>output_test_remix/006_100w_charging_cables/final_remix_test_remix_info.mp4</code></li>
+                <li>成片时长：<code>15.27s</code></li>
+                <li>输出模式：<code>PARTIAL_REMIX</code></li>
+                </ul>
+                <div class="table-scroll"><table>
+                <thead><tr><th>段落</th><th>时间</th><th>镜头</th><th>内容作用</th></tr></thead>
+                <tbody>
+                <tr><td><code>1</code></td><td>0.0-1.8s</td><td><code>[&#x27;v2_s2&#x27;]</code></td><td>悬念/吸引力</td></tr>
+                <tr><td><code>2</code></td><td>1.8-5.8s</td><td><code>[&#x27;v3_s8&#x27;, &#x27;v2_s7&#x27;]</code></td><td>产品名称</td></tr>
+                <tr><td><code>3</code></td><td>5.8-8.27s</td><td><code>[&#x27;v3_s1&#x27;]</code></td><td>核心卖点</td></tr>
+                <tr><td><code>4</code></td><td>8.27-12.27s</td><td><code>[&#x27;v3_s5&#x27;, &#x27;v3_s3&#x27;]</code></td><td>效果描述</td></tr>
+                <tr><td><code>5</code></td><td>12.27-15.27s</td><td><code>[&#x27;v3_s7&#x27;]</code></td><td>促销信息</td></tr>
+                </tbody></table></div></div></details>
+                </details>
+                <details class="case-detail" id="case-012" data-case-detail data-mode="PARTIAL_REMIX" data-risk="high" data-text="012 ladies sling bag 012_ladies_sling_bag"  open>
+                <summary><span>012 · Ladies Sling Bag</span><span class="summary-tags"><span class="tag mode-partial">PARTIAL_REMIX</span><span class="tag risk-high">high</span></span></summary>
+                <div class="case-layout">
+                  <div class="video-shell"><iframe src="https://drive.google.com/file/d/1UhCURATcvmcqEyvpZm4uFQEYisWFBGhd/preview" allow="autoplay; fullscreen" allowfullscreen loading="lazy" title="case-012 混剪 demo"></iframe></div>
+                  <aside class="case-summary">
+                    <h3>混剪结论</h3>
+                    <dl class="facts compact">
+                      <div><dt>规则层</dt><dd><code>REMIX</code></dd></div>
+                      <div><dt>LLM/最终</dt><dd><code>PARTIAL_REMIX</code></dd></div>
+                      <div><dt>参与混剪</dt><dd><code>[0, 1]</code></dd></div>
+                      <div><dt>未参与</dt><dd><code>[2]</code></dd></div>
+                      <div><dt>成片时长</dt><dd><code>16.2s</code></dd></div>
+                      <div><dt>镜头数</dt><dd><code>9</code></dd></div>
+                    </dl>
+                    <p>视频0和视频1展示同款棕色斜挎包，内容互补，可混剪以提供更全面的商品展示；视频2展示同款黑色斜挎包，颜色不同，应独立翻译。</p>
+                    <div class="actions inline-actions"><a href="https://drive.google.com/file/d/1UhCURATcvmcqEyvpZm4uFQEYisWFBGhd/view?usp=drive_link" target="_blank" rel="noopener">打开 Google Drive 视频</a><a href="data/remix_report_012.md" target="_blank" rel="noopener">原始 report.md</a></div>
+                  </aside>
+                </div>
+                <details class="nested-report"><summary>展开完整 report.md</summary><div class="report-content"><h2>混剪测试输出说明</h2>
+                <h2>1. 混剪结论</h2>
+                <ul class="clean">
+                <li>混剪模式：<code>PARTIAL_REMIX</code></li>
+                <li>参与混剪视频：<code>[0, 1]</code></li>
+                <li>单独翻译/未参与混剪视频：<code>[2]</code></li>
+                <li>决策摘要：<code>视频0和视频1展示同款棕色斜挎包，内容互补，可混剪以提供更全面的商品展示；视频2展示同款黑色斜挎包，颜色不同，应独立翻译。</code></li>
+                </ul>
+                <blockquote>
+                <p>视频0和视频1展示同款棕色斜挎包，内容互补，可混剪以提供更全面的商品展示；视频2展示同款黑色斜挎包，颜色不同，应独立翻译。</p>
+                </blockquote>
+                <h2>2. 输入素材关系</h2>
+                <div class="table-scroll"><table>
+                <thead><tr><th>视频</th><th>商品/内容判断</th><th>角色</th><th>是否进入混剪</th><th>原因</th></tr></thead>
+                <tbody>
+                <tr><td>视频 0</td><td>棕色女士斜挎包</td><td>primary</td><td>是</td><td>展示完整，包含佩戴、细节特写和文字介绍，叙事清晰，适合作为主线骨架。</td></tr>
+                <tr><td>视频 1</td><td>棕色/棕红色女士斜挎包</td><td>auxiliary</td><td>是</td><td>与视频0展示的棕色包为同款，提供了更多细节特写，如内部结构、肩带调整、底部侧面等，可丰富主线视频0的展示。</td></tr>
+                <tr><td>视频 2</td><td>黑色女士斜挎包</td><td>standalone_translation</td><td>否，单独翻译</td><td>展示的是同款包的黑色版本，与主线棕色包颜色不同，不适合直接混剪，更适合作为独立商品展示或单独翻译。</td></tr>
+                </tbody></table></div>
+                <h2>3. 规则层判断</h2>
+                <h3>3.1 规则层推荐结论</h3>
+                <ul class="clean">
+                <li>规则推荐模式：<code>REMIX</code></li>
+                <li>规则推荐混剪视频：<code>[0, 1, 2]</code></li>
+                <li>规则推荐单独翻译/排除视频：<code>[]</code></li>
+                <li>规则置信度：<code>0.65</code></li>
+                <li>规则原因：<code>全部视频存在共同核心内容类型和相近商品语义，可组合为同一商品混剪</code></li>
+                </ul>
+                <h3>3.2 规则层兼容性判断</h3>
+                <div class="table-scroll"><table>
+                <thead><tr><th>视频组合</th><th>商品一致性</th><th>风格一致性</th><th>人物/手部一致性</th><th>视觉连续性分数</th><th>风险等级</th><th>规则决策</th></tr></thead>
+                <tbody>
+                <tr><td>0 + 1</td><td>不一致</td><td>bright/closeup/lifestyle/static/studio/tabletop/ugc &lt;-&gt; closeup/demo/lifestyle/static/studio/tabletop/ugc</td><td>一致</td><td>0.5</td><td>high</td><td>can_remix</td></tr>
+                <tr><td>0 + 2</td><td>不一致</td><td>bright/closeup/lifestyle/static/studio/tabletop/ugc &lt;-&gt; bright/closeup/demo/static/studio/tabletop</td><td>一致</td><td>0.5</td><td>medium</td><td>can_remix</td></tr>
+                <tr><td>1 + 2</td><td>不一致</td><td>closeup/demo/lifestyle/static/studio/tabletop/ugc &lt;-&gt; bright/closeup/demo/static/studio/tabletop</td><td>一致</td><td>0.5</td><td>medium</td><td>can_remix</td></tr>
+                </tbody></table></div>
+                <h3>3.3 规则层风险说明</h3>
+                <div class="table-scroll"><table>
+                <thead><tr><th>视频组合</th><th>风险类型</th><th>风险原因</th></tr></thead>
+                <tbody>
+                <tr><td>0 + 1</td><td>high</td><td>棚拍/白底与UGC手持画面风格冲突；棚拍/白底与生活方式画面风格冲突</td></tr>
+                <tr><td>0 + 2</td><td>medium</td><td>棚拍/白底与UGC手持画面风格冲突；棚拍/白底与生活方式画面风格冲突</td></tr>
+                <tr><td>1 + 2</td><td>medium</td><td>棚拍/白底与UGC手持画面风格冲突；棚拍/白底与生活方式画面风格冲突</td></tr>
+                </tbody></table></div>
+                <h2>4. LLM 判断</h2>
+                <h3>4.1 LLM 最终结论</h3>
+                <ul class="clean">
+                <li>LLM 决策模式：<code>PARTIAL_REMIX</code></li>
+                <li>LLM 选择混剪视频：<code>[0, 1]</code></li>
+                <li>LLM 选择单独翻译/排除视频：<code>[2]</code></li>
+                <li>LLM 置信度：<code>0.95</code></li>
+                <li>LLM 决策原因：<code>视频0和视频1展示同款棕色斜挎包，内容互补，可混剪以提供更全面的商品展示；视频2展示同款黑色斜挎包，颜色不同，应独立翻译。</code></li>
+                </ul>
+                <h3>4.2 LLM 候选组合评估</h3>
+                <div class="table-scroll"><table>
+                <thead><tr><th>候选组合</th><th>商品一致性</th><th>风格一致性</th><th>背景一致性</th><th>人物/手部一致性</th><th>视觉风险</th><th>推荐结果</th><th>原因</th></tr></thead>
+                <tbody>
+                <tr><td>0 + 1 + 2</td><td>不一致</td><td>不一致</td><td>不一致</td><td>一致</td><td>high</td><td>reject</td><td>视频0/1展示棕色包，视频2展示黑色包，商品颜色不一致，不适合混剪。</td></tr>
+                <tr><td>0 + 1</td><td>一致</td><td>部分一致</td><td>部分一致</td><td>一致</td><td>medium</td><td>best</td><td>商品颜色和型号完全一致，视频1能有效补充视频0的细节展示。尽管规则层提示风格和背景风险，但两者均以桌面特写为主，视觉差异可接受，且商品一致性是最高优先级。</td></tr>
+                <tr><td>0 + 2</td><td>不一致</td><td>不一致</td><td>部分一致</td><td>一致</td><td>medium</td><td>reject</td><td>视频0展示棕色包，视频2展示黑色包，商品颜色不一致，不适合混剪。</td></tr>
+                <tr><td>1 + 2</td><td>不一致</td><td>不一致</td><td>部分一致</td><td>一致</td><td>medium</td><td>reject</td><td>视频1展示棕色包，视频2展示黑色包，商品颜色不一致，不适合混剪。</td></tr>
+                </tbody></table></div>
+                <h3>4.3 LLM 重点说明</h3>
+                <blockquote>
+                <p>根据SKU分析，视频0和视频1展示同款同色（或近似色）商品，可互补细节；视频2为同款不同色商品，应独立翻译。因此选择混剪[0,1]并翻译[2]。</p>
+                </blockquote>
+                <h2>5. 规则层与 LLM 差异</h2>
+                <ul class="clean">
+                <li>是否存在差异：<code>是</code></li>
+                <li>差异类型：<code>决策不一致</code></li>
+                <li>规则层结论：<code>REMIX</code> / <code>[0, 1, 2]</code></li>
+                <li>LLM 结论：<code>PARTIAL_REMIX</code> / <code>[0, 1]</code></li>
+                <li>最终采用：<code>llm</code></li>
+                <li>采用原因：<code>视频0和视频1展示同款棕色斜挎包，内容互补，可混剪以提供更全面的商品展示；视频2展示同款黑色斜挎包，颜色不同，应独立翻译。</code></li>
+                </ul>
+                <h2>6. Stage 3 故事线策略</h2>
+                <ul class="clean">
+                <li>主视频骨架：<code>视频 0</code></li>
+                <li>辅视频插入策略：<code>primary_backbone_with_role_dedupe</code></li>
+                <li>辅视频候选：<code>[1]</code></li>
+                <li>最终镜头来源分布：<code>{0: 3, 1: 6}</code></li>
+                <li>去重策略：<code>同阶段 + 同动作/卖点/视角才丢弃；包装/开箱阶段最多保留一个</code></li>
+                <li>去重结果：<code>dedupe_groups=3, dropped=3</code></li>
+                <li>时长补齐策略：<code>优先补辅视频、未覆盖卖点/动作、可用时长更长的镜头</code></li>
+                <li>时长补齐复用镜头：<code>0</code></li>
+                </ul>
+                <div class="table-scroll"><table>
+                <thead><tr><th>段落</th><th>目标作用</th><th>选择镜头</th><th>来源视频</th><th>选择原因</th></tr></thead>
+                <tbody>
+                <tr><td>HOOK</td><td>悬念/吸引力</td><td><code>[&#x27;v1_s1&#x27;]</code></td><td>视频 0</td><td>v1_s1: 主视频骨架</td></tr>
+                <tr><td>DEV</td><td>产品名称</td><td><code>[&#x27;v2_s2&#x27;, &#x27;v2_s4&#x27;]</code></td><td>视频 1，视频 1</td><td>v2_s2: 辅视频增量/补充；v2_s4: 辅视频增量/补充</td></tr>
+                <tr><td>DEV</td><td>核心卖点</td><td><code>[&#x27;v2_s1&#x27;, &#x27;v2_s5&#x27;]</code></td><td>视频 1，视频 1</td><td>v2_s1: 辅视频增量/补充；v2_s5: 辅视频增量/补充</td></tr>
+                <tr><td>CLIMAX</td><td>效果描述</td><td><code>[&#x27;v1_s4&#x27;, &#x27;v2_s10&#x27;, &#x27;v2_s3&#x27;]</code></td><td>视频 0，视频 1，视频 1</td><td>v1_s4: 主视频骨架；v2_s10: 辅视频增量/补充；v2_s3: 辅视频增量/补充</td></tr>
+                <tr><td>CTA</td><td>促销信息</td><td><code>[&#x27;v1_s3&#x27;]</code></td><td>视频 0</td><td>v1_s3: 主视频骨架</td></tr>
+                </tbody></table></div>
+                <h2>7. 镜头选择结果</h2>
+                <ul class="clean">
+                <li>识别镜头总数：<code>17</code></li>
+                <li>最终使用镜头数：<code>9</code></li>
+                <li>最终使用镜头：<code>[&#x27;v1_s1&#x27;, &#x27;v2_s2&#x27;, &#x27;v2_s4&#x27;, &#x27;v2_s1&#x27;, &#x27;v2_s5&#x27;, &#x27;v1_s4&#x27;, &#x27;v2_s10&#x27;, &#x27;v2_s3&#x27;, &#x27;v1_s3&#x27;]</code></li>
+                <li>被过滤/丢弃镜头：<code>[&#x27;v2_s6&#x27;, &#x27;v2_s7&#x27;, &#x27;v2_s8&#x27;]</code></li>
+                </ul>
+                <h3>7.1 最终使用镜头</h3>
+                <div class="table-scroll"><table>
+                <thead><tr><th>镜头 ID</th><th>来源视频</th><th>原始时间段</th><th>输出时间段</th><th>使用原因</th></tr></thead>
+                <tbody>
+                <tr><td><code>v1_s1</code></td><td>视频 0</td><td>0.0-2.2s</td><td>0.0-2.2s</td><td>主视频骨架：保证故事连续性</td></tr>
+                <tr><td><code>v2_s2</code></td><td>视频 1</td><td>1.88-4.28s</td><td>2.2-4.6s</td><td>辅视频增量插入：补充不同来源视角/卖点</td></tr>
+                <tr><td><code>v2_s4</code></td><td>视频 1</td><td>7.68-9.28s</td><td>4.6-6.2s</td><td>辅视频增量插入：补充不同来源视角/卖点</td></tr>
+                <tr><td><code>v2_s1</code></td><td>视频 1</td><td>0.0-1.5s</td><td>6.2-7.7s</td><td>辅视频增量插入：补充不同来源视角/卖点</td></tr>
+                <tr><td><code>v2_s5</code></td><td>视频 1</td><td>9.36-10.86s</td><td>7.7-9.2s</td><td>辅视频增量插入：补充不同来源视角/卖点</td></tr>
+                <tr><td><code>v1_s4</code></td><td>视频 0</td><td>18.4-19.43s</td><td>9.2-10.23s</td><td>主视频骨架：保证故事连续性</td></tr>
+                <tr><td><code>v2_s10</code></td><td>视频 1</td><td>20.52-22.02s</td><td>10.23-11.73s</td><td>辅视频增量插入：补充不同来源视角/卖点</td></tr>
+                <tr><td><code>v2_s3</code></td><td>视频 1</td><td>6.12-7.59s</td><td>11.73-13.2s</td><td>辅视频增量插入：补充不同来源视角/卖点</td></tr>
+                <tr><td><code>v1_s3</code></td><td>视频 0</td><td>4.33-7.33s</td><td>13.2-16.2s</td><td>主视频骨架：保证故事连续性</td></tr>
+                </tbody></table></div>
+                <h3>7.2 被过滤/丢弃镜头</h3>
+                <div class="table-scroll"><table>
+                <thead><tr><th>镜头 ID</th><th>来源视频</th><th>丢弃原因</th><th>相似/冲突对象</th></tr></thead>
+                <tbody>
+                <tr><td><code>v2_s6</code></td><td>视频 1</td><td>duplicate_with_primary_backbone</td><td>v1_s4</td></tr>
+                <tr><td><code>v2_s7</code></td><td>视频 1</td><td>duplicate_with_primary_backbone</td><td>v1_s4</td></tr>
+                <tr><td><code>v2_s8</code></td><td>视频 1</td><td>duplicate_with_primary_backbone</td><td>v1_s4</td></tr>
+                </tbody></table></div>
+                <h2>8. 成片结构</h2>
+                <ul class="clean">
+                <li>输出视频：<code>output_test_remix/012_ladies_sling_bag/final_remix_test_remix_info.mp4</code></li>
+                <li>成片时长：<code>16.2s</code></li>
+                <li>输出模式：<code>PARTIAL_REMIX</code></li>
+                </ul>
+                <div class="table-scroll"><table>
+                <thead><tr><th>段落</th><th>时间</th><th>镜头</th><th>内容作用</th></tr></thead>
+                <tbody>
+                <tr><td><code>1</code></td><td>0.0-2.2s</td><td><code>[&#x27;v1_s1&#x27;]</code></td><td>悬念/吸引力</td></tr>
+                <tr><td><code>2</code></td><td>2.2-6.2s</td><td><code>[&#x27;v2_s2&#x27;, &#x27;v2_s4&#x27;]</code></td><td>产品名称</td></tr>
+                <tr><td><code>3</code></td><td>6.2-9.2s</td><td><code>[&#x27;v2_s1&#x27;, &#x27;v2_s5&#x27;]</code></td><td>核心卖点</td></tr>
+                <tr><td><code>4</code></td><td>9.2-13.2s</td><td><code>[&#x27;v1_s4&#x27;, &#x27;v2_s10&#x27;, &#x27;v2_s3&#x27;]</code></td><td>效果描述</td></tr>
+                <tr><td><code>5</code></td><td>13.2-16.2s</td><td><code>[&#x27;v1_s3&#x27;]</code></td><td>促销信息</td></tr>
+                </tbody></table></div></div></details>
+                </details>
+              </div>
+            </div>
+
+            <div class="demo-section" aria-label="去字幕 demo">
+              <h3>去字幕 demo</h3>
+              <div class="clean-demo-list">
+                <div class="clean-demo-row">
+                  <video class="clean-demo-video" controls preload="metadata" src="assets/clean_diffueraser_case_2_video_2_side_by_side.mp4"></video>
+                </div>
+                <div class="clean-demo-row">
+                  <video class="clean-demo-video" controls preload="metadata" src="assets/clean_diffueraser_case_6_video_2_side_by_side.mp4"></video>
+                </div>
+                <div class="clean-demo-row">
+                  <video class="clean-demo-video" controls preload="metadata" src="assets/clean_diffueraser_case_8_video_1_side_by_side.mp4"></video>
+                </div>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <strong>Creative Video Remix 技术方案</strong>
+      <span>Repo: /Users/haoran.zhang/Documents/main/creative-video-remix · Page: /Users/haoran.zhang/Documents/haoran.zhang.gitlab.io/site/Creative_Video_Remix</span>
+    </footer>
+  </body>
+</html>
