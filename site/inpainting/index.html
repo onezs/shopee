@@ -55,19 +55,19 @@
 <body>
   <header>
     <p class="eyebrow">001 Clear Phone Case · Subtitle Inpainting</p>
-    <h1>LaMa, DiffuEraser, CLEAR 耗时与质量对比</h1>
-    <p class="lead">页面嵌入了 9 个本地 comparison 视频，每个视频左侧为原始输入，右侧为清理结果。耗时来自 /Users/haoran.zhang/Downloads/1 下已有报告。</p>
+    <h1>LaMa, DiffuEraser, CLEAR, EraserDiT 耗时与质量对比</h1>
+    <p class="lead">页面嵌入了本地 comparison 视频，每个视频左侧为原始输入，右侧为清理结果。LaMa、DiffuEraser、CLEAR 耗时来自已有报告；EraserDiT 使用 output/001_Clear_Phone_case 中的 mask/input 重新跑通并记录 wall-clock inpainting 时间。</p>
   </header>
   <main>
     <section class="summary" aria-label="summary metrics">
-      <div><span>Fastest total</span><strong>CLEAR</strong></div>
-      <div><span>Best total time</span><strong>27m 56.2s</strong></div>
-      <div><span>Second total</span><strong>DiffuEraser · 39m 22.4s</strong></div>
+      <div><span>Fastest full pipeline</span><strong>CLEAR</strong></div>
+      <div><span>Best full total</span><strong>27m 56.2s</strong></div>
+      <div><span>EraserDiT inpaint-only</span><strong>14m 4.7s</strong></div>
       <div><span>Slowest total</span><strong>LaMa · 53m 6.1s</strong></div>
     </section>
 
     <div class="callout">
-      <b>结论：</b>按 CLEAR 模型初始化只记录一次的口径，CLEAR 总耗时为 27m 56.2s，是这批结果里最快的方法；DiffuEraser 为 39m 22.4s，LaMa 为 53m 6.1s。质量评估仍要重点看尾部稳定性：当前 CLEAR comparison 文件比原始视频短，需要检查导出阶段是否丢帧。
+      <b>结论：</b>按 CLEAR 模型初始化只记录一次的口径，CLEAR 总耗时为 27m 56.2s，是已有 full pipeline 结果里最快的方法；DiffuEraser 为 39m 22.4s，LaMa 为 53m 6.1s。EraserDiT 本次只统计 inpainting wall-clock，三条视频合计 14m 4.7s，不能直接和包含 OCR 的 full pipeline 总耗时等价，但从纯修复阶段看速度优势明显。质量评估仍要重点看尾部稳定性和 mask 区域重绘痕迹。
     </div>
 
     <h3>耗时总表</h3>
@@ -81,6 +81,15 @@
         <td>39.7x</td>
         <td>12m 40.6s</td>
         <td>24m 12.8s</td>
+      </tr>
+
+      <tr>
+        <td><b>eraserdit</b></td>
+        <td>14m 4.7s <span style="color: var(--muted);">(inpaint-only)</span></td>
+        <td>0.54</td>
+        <td>14.2x</td>
+        <td>not measured</td>
+        <td>14m 4.7s</td>
       </tr>
 
       <tr>
@@ -107,9 +116,51 @@
     <div class="notes">
       <div class="note"><b>干净度</b>看右侧字幕区域是否仍有文字边缘、阴影、残影。CLEAR 和 DiffuEraser 通常更激进，LaMa 更容易出现局部糊化。</div>
       <div class="note"><b>稳定性</b>拖到字幕出现和消失附近，看右侧是否闪烁、跳帧或尾部冻结。当前 CLEAR comparison 时长偏短，需要特别检查尾部。</div>
-      <div class="note"><b>可发布性</b>优先选择没有尾部停顿、商品边缘不变形、字幕区域不吸睛的方法；速度只在质量过线后排序。</div>
+      <div class="note"><b>可发布性</b>优先选择没有尾部停顿、商品边缘不变形、字幕区域不吸睛的方法；EraserDiT 要额外观察大 mask 下是否重绘出异常纹理或文字形变。</div>
     </div>
 
+      <section class="method" id="eraserdit">
+        <div class="method-head">
+          <div>
+            <p class="eyebrow">Method</p>
+            <h2>EraserDiT</h2>
+          </div>
+          <div class="score">RTF 14.2x · inpaint-only</div>
+        </div>
+        <div class="metric-grid small">
+          <div><span>Inpaint wall time</span><strong>14m 4.7s</strong></div>
+          <div><span>Seconds / frame</span><strong>0.54</strong></div>
+          <div><span>Frames</span><strong>1575</strong></div>
+          <div><span>Video time</span><strong>59.5s</strong></div>
+        </div>
+        <p class="method-note"><b>Quality read:</b> 三条素材均能保持原始时长和帧数，字幕/水印区域清除速度明显快；对低分辨率 540x960 素材尤其快。<b>Risk:</b> 该数据只包含 EraserDiT inpainting，不含 OCR/mask 生成；大面积 mask 或贴近包装文字的位置可能出现重绘纹理、文字扭曲或局部发雾，需要逐段看右侧输出。</p>
+        <table>
+          <thead><tr><th>Video</th><th>Input</th><th>Frames</th><th>Duration</th><th>Inpaint wall time</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>Video 1</td><td>720x1280 · 30fps</td><td>528</td><td>17.6s</td><td>406.616s</td><td>使用 diffueraser_results/input.mp4 + mask.mp4</td></tr>
+            <tr><td>Video 2</td><td>540x960 · 25fps</td><td>384</td><td>15.4s</td><td>179.464s</td><td>从已有 mask PNG 重建 mask.mp4 后运行</td></tr>
+            <tr><td>Video 3</td><td>540x960 · 25fps</td><td>663</td><td>26.5s</td><td>258.618s</td><td>使用 diffueraser_results/input.mp4 + mask.mp4</td></tr>
+          </tbody>
+        </table>
+        <div class="videos">
+
+          <article class="video-card">
+            <div class="video-title"><span>Video 1</span><em>1440x1280 · 17.6s · aligned</em></div>
+            <video controls preload="metadata" playsinline src="assets/eraserdit_video_1_side_by_side.mp4"></video>
+          </article>
+
+          <article class="video-card">
+            <div class="video-title"><span>Video 2</span><em>1080x960 · 15.4s · aligned</em></div>
+            <video controls preload="metadata" playsinline src="assets/eraserdit_video_2_side_by_side.mp4"></video>
+          </article>
+
+          <article class="video-card">
+            <div class="video-title"><span>Video 3</span><em>1080x960 · 26.5s · aligned</em></div>
+            <video controls preload="metadata" playsinline src="assets/eraserdit_video_3_side_by_side.mp4"></video>
+          </article>
+
+        </div>
+      </section>
 
       <section class="method" id="lama">
         <div class="method-head">
