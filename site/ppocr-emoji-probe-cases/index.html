@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PP-OCRv6 Emoji Probe Cases</title>
+  <style>
+    body { margin: 0; font-family: Arial, "Microsoft YaHei", sans-serif; background: #f5f7fa; color: #17202a; }
+    header { padding: 28px 32px 18px; background: #fff; border-bottom: 1px solid #d7dee8; }
+    main { max-width: 1440px; margin: 0 auto; padding: 24px 32px 40px; }
+    h1 { margin: 0 0 10px; font-size: 24px; }
+    h2 { margin: 26px 0 12px; font-size: 18px; }
+    p { color: #5f6b7a; line-height: 1.6; }
+    table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #d7dee8; }
+    th, td { padding: 10px 12px; border-bottom: 1px solid #d7dee8; text-align: left; font-size: 14px; }
+    th { background: #eef2f7; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; }
+    .card { background: #fff; border: 1px solid #d7dee8; border-radius: 8px; overflow: hidden; }
+    .wrap { position: relative; background: #111; }
+    img { display: block; width: 100%; }
+    .tag { position: absolute; left: 10px; top: 10px; padding: 6px 8px; border-radius: 6px; background: rgba(10,16,24,.82); color: #fff; font-size: 12px; }
+    .body { padding: 10px 12px 12px; }
+    .label { color: #5f6b7a; font-size: 12px; overflow-wrap: anywhere; }
+    .stats { margin-top: 6px; font-size: 13px; }
+    .gt { color: #35a853; font-weight: 700; }
+    .cont { color: #ff7a1a; font-weight: 700; }
+    .pre { color: #2094ff; font-weight: 700; }
+    code { background: #eef2f7; padding: 2px 4px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>PP-OCRv6 Emoji Probe Cases</h1>
+    <p>从 <code>public_datasets/emoji-data/img-apple-160</code> 抽取 emoji PNG，贴到 736x1312 竖版画布上，测试两个 PP-OCRv6 overlay 模型是否能把 emoji overlay 框出来。<span class="gt">绿色=贴图 GT</span>，<span class="cont">橙色=continue-v2 best</span>，<span class="pre">蓝色=from-pretrained best</span>。</p>
+  </header>
+  <main>
+    <h2>汇总</h2>
+    <table>
+      <thead><tr><th>Model</th><th>Cases</th><th>GT boxes</th><th>Pred boxes</th><th>TP</th><th>FP</th><th>FN</th><th>Precision</th><th>Recall</th><th>Hmean</th></tr></thead>
+      <tbody>
+        <tr><td>continue-v2 best</td><td>40</td><td>68</td><td>74</td><td>31</td><td>43</td><td>37</td><td>41.89%</td><td>45.59%</td><td>43.66%</td></tr>
+        <tr><td>from-pretrained best</td><td>40</td><td>68</td><td>62</td><td>12</td><td>50</td><td>56</td><td>19.35%</td><td>17.65%</td><td>18.46%</td></tr>
+      </tbody>
+    </table>
+    <p>匹配口径：GT emoji 框与预测四边形 polygon IoU >= 0.50 记为 TP。这个 probe 不是业务 benchmark，只用于观察模型对独立 emoji/sticker 形态的召回倾向。</p>
+    <h2>Cases</h2>
+    <div class="grid">
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_001.jpg" alt="grinning">
+                <div class="tag">#001 · GT 1 · Continue 2 · From-pretrained 2</div>
+              </div>
+              <div class="body">
+                <div class="label">grinning</div>
+                <div class="stats cont">Continue boxes 2 · TP 1 · FP 1 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 2 · TP 1 · FP 1 · FN 0</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_002.jpg" alt="joy">
+                <div class="tag">#002 · GT 1 · Continue 2 · From-pretrained 2</div>
+              </div>
+              <div class="body">
+                <div class="label">joy</div>
+                <div class="stats cont">Continue boxes 2 · TP 1 · FP 1 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 2 · TP 1 · FP 1 · FN 0</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_003.jpg" alt="heart_eyes">
+                <div class="tag">#003 · GT 1 · Continue 2 · From-pretrained 2</div>
+              </div>
+              <div class="body">
+                <div class="label">heart_eyes</div>
+                <div class="stats cont">Continue boxes 2 · TP 1 · FP 1 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 2 · TP 1 · FP 1 · FN 0</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_004.jpg" alt="sunglasses">
+                <div class="tag">#004 · GT 1 · Continue 2 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">sunglasses</div>
+                <div class="stats cont">Continue boxes 2 · TP 1 · FP 1 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 0 · FP 1 · FN 1</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_005.jpg" alt="sob">
+                <div class="tag">#005 · GT 1 · Continue 1 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">sob</div>
+                <div class="stats cont">Continue boxes 1 · TP 0 · FP 1 · FN 1</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 0 · FP 1 · FN 1</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_006.jpg" alt="thinking_face">
+                <div class="tag">#006 · GT 1 · Continue 2 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">thinking_face</div>
+                <div class="stats cont">Continue boxes 2 · TP 1 · FP 1 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 0 · FP 1 · FN 1</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_007.jpg" alt="fire">
+                <div class="tag">#007 · GT 1 · Continue 1 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">fire</div>
+                <div class="stats cont">Continue boxes 1 · TP 0 · FP 1 · FN 1</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 0 · FP 1 · FN 1</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_008.jpg" alt="sparkles">
+                <div class="tag">#008 · GT 1 · Continue 1 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">sparkles</div>
+                <div class="stats cont">Continue boxes 1 · TP 0 · FP 1 · FN 1</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 0 · FP 1 · FN 1</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_009.jpg" alt="heart">
+                <div class="tag">#009 · GT 1 · Continue 1 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">heart</div>
+                <div class="stats cont">Continue boxes 1 · TP 0 · FP 1 · FN 1</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 0 · FP 1 · FN 1</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_010.jpg" alt="clap">
+                <div class="tag">#010 · GT 1 · Continue 3 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">clap</div>
+                <div class="stats cont">Continue boxes 3 · TP 1 · FP 2 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 0 · FP 1 · FN 1</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_011.jpg" alt="ok_hand">
+                <div class="tag">#011 · GT 1 · Continue 2 · From-pretrained 2</div>
+              </div>
+              <div class="body">
+                <div class="label">ok_hand</div>
+                <div class="stats cont">Continue boxes 2 · TP 1 · FP 1 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 2 · TP 1 · FP 1 · FN 0</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_012.jpg" alt="eyes">
+                <div class="tag">#012 · GT 1 · Continue 2 · From-pretrained 2</div>
+              </div>
+              <div class="body">
+                <div class="label">eyes</div>
+                <div class="stats cont">Continue boxes 2 · TP 1 · FP 1 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 2 · TP 1 · FP 1 · FN 0</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_013.jpg" alt="star">
+                <div class="tag">#013 · GT 1 · Continue 1 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">star</div>
+                <div class="stats cont">Continue boxes 1 · TP 0 · FP 1 · FN 1</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 0 · FP 1 · FN 1</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_014.jpg" alt="warning">
+                <div class="tag">#014 · GT 1 · Continue 1 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">warning</div>
+                <div class="stats cont">Continue boxes 1 · TP 0 · FP 1 · FN 1</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 0 · FP 1 · FN 1</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_015.jpg" alt="shopping_bags">
+                <div class="tag">#015 · GT 1 · Continue 2 · From-pretrained 2</div>
+              </div>
+              <div class="body">
+                <div class="label">shopping_bags</div>
+                <div class="stats cont">Continue boxes 2 · TP 1 · FP 1 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 2 · TP 1 · FP 1 · FN 0</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_016.jpg" alt="gift">
+                <div class="tag">#016 · GT 1 · Continue 2 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">gift</div>
+                <div class="stats cont">Continue boxes 2 · TP 1 · FP 1 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 0 · FP 1 · FN 1</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_017.jpg" alt="moneybag">
+                <div class="tag">#017 · GT 1 · Continue 1 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">moneybag</div>
+                <div class="stats cont">Continue boxes 1 · TP 0 · FP 1 · FN 1</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 0 · FP 1 · FN 1</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_018.jpg" alt="crown">
+                <div class="tag">#018 · GT 1 · Continue 2 · From-pretrained 2</div>
+              </div>
+              <div class="body">
+                <div class="label">crown</div>
+                <div class="stats cont">Continue boxes 2 · TP 1 · FP 1 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 2 · TP 1 · FP 1 · FN 0</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_019.jpg" alt="tada">
+                <div class="tag">#019 · GT 1 · Continue 2 · From-pretrained 2</div>
+              </div>
+              <div class="body">
+                <div class="label">tada</div>
+                <div class="stats cont">Continue boxes 2 · TP 1 · FP 1 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 2 · TP 0 · FP 2 · FN 1</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_020.jpg" alt="100">
+                <div class="tag">#020 · GT 1 · Continue 2 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">100</div>
+                <div class="stats cont">Continue boxes 2 · TP 1 · FP 1 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 0 · FP 1 · FN 1</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_021.jpg" alt="rocket, face_with_hand_over_mouth, heavy_check_mark">
+                <div class="tag">#021 · GT 3 · Continue 3 · From-pretrained 2</div>
+              </div>
+              <div class="body">
+                <div class="label">rocket, face_with_hand_over_mouth, heavy_check_mark</div>
+                <div class="stats cont">Continue boxes 3 · TP 2 · FP 1 · FN 1</div>
+                <div class="stats pre">From-pretrained boxes 2 · TP 0 · FP 2 · FN 3</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_022.jpg" alt="zap, rolling_on_the_floor_laughing, heavy_multiplication_x">
+                <div class="tag">#022 · GT 3 · Continue 2 · From-pretrained 2</div>
+              </div>
+              <div class="body">
+                <div class="label">zap, rolling_on_the_floor_laughing, heavy_multiplication_x</div>
+                <div class="stats cont">Continue boxes 2 · TP 1 · FP 1 · FN 2</div>
+                <div class="stats pre">From-pretrained boxes 2 · TP 1 · FP 1 · FN 2</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_023.jpg" alt="point_right, red_circle">
+                <div class="tag">#023 · GT 2 · Continue 3 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">point_right, red_circle</div>
+                <div class="stats cont">Continue boxes 3 · TP 1 · FP 2 · FN 1</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 0 · FP 1 · FN 2</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_024.jpg" alt="point_down, large_yellow_circle">
+                <div class="tag">#024 · GT 2 · Continue 1 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">point_down, large_yellow_circle</div>
+                <div class="stats cont">Continue boxes 1 · TP 0 · FP 1 · FN 2</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 0 · FP 1 · FN 2</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_025.jpg" alt="smiling_face_with_3_hearts, checkered_flag">
+                <div class="tag">#025 · GT 2 · Continue 3 · From-pretrained 7</div>
+              </div>
+              <div class="body">
+                <div class="label">smiling_face_with_3_hearts, checkered_flag</div>
+                <div class="stats cont">Continue boxes 3 · TP 1 · FP 2 · FN 1</div>
+                <div class="stats pre">From-pretrained boxes 7 · TP 0 · FP 7 · FN 2</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_026.jpg" alt="partying_face, white_check_mark">
+                <div class="tag">#026 · GT 2 · Continue 2 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">partying_face, white_check_mark</div>
+                <div class="stats cont">Continue boxes 2 · TP 1 · FP 1 · FN 1</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 0 · FP 1 · FN 2</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_027.jpg" alt="pleading_face, x">
+                <div class="tag">#027 · GT 2 · Continue 1 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">pleading_face, x</div>
+                <div class="stats cont">Continue boxes 1 · TP 0 · FP 1 · FN 2</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 0 · FP 1 · FN 2</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_028.jpg" alt="face_with_hand_over_mouth, heavy_check_mark">
+                <div class="tag">#028 · GT 2 · Continue 2 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">face_with_hand_over_mouth, heavy_check_mark</div>
+                <div class="stats cont">Continue boxes 2 · TP 1 · FP 1 · FN 1</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 0 · FP 1 · FN 2</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_029.jpg" alt="rolling_on_the_floor_laughing, heavy_multiplication_x, two">
+                <div class="tag">#029 · GT 3 · Continue 1 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">rolling_on_the_floor_laughing, heavy_multiplication_x, two</div>
+                <div class="stats cont">Continue boxes 1 · TP 0 · FP 1 · FN 3</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 0 · FP 1 · FN 3</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_030.jpg" alt="red_circle, exclamation, three">
+                <div class="tag">#030 · GT 3 · Continue 2 · From-pretrained 2</div>
+              </div>
+              <div class="body">
+                <div class="label">red_circle, exclamation, three</div>
+                <div class="stats cont">Continue boxes 2 · TP 1 · FP 1 · FN 2</div>
+                <div class="stats pre">From-pretrained boxes 2 · TP 1 · FP 1 · FN 2</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_031.jpg" alt="large_yellow_circle, question, four">
+                <div class="tag">#031 · GT 3 · Continue 3 · From-pretrained 2</div>
+              </div>
+              <div class="body">
+                <div class="label">large_yellow_circle, question, four</div>
+                <div class="stats cont">Continue boxes 3 · TP 2 · FP 1 · FN 1</div>
+                <div class="stats pre">From-pretrained boxes 2 · TP 0 · FP 2 · FN 3</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_032.jpg" alt="checkered_flag, hash, five">
+                <div class="tag">#032 · GT 3 · Continue 2 · From-pretrained 2</div>
+              </div>
+              <div class="body">
+                <div class="label">checkered_flag, hash, five</div>
+                <div class="stats cont">Continue boxes 2 · TP 1 · FP 1 · FN 2</div>
+                <div class="stats pre">From-pretrained boxes 2 · TP 1 · FP 1 · FN 2</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_033.jpg" alt="white_check_mark, keycap_star">
+                <div class="tag">#033 · GT 2 · Continue 2 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">white_check_mark, keycap_star</div>
+                <div class="stats cont">Continue boxes 2 · TP 1 · FP 1 · FN 1</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 0 · FP 1 · FN 2</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_034.jpg" alt="x, zero">
+                <div class="tag">#034 · GT 2 · Continue 1 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">x, zero</div>
+                <div class="stats cont">Continue boxes 1 · TP 0 · FP 1 · FN 2</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 0 · FP 1 · FN 2</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_035.jpg" alt="heavy_check_mark, one">
+                <div class="tag">#035 · GT 2 · Continue 2 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">heavy_check_mark, one</div>
+                <div class="stats cont">Continue boxes 2 · TP 1 · FP 1 · FN 1</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 0 · FP 1 · FN 2</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_036.jpg" alt="heavy_multiplication_x, two">
+                <div class="tag">#036 · GT 2 · Continue 2 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">heavy_multiplication_x, two</div>
+                <div class="stats cont">Continue boxes 2 · TP 1 · FP 1 · FN 1</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 0 · FP 1 · FN 2</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_037.jpg" alt="exclamation, three">
+                <div class="tag">#037 · GT 2 · Continue 2 · From-pretrained 3</div>
+              </div>
+              <div class="body">
+                <div class="label">exclamation, three</div>
+                <div class="stats cont">Continue boxes 2 · TP 1 · FP 1 · FN 1</div>
+                <div class="stats pre">From-pretrained boxes 3 · TP 1 · FP 2 · FN 1</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_038.jpg" alt="question, four, registered">
+                <div class="tag">#038 · GT 3 · Continue 1 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">question, four, registered</div>
+                <div class="stats cont">Continue boxes 1 · TP 0 · FP 1 · FN 3</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 0 · FP 1 · FN 3</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_039.jpg" alt="hash, five">
+                <div class="tag">#039 · GT 2 · Continue 2 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">hash, five</div>
+                <div class="stats cont">Continue boxes 2 · TP 1 · FP 1 · FN 1</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 0 · FP 1 · FN 2</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/emoji_case_040.jpg" alt="keycap_star, six, black_joker">
+                <div class="tag">#040 · GT 3 · Continue 3 · From-pretrained 2</div>
+              </div>
+              <div class="body">
+                <div class="label">keycap_star, six, black_joker</div>
+                <div class="stats cont">Continue boxes 3 · TP 2 · FP 1 · FN 1</div>
+                <div class="stats pre">From-pretrained boxes 2 · TP 1 · FP 1 · FN 2</div>
+              </div>
+            </article>
+            </div>
+  </main>
+</body>
+</html>
