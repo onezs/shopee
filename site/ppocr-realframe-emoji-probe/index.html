@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PP-OCRv6 Real-frame Emoji Probe</title>
+  <style>
+    body { margin: 0; font-family: Arial, "Microsoft YaHei", sans-serif; background: #f5f7fa; color: #17202a; }
+    header { padding: 28px 32px 18px; background: #fff; border-bottom: 1px solid #d7dee8; }
+    main { max-width: 1440px; margin: 0 auto; padding: 24px 32px 40px; }
+    h1 { margin: 0 0 10px; font-size: 24px; }
+    h2 { margin: 26px 0 12px; font-size: 18px; }
+    p { color: #5f6b7a; line-height: 1.6; }
+    table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #d7dee8; }
+    th, td { padding: 10px 12px; border-bottom: 1px solid #d7dee8; text-align: left; font-size: 14px; }
+    th { background: #eef2f7; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; }
+    .card { background: #fff; border: 1px solid #d7dee8; border-radius: 8px; overflow: hidden; }
+    .wrap { position: relative; background: #111; }
+    img { display: block; width: 100%; }
+    .tag { position: absolute; left: 10px; top: 10px; padding: 6px 8px; border-radius: 6px; background: rgba(10,16,24,.82); color: #fff; font-size: 12px; }
+    .body { padding: 10px 12px 12px; }
+    .label, .bg { color: #5f6b7a; font-size: 12px; overflow-wrap: anywhere; }
+    .stats { margin-top: 6px; font-size: 13px; }
+    .gt { color: #35a853; font-weight: 700; }
+    .cont { color: #ff7a1a; font-weight: 700; }
+    .pre { color: #2094ff; font-weight: 700; }
+    code { background: #eef2f7; padding: 2px 4px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>PP-OCRv6 Real-frame Emoji Probe</h1>
+    <p>从 <code>benchmark/frames/clean</code> 抽真实业务帧作为背景，程序化贴 Apple emoji PNG，测试两个 PP-OCRv6 overlay 模型对真实背景 emoji/sticker 的召回。<span class="gt">绿色=合成 GT</span>，<span class="cont">橙色=continue-v2 best</span>，<span class="pre">蓝色=from-pretrained best</span>。</p>
+  </header>
+  <main>
+    <h2>汇总</h2>
+    <table>
+      <thead><tr><th>Model</th><th>Cases</th><th>GT boxes</th><th>Pred boxes</th><th>TP</th><th>FP</th><th>FN</th><th>Precision</th><th>Recall</th><th>Hmean</th></tr></thead>
+      <tbody><tr><td>continue_v2</td><td>40</td><td>75</td><td>73</td><td>59</td><td>14</td><td>16</td><td>80.82%</td><td>78.67%</td><td>79.73%</td></tr>
+<tr><td>from_pretrained</td><td>40</td><td>75</td><td>50</td><td>37</td><td>13</td><td>38</td><td>74.00%</td><td>49.33%</td><td>59.20%</td></tr></tbody>
+    </table>
+    <p>匹配口径：GT emoji 框与预测四边形 polygon IoU >= 0.50 记为 TP。该 probe 使用 clean 真实帧背景，只衡量合成 emoji 的匹配；背景中的 native/商品文字若被预测，会计入 FP。</p>
+    <h2>Cases</h2>
+    <div class="grid">
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_001.jpg" alt="heart, zap">
+                <div class="tag">#001 · GT 2 · Continue 2 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">heart, zap</div>
+                <div class="stats cont">Continue boxes 2 · TP 2 · FP 0 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 1 · FP 0 · FN 1</div>
+                <div class="bg">bg: benchmark/frames/clean/video_087/scene_0002_frame_000033.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_002.jpg" alt="gift, red_circle">
+                <div class="tag">#002 · GT 2 · Continue 1 · From-pretrained 0</div>
+              </div>
+              <div class="body">
+                <div class="label">gift, red_circle</div>
+                <div class="stats cont">Continue boxes 1 · TP 1 · FP 0 · FN 1</div>
+                <div class="stats pre">From-pretrained boxes 0 · TP 0 · FP 0 · FN 2</div>
+                <div class="bg">bg: benchmark/frames/clean/video_008/scene_0010_frame_000420.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_003.jpg" alt="rocket, keycap_star, copyright">
+                <div class="tag">#003 · GT 3 · Continue 3 · From-pretrained 3</div>
+              </div>
+              <div class="body">
+                <div class="label">rocket, keycap_star, copyright</div>
+                <div class="stats cont">Continue boxes 3 · TP 3 · FP 0 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 3 · TP 2 · FP 1 · FN 1</div>
+                <div class="bg">bg: benchmark/frames/clean/video_005/scene_0004_frame_000459.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_004.jpg" alt="pleading_face, four">
+                <div class="tag">#004 · GT 2 · Continue 0 · From-pretrained 0</div>
+              </div>
+              <div class="body">
+                <div class="label">pleading_face, four</div>
+                <div class="stats cont">Continue boxes 0 · TP 0 · FP 0 · FN 2</div>
+                <div class="stats pre">From-pretrained boxes 0 · TP 0 · FP 0 · FN 2</div>
+                <div class="bg">bg: benchmark/frames/clean/video_002/scene_0009_frame_000401.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_005.jpg" alt="hash, nine, cool">
+                <div class="tag">#005 · GT 3 · Continue 3 · From-pretrained 3</div>
+              </div>
+              <div class="body">
+                <div class="label">hash, nine, cool</div>
+                <div class="stats cont">Continue boxes 3 · TP 3 · FP 0 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 3 · TP 2 · FP 1 · FN 1</div>
+                <div class="bg">bg: benchmark/frames/clean/video_007/scene_0006_frame_000386.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_006.jpg" alt="three, a">
+                <div class="tag">#006 · GT 2 · Continue 2 · From-pretrained 2</div>
+              </div>
+              <div class="body">
+                <div class="label">three, a</div>
+                <div class="stats cont">Continue boxes 2 · TP 2 · FP 0 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 2 · TP 2 · FP 0 · FN 0</div>
+                <div class="bg">bg: benchmark/frames/clean/video_073/scene_0020_frame_001348.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_007.jpg" alt="eight, cl, flag-ad">
+                <div class="tag">#007 · GT 3 · Continue 3 · From-pretrained 3</div>
+              </div>
+              <div class="body">
+                <div class="label">eight, cl, flag-ad</div>
+                <div class="stats cont">Continue boxes 3 · TP 3 · FP 0 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 3 · TP 2 · FP 1 · FN 1</div>
+                <div class="bg">bg: benchmark/frames/clean/video_008/scene_0021_frame_000779.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_008.jpg" alt="black_joker, ng">
+                <div class="tag">#008 · GT 2 · Continue 2 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">black_joker, ng</div>
+                <div class="stats cont">Continue boxes 2 · TP 1 · FP 1 · FN 1</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 1 · FP 0 · FN 1</div>
+                <div class="bg">bg: benchmark/frames/clean/video_019/scene_0008_frame_000456.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_009.jpg" alt="ab">
+                <div class="tag">#009 · GT 1 · Continue 1 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">ab</div>
+                <div class="stats cont">Continue boxes 1 · TP 1 · FP 0 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 1 · FP 0 · FN 0</div>
+                <div class="bg">bg: benchmark/frames/clean/video_076/scene_0008_frame_000525.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_010.jpg" alt="new, flag-ai">
+                <div class="tag">#010 · GT 2 · Continue 2 · From-pretrained 2</div>
+              </div>
+              <div class="body">
+                <div class="label">new, flag-ai</div>
+                <div class="stats cont">Continue boxes 2 · TP 1 · FP 1 · FN 1</div>
+                <div class="stats pre">From-pretrained boxes 2 · TP 1 · FP 1 · FN 1</div>
+                <div class="bg">bg: benchmark/frames/clean/video_005/scene_0003_frame_000410.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_011.jpg" alt="vs, flag-ar, flag-bf">
+                <div class="tag">#011 · GT 3 · Continue 3 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">vs, flag-ar, flag-bf</div>
+                <div class="stats cont">Continue boxes 3 · TP 3 · FP 0 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 1 · FP 0 · FN 2</div>
+                <div class="bg">bg: benchmark/frames/clean/video_019/scene_0003_frame_000082.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_012.jpg" alt="flag-ag">
+                <div class="tag">#012 · GT 1 · Continue 1 · From-pretrained 0</div>
+              </div>
+              <div class="body">
+                <div class="label">flag-ag</div>
+                <div class="stats cont">Continue boxes 1 · TP 1 · FP 0 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 0 · TP 0 · FP 0 · FN 1</div>
+                <div class="bg">bg: benchmark/frames/clean/video_008/scene_0014_frame_000565.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_013.jpg" alt="flag-aq, flag-be">
+                <div class="tag">#013 · GT 2 · Continue 2 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">flag-aq, flag-be</div>
+                <div class="stats cont">Continue boxes 2 · TP 2 · FP 0 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 0 · FP 1 · FN 2</div>
+                <div class="bg">bg: benchmark/frames/clean/video_005/scene_0004_frame_000447.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_014.jpg" alt="flag-aw">
+                <div class="tag">#014 · GT 1 · Continue 1 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">flag-aw</div>
+                <div class="stats cont">Continue boxes 1 · TP 1 · FP 0 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 1 · FP 0 · FN 0</div>
+                <div class="bg">bg: benchmark/frames/clean/video_079/scene_0008_frame_000278.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_015.jpg" alt="flag-bd, clap">
+                <div class="tag">#015 · GT 2 · Continue 2 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">flag-bd, clap</div>
+                <div class="stats cont">Continue boxes 2 · TP 1 · FP 1 · FN 1</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 1 · FP 0 · FN 1</div>
+                <div class="bg">bg: benchmark/frames/clean/video_007/scene_0005_frame_000362.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_016.jpg" alt="joy">
+                <div class="tag">#016 · GT 1 · Continue 1 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">joy</div>
+                <div class="stats cont">Continue boxes 1 · TP 1 · FP 0 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 1 · FP 0 · FN 0</div>
+                <div class="bg">bg: benchmark/frames/clean/video_032/scene_0002_frame_000087.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_017.jpg" alt="heart">
+                <div class="tag">#017 · GT 1 · Continue 1 · From-pretrained 0</div>
+              </div>
+              <div class="body">
+                <div class="label">heart</div>
+                <div class="stats cont">Continue boxes 1 · TP 1 · FP 0 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 0 · TP 0 · FP 0 · FN 1</div>
+                <div class="bg">bg: benchmark/frames/clean/video_088/scene_0005_frame_000309.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_018.jpg" alt="gift">
+                <div class="tag">#018 · GT 1 · Continue 0 · From-pretrained 0</div>
+              </div>
+              <div class="body">
+                <div class="label">gift</div>
+                <div class="stats cont">Continue boxes 0 · TP 0 · FP 0 · FN 1</div>
+                <div class="stats pre">From-pretrained boxes 0 · TP 0 · FP 0 · FN 1</div>
+                <div class="bg">bg: benchmark/frames/clean/video_079/scene_0006_frame_000193.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_019.jpg" alt="rocket, keycap_star">
+                <div class="tag">#019 · GT 2 · Continue 2 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">rocket, keycap_star</div>
+                <div class="stats cont">Continue boxes 2 · TP 1 · FP 1 · FN 1</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 1 · FP 0 · FN 1</div>
+                <div class="bg">bg: benchmark/frames/clean/video_068/scene_0002_frame_000035.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_020.jpg" alt="pleading_face, four, b">
+                <div class="tag">#020 · GT 3 · Continue 2 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">pleading_face, four, b</div>
+                <div class="stats cont">Continue boxes 2 · TP 2 · FP 0 · FN 1</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 1 · FP 0 · FN 2</div>
+                <div class="bg">bg: benchmark/frames/clean/video_019/scene_0004_frame_000127.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_021.jpg" alt="hash, nine">
+                <div class="tag">#021 · GT 2 · Continue 2 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">hash, nine</div>
+                <div class="stats cont">Continue boxes 2 · TP 2 · FP 0 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 1 · FP 0 · FN 1</div>
+                <div class="bg">bg: benchmark/frames/clean/video_087/scene_0003_frame_000070.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_022.jpg" alt="three, a">
+                <div class="tag">#022 · GT 2 · Continue 4 · From-pretrained 2</div>
+              </div>
+              <div class="body">
+                <div class="label">three, a</div>
+                <div class="stats cont">Continue boxes 4 · TP 2 · FP 2 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 2 · TP 1 · FP 1 · FN 1</div>
+                <div class="bg">bg: benchmark/frames/clean/video_079/scene_0005_frame_000161.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_023.jpg" alt="eight">
+                <div class="tag">#023 · GT 1 · Continue 2 · From-pretrained 0</div>
+              </div>
+              <div class="body">
+                <div class="label">eight</div>
+                <div class="stats cont">Continue boxes 2 · TP 0 · FP 2 · FN 1</div>
+                <div class="stats pre">From-pretrained boxes 0 · TP 0 · FP 0 · FN 1</div>
+                <div class="bg">bg: benchmark/frames/clean/video_032/scene_0002_frame_000124.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_024.jpg" alt="black_joker">
+                <div class="tag">#024 · GT 1 · Continue 1 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">black_joker</div>
+                <div class="stats cont">Continue boxes 1 · TP 1 · FP 0 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 1 · FP 0 · FN 0</div>
+                <div class="bg">bg: benchmark/frames/clean/video_040/scene_0001_frame_000036.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_025.jpg" alt="ab">
+                <div class="tag">#025 · GT 1 · Continue 1 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">ab</div>
+                <div class="stats cont">Continue boxes 1 · TP 1 · FP 0 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 1 · FP 0 · FN 0</div>
+                <div class="bg">bg: benchmark/frames/clean/video_019/scene_0008_frame_000473.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_026.jpg" alt="new">
+                <div class="tag">#026 · GT 1 · Continue 1 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">new</div>
+                <div class="stats cont">Continue boxes 1 · TP 1 · FP 0 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 1 · FP 0 · FN 0</div>
+                <div class="bg">bg: benchmark/frames/clean/video_027/scene_0004_frame_000179.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_027.jpg" alt="vs, flag-ar, flag-bf">
+                <div class="tag">#027 · GT 3 · Continue 3 · From-pretrained 3</div>
+              </div>
+              <div class="body">
+                <div class="label">vs, flag-ar, flag-bf</div>
+                <div class="stats cont">Continue boxes 3 · TP 2 · FP 1 · FN 1</div>
+                <div class="stats pre">From-pretrained boxes 3 · TP 1 · FP 2 · FN 2</div>
+                <div class="bg">bg: benchmark/frames/clean/video_032/scene_0003_frame_000162.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_028.jpg" alt="flag-ag">
+                <div class="tag">#028 · GT 1 · Continue 1 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">flag-ag</div>
+                <div class="stats cont">Continue boxes 1 · TP 1 · FP 0 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 1 · FP 0 · FN 0</div>
+                <div class="bg">bg: benchmark/frames/clean/video_007/scene_0005_frame_000312.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_029.jpg" alt="flag-aq, flag-be">
+                <div class="tag">#029 · GT 2 · Continue 2 · From-pretrained 2</div>
+              </div>
+              <div class="body">
+                <div class="label">flag-aq, flag-be</div>
+                <div class="stats cont">Continue boxes 2 · TP 2 · FP 0 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 2 · TP 2 · FP 0 · FN 0</div>
+                <div class="bg">bg: benchmark/frames/clean/video_077/scene_0002_frame_000501.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_030.jpg" alt="flag-aw, heart_eyes">
+                <div class="tag">#030 · GT 2 · Continue 2 · From-pretrained 2</div>
+              </div>
+              <div class="body">
+                <div class="label">flag-aw, heart_eyes</div>
+                <div class="stats cont">Continue boxes 2 · TP 2 · FP 0 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 2 · TP 1 · FP 1 · FN 1</div>
+                <div class="bg">bg: benchmark/frames/clean/video_005/scene_0006_frame_000556.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_031.jpg" alt="flag-bd, clap, point_right">
+                <div class="tag">#031 · GT 3 · Continue 3 · From-pretrained 3</div>
+              </div>
+              <div class="body">
+                <div class="label">flag-bd, clap, point_right</div>
+                <div class="stats cont">Continue boxes 3 · TP 3 · FP 0 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 3 · TP 3 · FP 0 · FN 0</div>
+                <div class="bg">bg: benchmark/frames/clean/video_027/scene_0003_frame_000095.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_032.jpg" alt="joy, moneybag">
+                <div class="tag">#032 · GT 2 · Continue 2 · From-pretrained 2</div>
+              </div>
+              <div class="body">
+                <div class="label">joy, moneybag</div>
+                <div class="stats cont">Continue boxes 2 · TP 2 · FP 0 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 2 · TP 1 · FP 1 · FN 1</div>
+                <div class="bg">bg: benchmark/frames/clean/video_087/scene_0006_frame_000221.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_033.jpg" alt="heart, zap, zero">
+                <div class="tag">#033 · GT 3 · Continue 1 · From-pretrained 0</div>
+              </div>
+              <div class="body">
+                <div class="label">heart, zap, zero</div>
+                <div class="stats cont">Continue boxes 1 · TP 1 · FP 0 · FN 2</div>
+                <div class="stats pre">From-pretrained boxes 0 · TP 0 · FP 0 · FN 3</div>
+                <div class="bg">bg: benchmark/frames/clean/video_040/scene_0002_frame_000096.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_034.jpg" alt="gift, red_circle">
+                <div class="tag">#034 · GT 2 · Continue 2 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">gift, red_circle</div>
+                <div class="stats cont">Continue boxes 2 · TP 2 · FP 0 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 1 · FP 0 · FN 1</div>
+                <div class="bg">bg: benchmark/frames/clean/video_076/scene_0004_frame_000290.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_035.jpg" alt="rocket, keycap_star, copyright">
+                <div class="tag">#035 · GT 3 · Continue 2 · From-pretrained 2</div>
+              </div>
+              <div class="body">
+                <div class="label">rocket, keycap_star, copyright</div>
+                <div class="stats cont">Continue boxes 2 · TP 2 · FP 0 · FN 1</div>
+                <div class="stats pre">From-pretrained boxes 2 · TP 1 · FP 1 · FN 2</div>
+                <div class="bg">bg: benchmark/frames/clean/video_058/scene_0001_frame_000218.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_036.jpg" alt="pleading_face">
+                <div class="tag">#036 · GT 1 · Continue 1 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">pleading_face</div>
+                <div class="stats cont">Continue boxes 1 · TP 1 · FP 0 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 1 · FP 0 · FN 0</div>
+                <div class="bg">bg: benchmark/frames/clean/video_032/scene_0008_frame_000587.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_037.jpg" alt="hash, nine">
+                <div class="tag">#037 · GT 2 · Continue 1 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">hash, nine</div>
+                <div class="stats cont">Continue boxes 1 · TP 1 · FP 0 · FN 1</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 0 · FP 1 · FN 2</div>
+                <div class="bg">bg: benchmark/frames/clean/video_075/scene_0001_frame_000016.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_038.jpg" alt="three, a">
+                <div class="tag">#038 · GT 2 · Continue 3 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">three, a</div>
+                <div class="stats cont">Continue boxes 3 · TP 1 · FP 2 · FN 1</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 0 · FP 1 · FN 2</div>
+                <div class="bg">bg: benchmark/frames/clean/video_057/scene_0017_frame_000631.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_039.jpg" alt="eight">
+                <div class="tag">#039 · GT 1 · Continue 2 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">eight</div>
+                <div class="stats cont">Continue boxes 2 · TP 1 · FP 1 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 1 · FP 0 · FN 0</div>
+                <div class="bg">bg: benchmark/frames/clean/video_073/scene_0012_frame_000690.jpg</div>
+              </div>
+            </article>
+            
+            <article class="card">
+              <div class="wrap">
+                <img src="images/real_emoji_case_040.jpg" alt="black_joker">
+                <div class="tag">#040 · GT 1 · Continue 3 · From-pretrained 1</div>
+              </div>
+              <div class="body">
+                <div class="label">black_joker</div>
+                <div class="stats cont">Continue boxes 3 · TP 1 · FP 2 · FN 0</div>
+                <div class="stats pre">From-pretrained boxes 1 · TP 1 · FP 0 · FN 0</div>
+                <div class="bg">bg: benchmark/frames/clean/video_032/scene_0005_frame_000325.jpg</div>
+              </div>
+            </article>
+            </div>
+  </main>
+</body>
+</html>
