@@ -1,0 +1,1434 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>YOLO11m OBB Business 6k Test Report</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; color: #202124; background: #f6f7f9; }
+    header { padding: 28px 36px; background: #183642; color: white; }
+    header h1 { margin: 0 0 8px; font-size: 26px; font-weight: 700; letter-spacing: 0; }
+    header p { margin: 0; color: #dbe7eb; }
+    main { padding: 24px 36px 44px; max-width: 1440px; margin: 0 auto; }
+    section { margin: 0 0 28px; }
+    h2 { margin: 0 0 14px; font-size: 20px; }
+    .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+    .metric { background: white; border: 1px solid #d9dee3; border-radius: 6px; padding: 14px; }
+    .metric span { display: block; font-size: 13px; color: #5f6b76; }
+    .metric strong { display: block; margin-top: 6px; font-size: 24px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 16px; }
+    .panel, .case { background: white; border: 1px solid #d9dee3; border-radius: 6px; overflow: hidden; margin: 0; }
+    .panel img, .case img { width: 100%; display: block; }
+    .panel h3 { margin: 12px 14px; font-size: 15px; }
+    .case figcaption { display: grid; gap: 4px; padding: 10px 12px 12px; }
+    .case figcaption span { font-size: 12px; color: #59636e; overflow-wrap: anywhere; }
+    .case figcaption small { color: #59636e; }
+    .note { background: white; border-left: 4px solid #2d6cdf; padding: 12px 14px; }
+    .pregrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 16px; }
+    pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; background: #101820; color: #e8edf2; padding: 14px; border-radius: 6px; font-size: 12px; line-height: 1.45; }
+    code { background: #eceff3; padding: 2px 5px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>YOLO11m OBB Business 6k Test Report</h1>
+    <p>模型 <code>work/runs/obb/yolo11m_obb_business_6k_v1/weights/best.pt</code>，测试集 <code>test_business</code>，绿色为 GT，红色为预测。</p>
+  </header>
+  <main>
+    <section>
+      <h2>核心指标</h2>
+      <div class="metrics"><div class='metric'><span>Precision</span><strong>0.856</strong></div><div class='metric'><span>Recall</span><strong>0.883</strong></div><div class='metric'><span>mAP50</span><strong>0.889</strong></div><div class='metric'><span>mAP50-95</span><strong>0.556</strong></div><div class='metric'><span>Clean FP</span><strong>16/25</strong></div><div class='metric'><span>Positive no pred</span><strong>0/109</strong></div></div>
+    </section>
+    <section class="note">
+      <p>test_business 共 134 张图、188 个实例。独立测试 mAP50 为 0.889，低于 val_business 的 0.924，说明真实 held-out 视频上泛化有一定下降，后续应重点看漏检和 clean 误检。</p>
+    </section>
+    <section>
+      <h2>数据集与训练配置</h2>
+      <div class="pregrid">
+        <div><h3>数据集摘要</h3><pre>{
+  &quot;source&quot;: &quot;/home/work/opa_common/zhanghaoran/ft_ocr_v6/work/ppocr_business_train_clean_synth_6k_v1&quot;,
+  &quot;output&quot;: &quot;/home/work/opa_common/zhanghaoran/ft_yolo/work/yolo_business_train_clean_synth_6k_obb_v1&quot;,
+  &quot;task&quot;: &quot;yolo_obb&quot;,
+  &quot;class_names&quot;: {
+    &quot;0&quot;: &quot;removable_overlay&quot;
+  },
+  &quot;assume_size&quot;: null,
+  &quot;fixed_size_prefix&quot;: [
+    [
+      &quot;train/business_clean_synth&quot;,
+      &quot;736&quot;,
+      &quot;1312&quot;
+    ]
+  ],
+  &quot;splits&quot;: {
+    &quot;train&quot;: {
+      &quot;images&quot;: 6334,
+      &quot;positive_images&quot;: 5872,
+      &quot;negative_images&quot;: 462,
+      &quot;instances&quot;: 14623,
+      &quot;skipped_non_overlay&quot;: 0
+    },
+    &quot;val_business&quot;: {
+      &quot;images&quot;: 190,
+      &quot;positive_images&quot;: 91,
+      &quot;negative_images&quot;: 99,
+      &quot;instances&quot;: 182,
+      &quot;skipped_non_overlay&quot;: 0
+    },
+    &quot;test_business&quot;: {
+      &quot;images&quot;: 134,
+      &quot;positive_images&quot;: 109,
+      &quot;negative_images&quot;: 25,
+      &quot;instances&quot;: 188,
+      &quot;skipped_non_overlay&quot;: 0
+    }
+  }
+}</pre></div>
+        <div><h3>训练参数</h3><pre>task: obb
+mode: train
+model: yolo11m-obb.pt
+data: work/yolo_business_train_clean_synth_6k_obb_v1/removable_overlay.yaml
+epochs: 80
+time: null
+patience: 20
+batch: 4
+imgsz: 1280
+save: true
+save_period: -1
+cache: ram
+device: &#x27;0&#x27;
+workers: 4
+project: /home/work/opa_common/zhanghaoran/ft_yolo/work/runs/obb
+name: yolo11m_obb_business_6k_v1
+exist_ok: true
+pretrained: true
+optimizer: auto
+verbose: true
+seed: 0
+deterministic: true
+single_cls: false
+rect: false
+cos_lr: false
+close_mosaic: 10
+resume: false
+amp: true
+fraction: 1.0
+profile: false
+freeze: null
+multi_scale: 0.0
+compile: false
+overlap_mask: true
+mask_ratio: 4
+dropout: 0.0
+val: true
+split: val
+save_json: false
+conf: null
+iou: 0.7
+max_det: 300
+half: false
+dnn: false
+plots: true
+end2end: null
+source: null
+vid_stride: 1
+stream_buffer: false
+visualize: false
+augment: false
+agnostic_nms: false
+classes: null
+retina_masks: false
+embed: null
+show: false
+save_frames: false
+save_txt: false
+save_conf: false
+save_crop: false
+show_labels: true
+show_conf: true
+show_boxes: true
+line_width: null
+format: torchscript
+keras: false
+optimize: false
+int8: false
+dynamic: false
+simplify: true
+opset: null
+workspace: null
+nms: false
+lr0: 0.01
+lrf: 0.01
+momentum: 0.937
+weight_decay: 0.0005
+warmup_epochs: 3
+warmup_momentum: 0.8
+warmup_bias_lr: 0.1
+box: 7.5
+cls: 0.5
+cls_pw: 0.0
+dfl: 1.5
+pose: 12.0
+kobj: 1.0
+rle: 1.0
+angle: 1.0
+nbs: 64
+hsv_h: 0.015
+hsv_s: 0.7
+hsv_v: 0.4
+degrees: 0.0
+translate: 0.1
+scale: 0.5
+shear: 0.0
+perspective: 0.0
+flipud: 0.0
+fliplr: 0.5
+bgr: 0.0
+mosaic: 1.0
+mixup: 0.0
+cutmix: 0.0
+copy_paste: 0.0
+copy_paste_mode: flip
+auto_augment: randaugment
+erasing: 0.4
+cfg: null
+tracker: tracktrack.yaml
+save_dir: /home/work/opa_common/zhanghaoran/ft_yolo/work/runs/obb/yolo11m_obb_business_6k_v1
+</pre></div>
+        <div><h3>训练 YAML</h3><pre>path: /home/work/opa_common/zhanghaoran/ft_yolo/work/yolo_business_train_clean_synth_6k_obb_v1
+train: images/train
+val: images/val_business
+names:
+  0: removable_overlay
+</pre></div>
+        <div><h3>测试 YAML</h3><pre>path: /home/work/opa_common/zhanghaoran/ft_yolo/work/yolo_business_train_clean_synth_6k_obb_v1
+train: images/train
+val: images/test_business
+test: images/test_business
+names:
+  0: removable_overlay
+</pre></div>
+      </div>
+    </section>
+    <section>
+      <h2>曲线与批量可视化</h2>
+      <div class="grid">
+        <div class="panel"><h3>训练曲线</h3><img src="assets/results.png" alt="training results"></div>
+        <div class="panel"><h3>测试 PR 曲线</h3><img src="assets/BoxPR_curve.png" alt="test pr"></div>
+        <div class="panel"><h3>测试预测批次</h3><img src="assets/val_batch0_pred.jpg" alt="test prediction batch"></div>
+        <div class="panel"><h3>测试 GT 批次</h3><img src="assets/val_batch0_labels.jpg" alt="test label batch"></div>
+      </div>
+    </section>
+    <section>
+      <h2>Case 可视化</h2>
+      <div class="grid">
+        <figure class="case">
+          <img src="cases/01_scene_0012_frame_000683.jpg" alt="test_business/clean/video_023/scene_0012_frame_000683.jpg">
+          <figcaption>
+            <strong>clean sample</strong>
+            <span>test_business/clean/video_023/scene_0012_frame_000683.jpg</span>
+            <small>gt=0, pred=0, max_conf=0.000</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/02_scene_0002_frame_000136.jpg" alt="test_business/clean/video_029/scene_0002_frame_000136.jpg">
+          <figcaption>
+            <strong>clean image false positive candidate</strong>
+            <span>test_business/clean/video_029/scene_0002_frame_000136.jpg</span>
+            <small>gt=0, pred=1, max_conf=0.376</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/03_scene_0002_frame_000174.jpg" alt="test_business/clean/video_029/scene_0002_frame_000174.jpg">
+          <figcaption>
+            <strong>clean sample</strong>
+            <span>test_business/clean/video_029/scene_0002_frame_000174.jpg</span>
+            <small>gt=0, pred=0, max_conf=0.000</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/04_scene_0004_frame_000324.jpg" alt="test_business/clean/video_029/scene_0004_frame_000324.jpg">
+          <figcaption>
+            <strong>clean sample</strong>
+            <span>test_business/clean/video_029/scene_0004_frame_000324.jpg</span>
+            <small>gt=0, pred=0, max_conf=0.000</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/05_scene_0004_frame_000393.jpg" alt="test_business/clean/video_029/scene_0004_frame_000393.jpg">
+          <figcaption>
+            <strong>clean sample</strong>
+            <span>test_business/clean/video_029/scene_0004_frame_000393.jpg</span>
+            <small>gt=0, pred=0, max_conf=0.000</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/06_scene_0001_frame_000019.jpg" alt="test_business/clean/video_076/scene_0001_frame_000019.jpg">
+          <figcaption>
+            <strong>clean sample</strong>
+            <span>test_business/clean/video_076/scene_0001_frame_000019.jpg</span>
+            <small>gt=0, pred=0, max_conf=0.000</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/07_scene_0001_frame_000038.jpg" alt="test_business/clean/video_076/scene_0001_frame_000038.jpg">
+          <figcaption>
+            <strong>clean sample</strong>
+            <span>test_business/clean/video_076/scene_0001_frame_000038.jpg</span>
+            <small>gt=0, pred=0, max_conf=0.000</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/08_scene_0002_frame_000099.jpg" alt="test_business/clean/video_076/scene_0002_frame_000099.jpg">
+          <figcaption>
+            <strong>clean sample</strong>
+            <span>test_business/clean/video_076/scene_0002_frame_000099.jpg</span>
+            <small>gt=0, pred=0, max_conf=0.000</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/09_scene_0002_frame_000140.jpg" alt="test_business/clean/video_076/scene_0002_frame_000140.jpg">
+          <figcaption>
+            <strong>clean sample</strong>
+            <span>test_business/clean/video_076/scene_0002_frame_000140.jpg</span>
+            <small>gt=0, pred=0, max_conf=0.000</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/10_scene_0003_frame_000205.jpg" alt="test_business/clean/video_076/scene_0003_frame_000205.jpg">
+          <figcaption>
+            <strong>clean image false positive candidate</strong>
+            <span>test_business/clean/video_076/scene_0003_frame_000205.jpg</span>
+            <small>gt=0, pred=1, max_conf=0.302</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/11_scene_0003_frame_000229.jpg" alt="test_business/clean/video_076/scene_0003_frame_000229.jpg">
+          <figcaption>
+            <strong>clean sample</strong>
+            <span>test_business/clean/video_076/scene_0003_frame_000229.jpg</span>
+            <small>gt=0, pred=0, max_conf=0.000</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/12_scene_0004_frame_000272.jpg" alt="test_business/clean/video_076/scene_0004_frame_000272.jpg">
+          <figcaption>
+            <strong>clean image false positive candidate</strong>
+            <span>test_business/clean/video_076/scene_0004_frame_000272.jpg</span>
+            <small>gt=0, pred=2, max_conf=0.505</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/13_scene_0004_frame_000290.jpg" alt="test_business/clean/video_076/scene_0004_frame_000290.jpg">
+          <figcaption>
+            <strong>clean image false positive candidate</strong>
+            <span>test_business/clean/video_076/scene_0004_frame_000290.jpg</span>
+            <small>gt=0, pred=2, max_conf=0.540</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/14_scene_0005_frame_000326.jpg" alt="test_business/clean/video_076/scene_0005_frame_000326.jpg">
+          <figcaption>
+            <strong>clean image false positive candidate</strong>
+            <span>test_business/clean/video_076/scene_0005_frame_000326.jpg</span>
+            <small>gt=0, pred=1, max_conf=0.606</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/15_scene_0005_frame_000343.jpg" alt="test_business/clean/video_076/scene_0005_frame_000343.jpg">
+          <figcaption>
+            <strong>clean image false positive candidate</strong>
+            <span>test_business/clean/video_076/scene_0005_frame_000343.jpg</span>
+            <small>gt=0, pred=1, max_conf=0.466</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/16_scene_0006_frame_000381.jpg" alt="test_business/clean/video_076/scene_0006_frame_000381.jpg">
+          <figcaption>
+            <strong>clean image false positive candidate</strong>
+            <span>test_business/clean/video_076/scene_0006_frame_000381.jpg</span>
+            <small>gt=0, pred=1, max_conf=0.281</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/17_scene_0006_frame_000402.jpg" alt="test_business/clean/video_076/scene_0006_frame_000402.jpg">
+          <figcaption>
+            <strong>clean image false positive candidate</strong>
+            <span>test_business/clean/video_076/scene_0006_frame_000402.jpg</span>
+            <small>gt=0, pred=1, max_conf=0.574</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/18_scene_0007_frame_000443.jpg" alt="test_business/clean/video_076/scene_0007_frame_000443.jpg">
+          <figcaption>
+            <strong>clean image false positive candidate</strong>
+            <span>test_business/clean/video_076/scene_0007_frame_000443.jpg</span>
+            <small>gt=0, pred=1, max_conf=0.676</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/19_scene_0007_frame_000462.jpg" alt="test_business/clean/video_076/scene_0007_frame_000462.jpg">
+          <figcaption>
+            <strong>clean image false positive candidate</strong>
+            <span>test_business/clean/video_076/scene_0007_frame_000462.jpg</span>
+            <small>gt=0, pred=1, max_conf=0.609</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/20_scene_0008_frame_000503.jpg" alt="test_business/clean/video_076/scene_0008_frame_000503.jpg">
+          <figcaption>
+            <strong>clean image false positive candidate</strong>
+            <span>test_business/clean/video_076/scene_0008_frame_000503.jpg</span>
+            <small>gt=0, pred=2, max_conf=0.752</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/21_scene_0008_frame_000525.jpg" alt="test_business/clean/video_076/scene_0008_frame_000525.jpg">
+          <figcaption>
+            <strong>clean image false positive candidate</strong>
+            <span>test_business/clean/video_076/scene_0008_frame_000525.jpg</span>
+            <small>gt=0, pred=2, max_conf=0.741</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/22_scene_0009_frame_000568.jpg" alt="test_business/clean/video_076/scene_0009_frame_000568.jpg">
+          <figcaption>
+            <strong>clean image false positive candidate</strong>
+            <span>test_business/clean/video_076/scene_0009_frame_000568.jpg</span>
+            <small>gt=0, pred=1, max_conf=0.430</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/23_scene_0009_frame_000588.jpg" alt="test_business/clean/video_076/scene_0009_frame_000588.jpg">
+          <figcaption>
+            <strong>clean image false positive candidate</strong>
+            <span>test_business/clean/video_076/scene_0009_frame_000588.jpg</span>
+            <small>gt=0, pred=1, max_conf=0.518</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/24_scene_0010_frame_000631.jpg" alt="test_business/clean/video_076/scene_0010_frame_000631.jpg">
+          <figcaption>
+            <strong>clean image false positive candidate</strong>
+            <span>test_business/clean/video_076/scene_0010_frame_000631.jpg</span>
+            <small>gt=0, pred=2, max_conf=0.661</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/25_scene_0010_frame_000653.jpg" alt="test_business/clean/video_076/scene_0010_frame_000653.jpg">
+          <figcaption>
+            <strong>clean image false positive candidate</strong>
+            <span>test_business/clean/video_076/scene_0010_frame_000653.jpg</span>
+            <small>gt=0, pred=1, max_conf=0.622</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/26_scene_0001_frame_000022.jpg" alt="test_business/overlay/video_011/scene_0001_frame_000022.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_011/scene_0001_frame_000022.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.701</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/27_scene_0001_frame_000066.jpg" alt="test_business/overlay/video_011/scene_0001_frame_000066.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_011/scene_0001_frame_000066.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.667</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/28_scene_0001_frame_000089.jpg" alt="test_business/overlay/video_011/scene_0001_frame_000089.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_011/scene_0001_frame_000089.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.713</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/29_scene_0002_frame_000158.jpg" alt="test_business/overlay/video_011/scene_0002_frame_000158.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_011/scene_0002_frame_000158.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.704</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/30_scene_0002_frame_000170.jpg" alt="test_business/overlay/video_011/scene_0002_frame_000170.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_011/scene_0002_frame_000170.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.762</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/31_scene_0002_frame_000181.jpg" alt="test_business/overlay/video_011/scene_0002_frame_000181.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_011/scene_0002_frame_000181.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.812</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/32_scene_0002_frame_000193.jpg" alt="test_business/overlay/video_011/scene_0002_frame_000193.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_011/scene_0002_frame_000193.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.431</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/33_scene_0003_frame_000228.jpg" alt="test_business/overlay/video_011/scene_0003_frame_000228.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_011/scene_0003_frame_000228.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.652</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/34_scene_0003_frame_000251.jpg" alt="test_business/overlay/video_011/scene_0003_frame_000251.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_011/scene_0003_frame_000251.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.651</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/35_scene_0003_frame_000273.jpg" alt="test_business/overlay/video_011/scene_0003_frame_000273.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_011/scene_0003_frame_000273.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.717</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/36_scene_0003_frame_000318.jpg" alt="test_business/overlay/video_011/scene_0003_frame_000318.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_011/scene_0003_frame_000318.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.713</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/37_scene_0004_frame_000386.jpg" alt="test_business/overlay/video_011/scene_0004_frame_000386.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_011/scene_0004_frame_000386.jpg</span>
+            <small>gt=1, pred=2, max_conf=0.700</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/38_scene_0004_frame_000402.jpg" alt="test_business/overlay/video_011/scene_0004_frame_000402.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_011/scene_0004_frame_000402.jpg</span>
+            <small>gt=1, pred=2, max_conf=0.727</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/39_scene_0005_frame_000446.jpg" alt="test_business/overlay/video_011/scene_0005_frame_000446.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_011/scene_0005_frame_000446.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.751</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/40_scene_0005_frame_000459.jpg" alt="test_business/overlay/video_011/scene_0005_frame_000459.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_011/scene_0005_frame_000459.jpg</span>
+            <small>gt=1, pred=2, max_conf=0.768</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/41_scene_0006_frame_000524.jpg" alt="test_business/overlay/video_011/scene_0006_frame_000524.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_011/scene_0006_frame_000524.jpg</span>
+            <small>gt=1, pred=2, max_conf=0.764</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/42_scene_0006_frame_000536.jpg" alt="test_business/overlay/video_011/scene_0006_frame_000536.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_011/scene_0006_frame_000536.jpg</span>
+            <small>gt=1, pred=2, max_conf=0.779</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/43_scene_0007_frame_000597.jpg" alt="test_business/overlay/video_011/scene_0007_frame_000597.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_011/scene_0007_frame_000597.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.692</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/44_scene_0007_frame_000635.jpg" alt="test_business/overlay/video_011/scene_0007_frame_000635.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_011/scene_0007_frame_000635.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.702</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/45_scene_0008_frame_000654.jpg" alt="test_business/overlay/video_011/scene_0008_frame_000654.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_011/scene_0008_frame_000654.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.631</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/46_scene_0009_frame_000726.jpg" alt="test_business/overlay/video_011/scene_0009_frame_000726.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_011/scene_0009_frame_000726.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.711</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/47_scene_0009_frame_000749.jpg" alt="test_business/overlay/video_011/scene_0009_frame_000749.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_011/scene_0009_frame_000749.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.706</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/48_scene_0010_frame_000857.jpg" alt="test_business/overlay/video_011/scene_0010_frame_000857.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_011/scene_0010_frame_000857.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.714</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/49_scene_0010_frame_000870.jpg" alt="test_business/overlay/video_011/scene_0010_frame_000870.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_011/scene_0010_frame_000870.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.728</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/50_scene_0010_frame_000882.jpg" alt="test_business/overlay/video_011/scene_0010_frame_000882.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_011/scene_0010_frame_000882.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.730</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/51_scene_0011_frame_000932.jpg" alt="test_business/overlay/video_011/scene_0011_frame_000932.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_011/scene_0011_frame_000932.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.762</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/52_scene_0011_frame_000944.jpg" alt="test_business/overlay/video_011/scene_0011_frame_000944.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_011/scene_0011_frame_000944.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.767</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/53_scene_0011_frame_000980.jpg" alt="test_business/overlay/video_011/scene_0011_frame_000980.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_011/scene_0011_frame_000980.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.633</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/54_scene_0012_frame_001032.jpg" alt="test_business/overlay/video_011/scene_0012_frame_001032.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_011/scene_0012_frame_001032.jpg</span>
+            <small>gt=1, pred=2, max_conf=0.748</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/55_scene_0012_frame_001109.jpg" alt="test_business/overlay/video_011/scene_0012_frame_001109.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_011/scene_0012_frame_001109.jpg</span>
+            <small>gt=1, pred=2, max_conf=0.751</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/56_scene_0001_frame_000030.jpg" alt="test_business/overlay/video_014/scene_0001_frame_000030.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_014/scene_0001_frame_000030.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.944</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/57_scene_0002_frame_000209.jpg" alt="test_business/overlay/video_014/scene_0002_frame_000209.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_014/scene_0002_frame_000209.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.936</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/58_scene_0003_frame_000299.jpg" alt="test_business/overlay/video_014/scene_0003_frame_000299.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_014/scene_0003_frame_000299.jpg</span>
+            <small>gt=2, pred=3, max_conf=0.947</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/59_scene_0004_frame_000415.jpg" alt="test_business/overlay/video_014/scene_0004_frame_000415.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_014/scene_0004_frame_000415.jpg</span>
+            <small>gt=2, pred=3, max_conf=0.939</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/60_scene_0004_frame_000471.jpg" alt="test_business/overlay/video_014/scene_0004_frame_000471.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_014/scene_0004_frame_000471.jpg</span>
+            <small>gt=2, pred=3, max_conf=0.939</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/61_scene_0001_frame_000070.jpg" alt="test_business/overlay/video_015/scene_0001_frame_000070.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_015/scene_0001_frame_000070.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.740</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/62_scene_0001_frame_000141.jpg" alt="test_business/overlay/video_015/scene_0001_frame_000141.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_015/scene_0001_frame_000141.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.816</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/63_scene_0001_frame_000211.jpg" alt="test_business/overlay/video_015/scene_0001_frame_000211.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_015/scene_0001_frame_000211.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.836</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/64_scene_0001_frame_000281.jpg" alt="test_business/overlay/video_015/scene_0001_frame_000281.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_015/scene_0001_frame_000281.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.839</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/65_scene_0001_frame_000352.jpg" alt="test_business/overlay/video_015/scene_0001_frame_000352.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_015/scene_0001_frame_000352.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.824</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/66_scene_0002_frame_000454.jpg" alt="test_business/overlay/video_015/scene_0002_frame_000454.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_015/scene_0002_frame_000454.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.784</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/67_scene_0002_frame_000485.jpg" alt="test_business/overlay/video_015/scene_0002_frame_000485.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_015/scene_0002_frame_000485.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.785</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/68_scene_0002_frame_000516.jpg" alt="test_business/overlay/video_015/scene_0002_frame_000516.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_015/scene_0002_frame_000516.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.809</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/69_scene_0002_frame_000547.jpg" alt="test_business/overlay/video_015/scene_0002_frame_000547.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_015/scene_0002_frame_000547.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.820</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/70_scene_0002_frame_000578.jpg" alt="test_business/overlay/video_015/scene_0002_frame_000578.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_015/scene_0002_frame_000578.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.816</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/71_scene_0001_frame_000048.jpg" alt="test_business/overlay/video_023/scene_0001_frame_000048.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_023/scene_0001_frame_000048.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.910</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/72_scene_0002_frame_000072.jpg" alt="test_business/overlay/video_023/scene_0002_frame_000072.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_023/scene_0002_frame_000072.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.921</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/73_scene_0002_frame_000087.jpg" alt="test_business/overlay/video_023/scene_0002_frame_000087.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_023/scene_0002_frame_000087.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.905</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/74_scene_0002_frame_000130.jpg" alt="test_business/overlay/video_023/scene_0002_frame_000130.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_023/scene_0002_frame_000130.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.902</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/75_scene_0003_frame_000153.jpg" alt="test_business/overlay/video_023/scene_0003_frame_000153.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_023/scene_0003_frame_000153.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.887</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/76_scene_0003_frame_000176.jpg" alt="test_business/overlay/video_023/scene_0003_frame_000176.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_023/scene_0003_frame_000176.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.917</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/77_scene_0003_frame_000183.jpg" alt="test_business/overlay/video_023/scene_0003_frame_000183.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_023/scene_0003_frame_000183.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.898</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/78_scene_0004_frame_000208.jpg" alt="test_business/overlay/video_023/scene_0004_frame_000208.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_023/scene_0004_frame_000208.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.915</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/79_scene_0004_frame_000224.jpg" alt="test_business/overlay/video_023/scene_0004_frame_000224.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_023/scene_0004_frame_000224.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.914</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/80_scene_0004_frame_000240.jpg" alt="test_business/overlay/video_023/scene_0004_frame_000240.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_023/scene_0004_frame_000240.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.907</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/81_scene_0004_frame_000256.jpg" alt="test_business/overlay/video_023/scene_0004_frame_000256.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_023/scene_0004_frame_000256.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.904</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/82_scene_0004_frame_000272.jpg" alt="test_business/overlay/video_023/scene_0004_frame_000272.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_023/scene_0004_frame_000272.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.911</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/83_scene_0007_frame_000423.jpg" alt="test_business/overlay/video_023/scene_0007_frame_000423.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_023/scene_0007_frame_000423.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.856</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/84_scene_0007_frame_000446.jpg" alt="test_business/overlay/video_023/scene_0007_frame_000446.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_023/scene_0007_frame_000446.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.897</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/85_scene_0007_frame_000453.jpg" alt="test_business/overlay/video_023/scene_0007_frame_000453.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_023/scene_0007_frame_000453.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.917</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/86_scene_0008_frame_000468.jpg" alt="test_business/overlay/video_023/scene_0008_frame_000468.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_023/scene_0008_frame_000468.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.903</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/87_scene_0008_frame_000473.jpg" alt="test_business/overlay/video_023/scene_0008_frame_000473.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_023/scene_0008_frame_000473.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.903</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/88_scene_0010_frame_000558.jpg" alt="test_business/overlay/video_023/scene_0010_frame_000558.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_023/scene_0010_frame_000558.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.923</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/89_scene_0010_frame_000564.jpg" alt="test_business/overlay/video_023/scene_0010_frame_000564.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_023/scene_0010_frame_000564.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.921</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/90_scene_0010_frame_000571.jpg" alt="test_business/overlay/video_023/scene_0010_frame_000571.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_023/scene_0010_frame_000571.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.916</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/91_scene_0010_frame_000578.jpg" alt="test_business/overlay/video_023/scene_0010_frame_000578.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_023/scene_0010_frame_000578.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.927</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/92_scene_0010_frame_000584.jpg" alt="test_business/overlay/video_023/scene_0010_frame_000584.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_023/scene_0010_frame_000584.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.918</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/93_scene_0011_frame_000599.jpg" alt="test_business/overlay/video_023/scene_0011_frame_000599.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_023/scene_0011_frame_000599.jpg</span>
+            <small>gt=2, pred=3, max_conf=0.924</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/94_scene_0011_frame_000621.jpg" alt="test_business/overlay/video_023/scene_0011_frame_000621.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_023/scene_0011_frame_000621.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.889</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/95_scene_0012_frame_000648.jpg" alt="test_business/overlay/video_023/scene_0012_frame_000648.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_023/scene_0012_frame_000648.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.760</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/96_scene_0002_frame_000081.jpg" alt="test_business/overlay/video_031/scene_0002_frame_000081.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_031/scene_0002_frame_000081.jpg</span>
+            <small>gt=2, pred=6, max_conf=0.753</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/97_scene_0004_frame_000193.jpg" alt="test_business/overlay/video_031/scene_0004_frame_000193.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_031/scene_0004_frame_000193.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.833</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/98_scene_0006_frame_000293.jpg" alt="test_business/overlay/video_031/scene_0006_frame_000293.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_031/scene_0006_frame_000293.jpg</span>
+            <small>gt=2, pred=4, max_conf=0.782</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/99_scene_0010_frame_000630.jpg" alt="test_business/overlay/video_031/scene_0010_frame_000630.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_031/scene_0010_frame_000630.jpg</span>
+            <small>gt=3, pred=4, max_conf=0.758</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/100_scene_0001_frame_000029.jpg" alt="test_business/overlay/video_033/scene_0001_frame_000029.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_033/scene_0001_frame_000029.jpg</span>
+            <small>gt=3, pred=3, max_conf=0.876</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/101_scene_0002_frame_000100.jpg" alt="test_business/overlay/video_033/scene_0002_frame_000100.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_033/scene_0002_frame_000100.jpg</span>
+            <small>gt=3, pred=5, max_conf=0.833</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/102_scene_0003_frame_000145.jpg" alt="test_business/overlay/video_033/scene_0003_frame_000145.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_033/scene_0003_frame_000145.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.766</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/103_scene_0005_frame_000269.jpg" alt="test_business/overlay/video_033/scene_0005_frame_000269.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_033/scene_0005_frame_000269.jpg</span>
+            <small>gt=4, pred=4, max_conf=0.894</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/104_scene_0007_frame_000376.jpg" alt="test_business/overlay/video_033/scene_0007_frame_000376.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_033/scene_0007_frame_000376.jpg</span>
+            <small>gt=4, pred=5, max_conf=0.875</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/105_scene_0009_frame_000568.jpg" alt="test_business/overlay/video_033/scene_0009_frame_000568.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_033/scene_0009_frame_000568.jpg</span>
+            <small>gt=4, pred=4, max_conf=0.903</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/106_scene_0012_frame_000677.jpg" alt="test_business/overlay/video_033/scene_0012_frame_000677.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_033/scene_0012_frame_000677.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.877</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/107_scene_0017_frame_000965.jpg" alt="test_business/overlay/video_033/scene_0017_frame_000965.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_033/scene_0017_frame_000965.jpg</span>
+            <small>gt=3, pred=4, max_conf=0.887</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/108_scene_0023_frame_001230.jpg" alt="test_business/overlay/video_033/scene_0023_frame_001230.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_033/scene_0023_frame_001230.jpg</span>
+            <small>gt=3, pred=6, max_conf=0.819</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/109_scene_0025_frame_001334.jpg" alt="test_business/overlay/video_033/scene_0025_frame_001334.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_033/scene_0025_frame_001334.jpg</span>
+            <small>gt=3, pred=5, max_conf=0.846</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/110_scene_0001_frame_000053.jpg" alt="test_business/overlay/video_043/scene_0001_frame_000053.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_043/scene_0001_frame_000053.jpg</span>
+            <small>gt=2, pred=3, max_conf=0.845</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/111_scene_0002_frame_000185.jpg" alt="test_business/overlay/video_043/scene_0002_frame_000185.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_043/scene_0002_frame_000185.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.845</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/112_scene_0003_frame_000251.jpg" alt="test_business/overlay/video_043/scene_0003_frame_000251.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_043/scene_0003_frame_000251.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.845</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/113_scene_0005_frame_000413.jpg" alt="test_business/overlay/video_043/scene_0005_frame_000413.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_043/scene_0005_frame_000413.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.849</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/114_scene_0007_frame_000604.jpg" alt="test_business/overlay/video_043/scene_0007_frame_000604.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_043/scene_0007_frame_000604.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.843</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/115_scene_0009_frame_000782.jpg" alt="test_business/overlay/video_043/scene_0009_frame_000782.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_043/scene_0009_frame_000782.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.837</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/116_scene_0010_frame_000829.jpg" alt="test_business/overlay/video_043/scene_0010_frame_000829.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_043/scene_0010_frame_000829.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.821</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/117_scene_0001_frame_000007.jpg" alt="test_business/overlay/video_048/scene_0001_frame_000007.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_048/scene_0001_frame_000007.jpg</span>
+            <small>gt=2, pred=9, max_conf=0.824</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/118_scene_0002_frame_000030.jpg" alt="test_business/overlay/video_048/scene_0002_frame_000030.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_048/scene_0002_frame_000030.jpg</span>
+            <small>gt=3, pred=6, max_conf=0.814</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/119_scene_0003_frame_000050.jpg" alt="test_business/overlay/video_048/scene_0003_frame_000050.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_048/scene_0003_frame_000050.jpg</span>
+            <small>gt=3, pred=7, max_conf=0.819</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/120_scene_0006_frame_000135.jpg" alt="test_business/overlay/video_048/scene_0006_frame_000135.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_048/scene_0006_frame_000135.jpg</span>
+            <small>gt=2, pred=2, max_conf=0.844</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/121_scene_0009_frame_000207.jpg" alt="test_business/overlay/video_048/scene_0009_frame_000207.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_048/scene_0009_frame_000207.jpg</span>
+            <small>gt=1, pred=3, max_conf=0.536</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/122_scene_0010_frame_000250.jpg" alt="test_business/overlay/video_048/scene_0010_frame_000250.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_048/scene_0010_frame_000250.jpg</span>
+            <small>gt=2, pred=4, max_conf=0.812</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/123_scene_0001_frame_000030.jpg" alt="test_business/overlay/video_056/scene_0001_frame_000030.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_056/scene_0001_frame_000030.jpg</span>
+            <small>gt=3, pred=6, max_conf=0.847</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/124_scene_0002_frame_000151.jpg" alt="test_business/overlay/video_056/scene_0002_frame_000151.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_056/scene_0002_frame_000151.jpg</span>
+            <small>gt=3, pred=3, max_conf=0.883</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/125_scene_0003_frame_000240.jpg" alt="test_business/overlay/video_056/scene_0003_frame_000240.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_056/scene_0003_frame_000240.jpg</span>
+            <small>gt=3, pred=5, max_conf=0.744</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/126_scene_0005_frame_000392.jpg" alt="test_business/overlay/video_056/scene_0005_frame_000392.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_056/scene_0005_frame_000392.jpg</span>
+            <small>gt=5, pred=5, max_conf=0.677</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/127_scene_0001_frame_000019.jpg" alt="test_business/overlay/video_062/scene_0001_frame_000019.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_062/scene_0001_frame_000019.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.905</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/128_scene_0002_frame_000041.jpg" alt="test_business/overlay/video_062/scene_0002_frame_000041.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_062/scene_0002_frame_000041.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.862</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/129_scene_0002_frame_000053.jpg" alt="test_business/overlay/video_062/scene_0002_frame_000053.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_062/scene_0002_frame_000053.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.902</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/130_scene_0003_frame_000086.jpg" alt="test_business/overlay/video_062/scene_0003_frame_000086.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_062/scene_0003_frame_000086.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.843</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/131_scene_0003_frame_000107.jpg" alt="test_business/overlay/video_062/scene_0003_frame_000107.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_062/scene_0003_frame_000107.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.780</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/132_scene_0004_frame_000210.jpg" alt="test_business/overlay/video_062/scene_0004_frame_000210.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_062/scene_0004_frame_000210.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.827</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/133_scene_0004_frame_000293.jpg" alt="test_business/overlay/video_062/scene_0004_frame_000293.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_062/scene_0004_frame_000293.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.429</small>
+          </figcaption>
+        </figure>
+        
+        <figure class="case">
+          <img src="cases/134_scene_0005_frame_000395.jpg" alt="test_business/overlay/video_062/scene_0005_frame_000395.jpg">
+          <figcaption>
+            <strong>positive sample</strong>
+            <span>test_business/overlay/video_062/scene_0005_frame_000395.jpg</span>
+            <small>gt=1, pred=1, max_conf=0.864</small>
+          </figcaption>
+        </figure>
+        </div>
+    </section>
+  </main>
+</body>
+</html>
