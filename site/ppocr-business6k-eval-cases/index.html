@@ -1,0 +1,709 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PP-OCRv6 Business6k Eval Cases</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17202a;
+      --muted: #5f6b7a;
+      --line: #d7dee8;
+      --bg: #f5f7fa;
+      --panel: #ffffff;
+      --gt: #35a853;
+      --cont: #ff7a1a;
+      --pre: #2094ff;
+    }
+    body {
+      margin: 0;
+      font-family: Arial, "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+    }
+    header {
+      padding: 28px 32px 18px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--line);
+    }
+    h1 { margin: 0 0 12px; font-size: 24px; }
+    h2 { margin: 28px 0 12px; font-size: 18px; }
+    p { line-height: 1.6; color: var(--muted); }
+    main { max-width: 1440px; margin: 0 auto; padding: 24px 32px 40px; }
+    .legend, .metrics, .formula {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .pill {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 6px;
+      padding: 7px 10px;
+      font-size: 13px;
+    }
+    .gt { color: var(--gt); font-weight: 700; }
+    .cont { color: var(--cont); font-weight: 700; }
+    .pre { color: var(--pre); font-weight: 700; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      font-size: 14px;
+    }
+    th { background: #eef2f7; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 18px;
+    }
+    .case-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .case-card img {
+      display: block;
+      width: 100%;
+      background: #111;
+    }
+    .case-body { padding: 10px 12px 12px; }
+    .path {
+      font-size: 12px;
+      color: var(--muted);
+      overflow-wrap: anywhere;
+      margin-bottom: 8px;
+    }
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 12px;
+    }
+    .stats span {
+      padding: 4px 6px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: #fafbfd;
+    }
+    code { background: #eef2f7; padding: 2px 4px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>PP-OCRv6 Business6k Eval Cases</h1>
+    <p>数据：<code>work/ppocr_business_train_clean_synth_6k_v1/labels/test_business_overlay.txt</code>；展示 48 / 109 张 test overlay 正样本图。框颜色：<span class="gt">绿色=GT</span>，<span class="cont">橙色=continue-v2</span>，<span class="pre">蓝色=from-pretrained</span>。</p>
+  </header>
+  <main>
+    <h2>整体指标</h2>
+    <table>
+      <thead><tr><th>模型</th><th>GT</th><th>Pred</th><th>TP</th><th>Precision</th><th>Recall</th><th>Hmean</th></tr></thead>
+      <tbody>
+        <tr><td>continue-v2 best</td><td>188</td><td>255</td><td>163</td><td>63.92%</td><td>86.70%</td><td>73.59%</td></tr>
+        <tr><td>from-pretrained best</td><td>188</td><td>219</td><td>146</td><td>66.67%</td><td>77.66%</td><td>71.74%</td></tr>
+      </tbody>
+    </table>
+
+    <h2>指标口径</h2>
+    <p>这里复现 PaddleOCR DetMetric 的核心口径：每个 GT 四边形和预测四边形计算 polygon IoU，按 IoU 从高到低做一对一贪心匹配；IoU ≥ 0.50 记为 TP，未匹配 GT 记为 FN，未匹配预测记为 FP。</p>
+    <div class="formula">
+      <span class="pill">Precision = TP / (TP + FP)</span>
+      <span class="pill">Recall = TP / (TP + FN)</span>
+      <span class="pill">Hmean = 2 * Precision * Recall / (Precision + Recall)</span>
+    </div>
+    <p>本页只评估 <code>test_business_overlay.txt</code> 中有 overlay 的正样本帧，不包含 clean/native 空样本误检统计；clean FP 需要单独跑负样本推理后按“有无预测框 / 每图预测框数 / 与 native 区域重叠”统计。</p>
+
+    <h2>Case 展示</h2>
+    <div class="grid">
+      
+            <article class="case-card">
+              <img src="images/001_scene_0005_frame_000392.jpg" alt="test_business/overlay/video_056/scene_0005_frame_000392.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_056/scene_0005_frame_000392.jpg</div>
+                <div class="stats">
+                  <span>GT 5</span>
+                  <span class="cont">Continue TP 5 FP 0 FN 0</span>
+                  <span class="pre">From-pretrained TP 1 FP 1 FN 4</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/002_scene_0010_frame_000630.jpg" alt="test_business/overlay/video_031/scene_0010_frame_000630.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_031/scene_0010_frame_000630.jpg</div>
+                <div class="stats">
+                  <span>GT 3</span>
+                  <span class="cont">Continue TP 3 FP 0 FN 0</span>
+                  <span class="pre">From-pretrained TP 1 FP 1 FN 2</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/003_scene_0009_frame_000568.jpg" alt="test_business/overlay/video_033/scene_0009_frame_000568.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_033/scene_0009_frame_000568.jpg</div>
+                <div class="stats">
+                  <span>GT 4</span>
+                  <span class="cont">Continue TP 4 FP 0 FN 0</span>
+                  <span class="pre">From-pretrained TP 2 FP 7 FN 2</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/004_scene_0023_frame_001230.jpg" alt="test_business/overlay/video_033/scene_0023_frame_001230.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_033/scene_0023_frame_001230.jpg</div>
+                <div class="stats">
+                  <span>GT 3</span>
+                  <span class="cont">Continue TP 3 FP 0 FN 0</span>
+                  <span class="pre">From-pretrained TP 1 FP 2 FN 2</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/005_scene_0025_frame_001334.jpg" alt="test_business/overlay/video_033/scene_0025_frame_001334.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_033/scene_0025_frame_001334.jpg</div>
+                <div class="stats">
+                  <span>GT 3</span>
+                  <span class="cont">Continue TP 3 FP 0 FN 0</span>
+                  <span class="pre">From-pretrained TP 1 FP 1 FN 2</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/006_scene_0002_frame_000030.jpg" alt="test_business/overlay/video_048/scene_0002_frame_000030.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_048/scene_0002_frame_000030.jpg</div>
+                <div class="stats">
+                  <span>GT 3</span>
+                  <span class="cont">Continue TP 3 FP 0 FN 0</span>
+                  <span class="pre">From-pretrained TP 1 FP 1 FN 2</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/007_scene_0003_frame_000050.jpg" alt="test_business/overlay/video_048/scene_0003_frame_000050.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_048/scene_0003_frame_000050.jpg</div>
+                <div class="stats">
+                  <span>GT 3</span>
+                  <span class="cont">Continue TP 3 FP 0 FN 0</span>
+                  <span class="pre">From-pretrained TP 1 FP 1 FN 2</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/008_scene_0007_frame_000376.jpg" alt="test_business/overlay/video_033/scene_0007_frame_000376.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_033/scene_0007_frame_000376.jpg</div>
+                <div class="stats">
+                  <span>GT 4</span>
+                  <span class="cont">Continue TP 3 FP 0 FN 1</span>
+                  <span class="pre">From-pretrained TP 1 FP 1 FN 3</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/009_scene_0002_frame_000151.jpg" alt="test_business/overlay/video_056/scene_0002_frame_000151.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_056/scene_0002_frame_000151.jpg</div>
+                <div class="stats">
+                  <span>GT 3</span>
+                  <span class="cont">Continue TP 3 FP 4 FN 0</span>
+                  <span class="pre">From-pretrained TP 2 FP 0 FN 1</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/010_scene_0012_frame_000648.jpg" alt="test_business/overlay/video_023/scene_0012_frame_000648.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_023/scene_0012_frame_000648.jpg</div>
+                <div class="stats">
+                  <span>GT 2</span>
+                  <span class="cont">Continue TP 2 FP 0 FN 0</span>
+                  <span class="pre">From-pretrained TP 1 FP 0 FN 1</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/011_scene_0004_frame_000471.jpg" alt="test_business/overlay/video_014/scene_0004_frame_000471.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_014/scene_0004_frame_000471.jpg</div>
+                <div class="stats">
+                  <span>GT 2</span>
+                  <span class="cont">Continue TP 1 FP 4 FN 1</span>
+                  <span class="pre">From-pretrained TP 0 FP 4 FN 2</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/012_scene_0002_frame_000100.jpg" alt="test_business/overlay/video_033/scene_0002_frame_000100.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_033/scene_0002_frame_000100.jpg</div>
+                <div class="stats">
+                  <span>GT 3</span>
+                  <span class="cont">Continue TP 2 FP 1 FN 1</span>
+                  <span class="pre">From-pretrained TP 1 FP 2 FN 2</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/013_scene_0003_frame_000273.jpg" alt="test_business/overlay/video_011/scene_0003_frame_000273.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_011/scene_0003_frame_000273.jpg</div>
+                <div class="stats">
+                  <span>GT 1</span>
+                  <span class="cont">Continue TP 1 FP 3 FN 0</span>
+                  <span class="pre">From-pretrained TP 1 FP 0 FN 0</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/014_scene_0011_frame_000932.jpg" alt="test_business/overlay/video_011/scene_0011_frame_000932.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_011/scene_0011_frame_000932.jpg</div>
+                <div class="stats">
+                  <span>GT 1</span>
+                  <span class="cont">Continue TP 1 FP 3 FN 0</span>
+                  <span class="pre">From-pretrained TP 1 FP 0 FN 0</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/015_scene_0011_frame_000980.jpg" alt="test_business/overlay/video_011/scene_0011_frame_000980.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_011/scene_0011_frame_000980.jpg</div>
+                <div class="stats">
+                  <span>GT 1</span>
+                  <span class="cont">Continue TP 1 FP 3 FN 0</span>
+                  <span class="pre">From-pretrained TP 1 FP 0 FN 0</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/016_scene_0001_frame_000066.jpg" alt="test_business/overlay/video_011/scene_0001_frame_000066.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_011/scene_0001_frame_000066.jpg</div>
+                <div class="stats">
+                  <span>GT 1</span>
+                  <span class="cont">Continue TP 1 FP 2 FN 0</span>
+                  <span class="pre">From-pretrained TP 1 FP 0 FN 0</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/017_scene_0003_frame_000318.jpg" alt="test_business/overlay/video_011/scene_0003_frame_000318.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_011/scene_0003_frame_000318.jpg</div>
+                <div class="stats">
+                  <span>GT 1</span>
+                  <span class="cont">Continue TP 1 FP 2 FN 0</span>
+                  <span class="pre">From-pretrained TP 1 FP 0 FN 0</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/018_scene_0004_frame_000386.jpg" alt="test_business/overlay/video_011/scene_0004_frame_000386.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_011/scene_0004_frame_000386.jpg</div>
+                <div class="stats">
+                  <span>GT 1</span>
+                  <span class="cont">Continue TP 1 FP 2 FN 0</span>
+                  <span class="pre">From-pretrained TP 1 FP 3 FN 0</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/019_scene_0005_frame_000446.jpg" alt="test_business/overlay/video_011/scene_0005_frame_000446.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_011/scene_0005_frame_000446.jpg</div>
+                <div class="stats">
+                  <span>GT 1</span>
+                  <span class="cont">Continue TP 1 FP 2 FN 0</span>
+                  <span class="pre">From-pretrained TP 1 FP 0 FN 0</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/020_scene_0005_frame_000459.jpg" alt="test_business/overlay/video_011/scene_0005_frame_000459.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_011/scene_0005_frame_000459.jpg</div>
+                <div class="stats">
+                  <span>GT 1</span>
+                  <span class="cont">Continue TP 1 FP 2 FN 0</span>
+                  <span class="pre">From-pretrained TP 1 FP 0 FN 0</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/021_scene_0006_frame_000524.jpg" alt="test_business/overlay/video_011/scene_0006_frame_000524.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_011/scene_0006_frame_000524.jpg</div>
+                <div class="stats">
+                  <span>GT 1</span>
+                  <span class="cont">Continue TP 1 FP 2 FN 0</span>
+                  <span class="pre">From-pretrained TP 1 FP 2 FN 0</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/022_scene_0011_frame_000944.jpg" alt="test_business/overlay/video_011/scene_0011_frame_000944.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_011/scene_0011_frame_000944.jpg</div>
+                <div class="stats">
+                  <span>GT 1</span>
+                  <span class="cont">Continue TP 1 FP 2 FN 0</span>
+                  <span class="pre">From-pretrained TP 1 FP 0 FN 0</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/023_scene_0009_frame_000782.jpg" alt="test_business/overlay/video_043/scene_0009_frame_000782.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_043/scene_0009_frame_000782.jpg</div>
+                <div class="stats">
+                  <span>GT 2</span>
+                  <span class="cont">Continue TP 2 FP 2 FN 0</span>
+                  <span class="pre">From-pretrained TP 2 FP 1 FN 0</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/024_scene_0001_frame_000089.jpg" alt="test_business/overlay/video_011/scene_0001_frame_000089.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_011/scene_0001_frame_000089.jpg</div>
+                <div class="stats">
+                  <span>GT 1</span>
+                  <span class="cont">Continue TP 1 FP 1 FN 0</span>
+                  <span class="pre">From-pretrained TP 1 FP 0 FN 0</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/025_scene_0005_frame_000269.jpg" alt="test_business/overlay/video_033/scene_0005_frame_000269.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_033/scene_0005_frame_000269.jpg</div>
+                <div class="stats">
+                  <span>GT 4</span>
+                  <span class="cont">Continue TP 0 FP 4 FN 4</span>
+                  <span class="pre">From-pretrained TP 0 FP 1 FN 4</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/026_scene_0002_frame_000209.jpg" alt="test_business/overlay/video_014/scene_0002_frame_000209.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_014/scene_0002_frame_000209.jpg</div>
+                <div class="stats">
+                  <span>GT 2</span>
+                  <span class="cont">Continue TP 0 FP 4 FN 2</span>
+                  <span class="pre">From-pretrained TP 0 FP 2 FN 2</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/027_scene_0003_frame_000240.jpg" alt="test_business/overlay/video_056/scene_0003_frame_000240.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_056/scene_0003_frame_000240.jpg</div>
+                <div class="stats">
+                  <span>GT 3</span>
+                  <span class="cont">Continue TP 1 FP 4 FN 2</span>
+                  <span class="pre">From-pretrained TP 2 FP 0 FN 1</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/028_scene_0001_frame_000030.jpg" alt="test_business/overlay/video_014/scene_0001_frame_000030.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_014/scene_0001_frame_000030.jpg</div>
+                <div class="stats">
+                  <span>GT 2</span>
+                  <span class="cont">Continue TP 0 FP 3 FN 2</span>
+                  <span class="pre">From-pretrained TP 1 FP 2 FN 1</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/029_scene_0001_frame_000030.jpg" alt="test_business/overlay/video_056/scene_0001_frame_000030.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_056/scene_0001_frame_000030.jpg</div>
+                <div class="stats">
+                  <span>GT 3</span>
+                  <span class="cont">Continue TP 2 FP 8 FN 1</span>
+                  <span class="pre">From-pretrained TP 2 FP 3 FN 1</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/030_scene_0003_frame_000299.jpg" alt="test_business/overlay/video_014/scene_0003_frame_000299.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_014/scene_0003_frame_000299.jpg</div>
+                <div class="stats">
+                  <span>GT 2</span>
+                  <span class="cont">Continue TP 1 FP 4 FN 1</span>
+                  <span class="pre">From-pretrained TP 1 FP 2 FN 1</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/031_scene_0004_frame_000415.jpg" alt="test_business/overlay/video_014/scene_0004_frame_000415.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_014/scene_0004_frame_000415.jpg</div>
+                <div class="stats">
+                  <span>GT 2</span>
+                  <span class="cont">Continue TP 1 FP 3 FN 1</span>
+                  <span class="pre">From-pretrained TP 1 FP 2 FN 1</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/032_scene_0002_frame_000081.jpg" alt="test_business/overlay/video_031/scene_0002_frame_000081.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_031/scene_0002_frame_000081.jpg</div>
+                <div class="stats">
+                  <span>GT 2</span>
+                  <span class="cont">Continue TP 1 FP 3 FN 1</span>
+                  <span class="pre">From-pretrained TP 2 FP 2 FN 0</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/033_scene_0001_frame_000007.jpg" alt="test_business/overlay/video_048/scene_0001_frame_000007.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_048/scene_0001_frame_000007.jpg</div>
+                <div class="stats">
+                  <span>GT 2</span>
+                  <span class="cont">Continue TP 1 FP 3 FN 1</span>
+                  <span class="pre">From-pretrained TP 2 FP 7 FN 0</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/034_scene_0006_frame_000293.jpg" alt="test_business/overlay/video_031/scene_0006_frame_000293.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_031/scene_0006_frame_000293.jpg</div>
+                <div class="stats">
+                  <span>GT 2</span>
+                  <span class="cont">Continue TP 1 FP 2 FN 1</span>
+                  <span class="pre">From-pretrained TP 1 FP 2 FN 1</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/035_scene_0002_frame_000193.jpg" alt="test_business/overlay/video_011/scene_0002_frame_000193.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_011/scene_0002_frame_000193.jpg</div>
+                <div class="stats">
+                  <span>GT 1</span>
+                  <span class="cont">Continue TP 0 FP 1 FN 1</span>
+                  <span class="pre">From-pretrained TP 0 FP 5 FN 1</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/036_scene_0001_frame_000029.jpg" alt="test_business/overlay/video_033/scene_0001_frame_000029.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_033/scene_0001_frame_000029.jpg</div>
+                <div class="stats">
+                  <span>GT 3</span>
+                  <span class="cont">Continue TP 2 FP 1 FN 1</span>
+                  <span class="pre">From-pretrained TP 3 FP 0 FN 0</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/037_scene_0002_frame_000053.jpg" alt="test_business/overlay/video_062/scene_0002_frame_000053.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_062/scene_0002_frame_000053.jpg</div>
+                <div class="stats">
+                  <span>GT 1</span>
+                  <span class="cont">Continue TP 0 FP 1 FN 1</span>
+                  <span class="pre">From-pretrained TP 0 FP 1 FN 1</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/038_scene_0003_frame_000086.jpg" alt="test_business/overlay/video_062/scene_0003_frame_000086.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_062/scene_0003_frame_000086.jpg</div>
+                <div class="stats">
+                  <span>GT 1</span>
+                  <span class="cont">Continue TP 0 FP 1 FN 1</span>
+                  <span class="pre">From-pretrained TP 0 FP 2 FN 1</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/039_scene_0003_frame_000107.jpg" alt="test_business/overlay/video_062/scene_0003_frame_000107.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_062/scene_0003_frame_000107.jpg</div>
+                <div class="stats">
+                  <span>GT 1</span>
+                  <span class="cont">Continue TP 0 FP 1 FN 1</span>
+                  <span class="pre">From-pretrained TP 0 FP 2 FN 1</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/040_scene_0003_frame_000145.jpg" alt="test_business/overlay/video_033/scene_0003_frame_000145.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_033/scene_0003_frame_000145.jpg</div>
+                <div class="stats">
+                  <span>GT 1</span>
+                  <span class="cont">Continue TP 0 FP 0 FN 1</span>
+                  <span class="pre">From-pretrained TP 0 FP 0 FN 1</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/041_scene_0002_frame_000158.jpg" alt="test_business/overlay/video_011/scene_0002_frame_000158.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_011/scene_0002_frame_000158.jpg</div>
+                <div class="stats">
+                  <span>GT 1</span>
+                  <span class="cont">Continue TP 1 FP 1 FN 0</span>
+                  <span class="pre">From-pretrained TP 1 FP 0 FN 0</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/042_scene_0002_frame_000170.jpg" alt="test_business/overlay/video_011/scene_0002_frame_000170.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_011/scene_0002_frame_000170.jpg</div>
+                <div class="stats">
+                  <span>GT 1</span>
+                  <span class="cont">Continue TP 1 FP 1 FN 0</span>
+                  <span class="pre">From-pretrained TP 1 FP 0 FN 0</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/043_scene_0002_frame_000181.jpg" alt="test_business/overlay/video_011/scene_0002_frame_000181.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_011/scene_0002_frame_000181.jpg</div>
+                <div class="stats">
+                  <span>GT 1</span>
+                  <span class="cont">Continue TP 1 FP 1 FN 0</span>
+                  <span class="pre">From-pretrained TP 1 FP 0 FN 0</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/044_scene_0003_frame_000228.jpg" alt="test_business/overlay/video_011/scene_0003_frame_000228.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_011/scene_0003_frame_000228.jpg</div>
+                <div class="stats">
+                  <span>GT 1</span>
+                  <span class="cont">Continue TP 1 FP 1 FN 0</span>
+                  <span class="pre">From-pretrained TP 1 FP 1 FN 0</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/045_scene_0003_frame_000251.jpg" alt="test_business/overlay/video_011/scene_0003_frame_000251.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_011/scene_0003_frame_000251.jpg</div>
+                <div class="stats">
+                  <span>GT 1</span>
+                  <span class="cont">Continue TP 1 FP 1 FN 0</span>
+                  <span class="pre">From-pretrained TP 1 FP 0 FN 0</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/046_scene_0004_frame_000402.jpg" alt="test_business/overlay/video_011/scene_0004_frame_000402.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_011/scene_0004_frame_000402.jpg</div>
+                <div class="stats">
+                  <span>GT 1</span>
+                  <span class="cont">Continue TP 1 FP 1 FN 0</span>
+                  <span class="pre">From-pretrained TP 1 FP 1 FN 0</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/047_scene_0010_frame_000857.jpg" alt="test_business/overlay/video_011/scene_0010_frame_000857.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_011/scene_0010_frame_000857.jpg</div>
+                <div class="stats">
+                  <span>GT 1</span>
+                  <span class="cont">Continue TP 1 FP 1 FN 0</span>
+                  <span class="pre">From-pretrained TP 1 FP 0 FN 0</span>
+                </div>
+              </div>
+            </article>
+            
+            <article class="case-card">
+              <img src="images/048_scene_0012_frame_001032.jpg" alt="test_business/overlay/video_011/scene_0012_frame_001032.jpg">
+              <div class="case-body">
+                <div class="path">test_business/overlay/video_011/scene_0012_frame_001032.jpg</div>
+                <div class="stats">
+                  <span>GT 1</span>
+                  <span class="cont">Continue TP 1 FP 1 FN 0</span>
+                  <span class="pre">From-pretrained TP 1 FP 0 FN 0</span>
+                </div>
+              </div>
+            </article>
+            
+    </div>
+  </main>
+</body>
+</html>
