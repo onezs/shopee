@@ -24,8 +24,15 @@
     .case figcaption span { font-size: 12px; color: #59636e; overflow-wrap: anywhere; }
     .case figcaption small { color: #59636e; }
     .note { background: white; border-left: 4px solid #2d6cdf; padding: 12px 14px; }
-    .pregrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 16px; }
-    pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; background: #101820; color: #e8edf2; padding: 14px; border-radius: 6px; font-size: 12px; line-height: 1.45; }
+    .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+    .info-card { background: white; border: 1px solid #d9dee3; border-radius: 6px; padding: 14px; }
+    .info-card h3 { margin: 0 0 10px; font-size: 15px; }
+    .info-card p { margin: 0 0 8px; color: #3e4a55; line-height: 1.55; }
+    .info-card ul { margin: 0; padding-left: 18px; color: #3e4a55; line-height: 1.65; }
+    .kv { display: grid; grid-template-columns: 120px 1fr; gap: 8px 12px; font-size: 13px; }
+    .kv span:nth-child(odd) { color: #65717c; }
+    .kv span:nth-child(even) { font-weight: 600; overflow-wrap: anywhere; }
+    .path { color: #4d5964; font-size: 12px; overflow-wrap: anywhere; }
     code { background: #eceff3; padding: 2px 5px; border-radius: 4px; }
   </style>
 </head>
@@ -43,171 +50,116 @@
       <p>test_business 共 134 张图、188 个实例。独立测试 mAP50 为 0.889，低于 val_business 的 0.924，说明真实 held-out 视频上泛化有一定下降，后续应重点看漏检和 clean 误检。</p>
     </section>
     <section>
+      <h2>指标说明</h2>
+      <div class="summary-grid">
+        <div class="info-card">
+          <h3>Precision 0.856</h3>
+          <p>模型预测出来的 overlay 框里，有多少比例是对的。这个值越高，误检越少；当前说明预测框整体可信度还可以，但仍有一部分商品文字或画面文字被当成 overlay。</p>
+        </div>
+        <div class="info-card">
+          <h3>Recall 0.883</h3>
+          <p>真实存在的 overlay 中，有多少被模型找到了。这个值越高，漏检越少；当前对有标注 overlay 的视频帧覆盖较好，134 张测试图中正样本没有完全无预测的 case。</p>
+        </div>
+        <div class="info-card">
+          <h3>mAP50 0.889</h3>
+          <p>在 IoU 0.50 的匹配标准下综合衡量检测排序和命中情况。它更偏“是否大致框到目标”，当前分数较高，说明 YOLO 路线可以抓到主要 overlay 区域。</p>
+        </div>
+        <div class="info-card">
+          <h3>mAP50-95 0.556</h3>
+          <p>在 IoU 0.50 到 0.95 多个严格阈值下的平均分。它更关注框的位置和角度精细度；当前明显低于 mAP50，说明边界贴合、四边形角点精度还有提升空间。</p>
+        </div>
+        <div class="info-card">
+          <h3>Clean FP 16/25</h3>
+          <p>25 张无 overlay 的 clean 测试图中，有 16 张出现预测框。这个指标是当前主要风险，代表模型容易把商品原生文字、UI 或背景文字误判为可移除 overlay。</p>
+        </div>
+        <div class="info-card">
+          <h3>Positive no pred 0/109</h3>
+          <p>109 张有 overlay 的测试图中，没有出现完全无预测的图片。它说明模型召回覆盖较好，但不能代表每个框都精确，也不能抵消 clean 误检问题。</p>
+        </div>
+      </div>
+    </section>
+    <section>
       <h2>数据集与训练配置</h2>
-      <div class="pregrid">
-        <div><h3>数据集摘要</h3><pre>{
-  &quot;source&quot;: &quot;/home/work/opa_common/zhanghaoran/ft_ocr_v6/work/ppocr_business_train_clean_synth_6k_v1&quot;,
-  &quot;output&quot;: &quot;/home/work/opa_common/zhanghaoran/ft_yolo/work/yolo_business_train_clean_synth_6k_obb_v1&quot;,
-  &quot;task&quot;: &quot;yolo_obb&quot;,
-  &quot;class_names&quot;: {
-    &quot;0&quot;: &quot;removable_overlay&quot;
-  },
-  &quot;assume_size&quot;: null,
-  &quot;fixed_size_prefix&quot;: [
-    [
-      &quot;train/business_clean_synth&quot;,
-      &quot;736&quot;,
-      &quot;1312&quot;
-    ]
-  ],
-  &quot;splits&quot;: {
-    &quot;train&quot;: {
-      &quot;images&quot;: 6334,
-      &quot;positive_images&quot;: 5872,
-      &quot;negative_images&quot;: 462,
-      &quot;instances&quot;: 14623,
-      &quot;skipped_non_overlay&quot;: 0
-    },
-    &quot;val_business&quot;: {
-      &quot;images&quot;: 190,
-      &quot;positive_images&quot;: 91,
-      &quot;negative_images&quot;: 99,
-      &quot;instances&quot;: 182,
-      &quot;skipped_non_overlay&quot;: 0
-    },
-    &quot;test_business&quot;: {
-      &quot;images&quot;: 134,
-      &quot;positive_images&quot;: 109,
-      &quot;negative_images&quot;: 25,
-      &quot;instances&quot;: 188,
-      &quot;skipped_non_overlay&quot;: 0
-    }
-  }
-}</pre></div>
-        <div><h3>训练参数</h3><pre>task: obb
-mode: train
-model: yolo11m-obb.pt
-data: work/yolo_business_train_clean_synth_6k_obb_v1/removable_overlay.yaml
-epochs: 80
-time: null
-patience: 20
-batch: 4
-imgsz: 1280
-save: true
-save_period: -1
-cache: ram
-device: &#x27;0&#x27;
-workers: 4
-project: /home/work/opa_common/zhanghaoran/ft_yolo/work/runs/obb
-name: yolo11m_obb_business_6k_v1
-exist_ok: true
-pretrained: true
-optimizer: auto
-verbose: true
-seed: 0
-deterministic: true
-single_cls: false
-rect: false
-cos_lr: false
-close_mosaic: 10
-resume: false
-amp: true
-fraction: 1.0
-profile: false
-freeze: null
-multi_scale: 0.0
-compile: false
-overlap_mask: true
-mask_ratio: 4
-dropout: 0.0
-val: true
-split: val
-save_json: false
-conf: null
-iou: 0.7
-max_det: 300
-half: false
-dnn: false
-plots: true
-end2end: null
-source: null
-vid_stride: 1
-stream_buffer: false
-visualize: false
-augment: false
-agnostic_nms: false
-classes: null
-retina_masks: false
-embed: null
-show: false
-save_frames: false
-save_txt: false
-save_conf: false
-save_crop: false
-show_labels: true
-show_conf: true
-show_boxes: true
-line_width: null
-format: torchscript
-keras: false
-optimize: false
-int8: false
-dynamic: false
-simplify: true
-opset: null
-workspace: null
-nms: false
-lr0: 0.01
-lrf: 0.01
-momentum: 0.937
-weight_decay: 0.0005
-warmup_epochs: 3
-warmup_momentum: 0.8
-warmup_bias_lr: 0.1
-box: 7.5
-cls: 0.5
-cls_pw: 0.0
-dfl: 1.5
-pose: 12.0
-kobj: 1.0
-rle: 1.0
-angle: 1.0
-nbs: 64
-hsv_h: 0.015
-hsv_s: 0.7
-hsv_v: 0.4
-degrees: 0.0
-translate: 0.1
-scale: 0.5
-shear: 0.0
-perspective: 0.0
-flipud: 0.0
-fliplr: 0.5
-bgr: 0.0
-mosaic: 1.0
-mixup: 0.0
-cutmix: 0.0
-copy_paste: 0.0
-copy_paste_mode: flip
-auto_augment: randaugment
-erasing: 0.4
-cfg: null
-tracker: tracktrack.yaml
-save_dir: /home/work/opa_common/zhanghaoran/ft_yolo/work/runs/obb/yolo11m_obb_business_6k_v1
-</pre></div>
-        <div><h3>训练 YAML</h3><pre>path: /home/work/opa_common/zhanghaoran/ft_yolo/work/yolo_business_train_clean_synth_6k_obb_v1
-train: images/train
-val: images/val_business
-names:
-  0: removable_overlay
-</pre></div>
-        <div><h3>测试 YAML</h3><pre>path: /home/work/opa_common/zhanghaoran/ft_yolo/work/yolo_business_train_clean_synth_6k_obb_v1
-train: images/train
-val: images/test_business
-test: images/test_business
-names:
-  0: removable_overlay
-</pre></div>
+      <div class="summary-grid">
+        <div class="info-card">
+          <h3>训练目标</h3>
+          <p>单类可移除 overlay 检测，输出 YOLO OBB 四边形框。</p>
+          <div class="kv">
+            <span>类别</span><span>removable_overlay</span>
+            <span>任务类型</span><span>OBB 旋转框检测</span>
+            <span>业务比例</span><span>主要面向 9:16 商品短视频</span>
+          </div>
+        </div>
+        <div class="info-card">
+          <h3>数据来源</h3>
+          <p>由 PP-OCR 业务 clean/synth 数据转换为 YOLO OBB 格式，保留 clean 负样本用于观察误检。</p>
+          <p class="path">源数据：/home/work/opa_common/zhanghaoran/ft_ocr_v6/work/ppocr_business_train_clean_synth_6k_v1</p>
+          <p class="path">YOLO 数据：/home/work/opa_common/zhanghaoran/ft_yolo/work/yolo_business_train_clean_synth_6k_obb_v1</p>
+        </div>
+        <div class="info-card">
+          <h3>训练集</h3>
+          <div class="kv">
+            <span>图片数</span><span>6,334</span>
+            <span>正样本</span><span>5,872</span>
+            <span>负样本</span><span>462</span>
+            <span>标注实例</span><span>14,623</span>
+          </div>
+        </div>
+        <div class="info-card">
+          <h3>验证集</h3>
+          <div class="kv">
+            <span>图片数</span><span>190</span>
+            <span>正样本</span><span>91</span>
+            <span>负样本</span><span>99</span>
+            <span>标注实例</span><span>182</span>
+          </div>
+        </div>
+        <div class="info-card">
+          <h3>独立测试集</h3>
+          <div class="kv">
+            <span>图片数</span><span>134</span>
+            <span>正样本</span><span>109</span>
+            <span>负样本</span><span>25</span>
+            <span>标注实例</span><span>188</span>
+          </div>
+        </div>
+        <div class="info-card">
+          <h3>模型与输入</h3>
+          <div class="kv">
+            <span>初始化</span><span>yolo11m-obb.pt</span>
+            <span>输入尺寸</span><span>1280</span>
+            <span>预训练</span><span>开启</span>
+            <span>AMP</span><span>开启</span>
+          </div>
+        </div>
+        <div class="info-card">
+          <h3>训练策略</h3>
+          <div class="kv">
+            <span>最大轮数</span><span>80</span>
+            <span>Early stop</span><span>patience 20，best epoch 15</span>
+            <span>实际训练</span><span>35 epochs，约 8.17 小时</span>
+            <span>Batch</span><span>4</span>
+            <span>Cache</span><span>RAM</span>
+            <span>Workers</span><span>4</span>
+          </div>
+        </div>
+        <div class="info-card">
+          <h3>优化与增强</h3>
+          <ul>
+            <li>optimizer 使用 auto，初始学习率 0.01，weight decay 0.0005。</li>
+            <li>warmup 3 epochs，mosaic 开启并在最后 10 epochs 关闭。</li>
+            <li>水平翻转、颜色扰动、随机擦除等保持 Ultralytics 默认配置。</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h3>评估配置</h3>
+          <div class="kv">
+            <span>测试 split</span><span>test_business</span>
+            <span>评估尺寸</span><span>1280</span>
+            <span>可视化阈值</span><span>conf 0.25</span>
+            <span>NMS IoU</span><span>0.7</span>
+          </div>
+        </div>
       </div>
     </section>
     <section>
