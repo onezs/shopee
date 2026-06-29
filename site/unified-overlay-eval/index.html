@@ -7,7 +7,7 @@
     th{background:#eef2f7}
     .note{background:#fff;border:1px solid #d7dee8;border-radius:8px;padding:14px 16px;margin:16px 0}
     .legend span{display:inline-block;margin-right:14px}
-    .gt{color:#2db35f}.yolo{color:#283cf0}.ocr1{color:#ffa500}.ocr2{color:#1e78ff}
+    .gt{color:#2db35f}.yolo{color:#e3342f}.ocr1{color:#ffa500}.ocr2{color:#1e78ff}
     .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(390px,1fr));gap:18px;margin-top:16px}
     article{background:#fff;border:1px solid #d7dee8;border-radius:8px;overflow:hidden}
     article img{display:block;width:100%;background:#111}
@@ -17,7 +17,7 @@
 <header><h1>Unified Overlay Eval: YOLO vs PP-OCRv6</h1>
 <p>同一份 Business6k test，统一使用 polygon IoU >= 0.50 一对一贪心匹配，在当前工作点比较 TP/FP/FN、召回和误检率。</p></header>
 <main>
-<div class="note"><p><b>颜色：</b><span class="gt">绿色=GT</span> <span class="yolo">红/蓝=YOLO11m OBB</span> <span class="ocr1">橙色=PP-OCRv6 continue</span> <span class="ocr2">蓝色=PP-OCRv6 pretrained</span></p>
+<div class="note"><p><b>颜色：</b><span class="gt">绿色=GT</span> <span class="yolo">红色=YOLO11m OBB</span> <span class="ocr1">橙色=PP-OCRv6 continue</span> <span class="ocr2">蓝色=PP-OCRv6 pretrained</span></p>
 <p><b>口径：</b>这里不使用 YOLO 内置 PR 曲线指标；所有模型都只拿当前输出框，用同一 evaluator 计算。误检率包含 <code>FP image rate</code> 和 <code>clean FP rate</code>。</p></div>
 <h2>Unified Metrics</h2><table><thead><tr><th>Model</th><th>TP</th><th>FP</th><th>FN</th><th>Precision</th><th>Recall</th><th>F1</th><th>FP image rate</th><th>FP boxes/img</th><th>Clean FP rate</th><th>Clean FP boxes/img</th><th>Positive no pred</th></tr></thead><tbody><tr><td>YOLO11m OBB</td><td>171</td><td>89</td><td>17</td><td>65.77%</td><td>90.96%</td><td>76.34%</td><td>36.57%</td><td>0.66</td><td>16/25 (64.00%)</td><td>0.84</td><td>0/109 (0.00%)</td></tr><tr><td>PP-OCRv6 continue</td><td>163</td><td>101</td><td>25</td><td>61.74%</td><td>86.70%</td><td>72.12%</td><td>37.31%</td><td>0.75</td><td>6/25 (24.00%)</td><td>0.36</td><td>1/109 (0.92%)</td></tr><tr><td>PP-OCRv6 pretrained</td><td>146</td><td>91</td><td>42</td><td>61.60%</td><td>77.66%</td><td>68.71%</td><td>37.31%</td><td>0.68</td><td>13/25 (52.00%)</td><td>0.72</td><td>1/109 (0.92%)</td></tr></tbody></table>
 <div class="note"><p><b>结论建议：</b>看当前固定工作点，优先比较 Recall、Precision、Clean FP rate 三项。擦除业务不能只看 Recall，clean/native 误检会直接造成误擦。</p></div>
