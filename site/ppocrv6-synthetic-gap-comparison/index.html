@@ -3,347 +3,120 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PP-OCRv6 合成数据与业务 Benchmark 对比说明</title>
+  <title>Overlay 检测路线对比：YOLO OBB vs PP-OCRv6</title>
   <style>
-    :root {
-      --bg: #f5f7fa;
-      --panel: #ffffff;
-      --ink: #17202a;
-      --muted: #5b6778;
-      --line: #d9e1ea;
-      --accent: #1f6feb;
-      --bad: #d1242f;
-      --warn: #9a6700;
-      --good: #1a7f37;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, "Microsoft YaHei", sans-serif;
-      background: var(--bg);
-      color: var(--ink);
-      line-height: 1.55;
-    }
-    header {
-      background: #101828;
-      color: #fff;
-      padding: 34px 42px 30px;
-    }
-    header h1 { margin: 0 0 10px; font-size: 28px; letter-spacing: 0; }
-    header p { margin: 0; color: #d6deea; max-width: 1080px; }
-    main { max-width: 1180px; margin: 0 auto; padding: 28px 24px 48px; }
-    section {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 20px 22px;
-      margin: 0 0 18px;
-    }
-    h2 { margin: 0 0 14px; font-size: 20px; }
-    h3 { margin: 18px 0 10px; font-size: 16px; }
-    p { margin: 8px 0; }
-    .lead {
-      border-left: 4px solid var(--bad);
-      padding-left: 14px;
-      color: var(--ink);
-      font-weight: 600;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 14px;
-      margin-top: 12px;
-    }
-    .card {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 14px;
-      background: #fbfcfe;
-    }
-    .card b { display: block; margin-bottom: 6px; }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 12px 0 4px;
-      font-size: 14px;
-    }
-    th, td {
-      border: 1px solid var(--line);
-      padding: 9px 10px;
-      text-align: left;
-      vertical-align: top;
-    }
-    th { background: #eef3f8; }
-    td.num, th.num { text-align: right; white-space: nowrap; }
-    code {
-      background: #eef3f8;
-      border-radius: 4px;
-      padding: 1px 5px;
-      font-family: Consolas, monospace;
-      font-size: 13px;
-    }
-    .bad { color: var(--bad); font-weight: 700; }
-    .warn { color: var(--warn); font-weight: 700; }
-    .good { color: var(--good); font-weight: 700; }
-    .muted { color: var(--muted); }
-    ul { margin: 8px 0 0 20px; padding: 0; }
-    li { margin: 6px 0; }
+    body{margin:0;background:#f6f7f9;color:#17202a;font-family:Arial,"Microsoft YaHei",sans-serif;line-height:1.55}
+    header{background:#111827;color:white;padding:30px 40px}
+    header h1{margin:0 0 8px;font-size:26px} header p{margin:0;color:#d6deea}
+    main{max-width:1120px;margin:0 auto;padding:24px}
+    section{background:white;border:1px solid #d8e0ea;border-radius:8px;padding:18px 20px;margin-bottom:16px}
+    h2{font-size:19px;margin:0 0 12px}
+    table{width:100%;border-collapse:collapse;font-size:14px;margin-top:10px}
+    th,td{border:1px solid #d8e0ea;padding:8px 9px;text-align:left;vertical-align:top}
+    th{background:#eef3f8}.num{text-align:right;white-space:nowrap}
+    code{background:#eef3f8;border-radius:4px;padding:1px 5px;font-family:Consolas,monospace;font-size:13px}
+    .lead{border-left:4px solid #d1242f;padding-left:12px;font-weight:600}
+    .good{color:#1a7f37;font-weight:700}.bad{color:#d1242f;font-weight:700}.warn{color:#9a6700;font-weight:700}
+    .muted{color:#5b6778}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+    .card{border:1px solid #d8e0ea;border-radius:8px;background:#fbfcfe;padding:12px}.card b{display:block;margin-bottom:5px}
+    ul{margin:8px 0 0 20px;padding:0}li{margin:5px 0}
   </style>
 </head>
 <body>
-  <header>
-    <h1>PP-OCRv6 合成数据与业务 Benchmark 对比说明</h1>
-    <p>对比第一版 all-overlay 合成训练和 V2 字幕/水印 + hard negative 训练，说明为什么合成验证集表现正常，但真实业务 benchmark 召回仍不达标。</p>
-  </header>
-  <main>
-    <section>
-      <h2>一句话结论</h2>
-      <p class="lead">合成数据路线可以把 PP-OCRv6 训练收敛，但当前合成分布还没有覆盖真实业务视频的字幕、水印、小目标、底部区域和压缩退化。第一版 recall 较高但误检严重；V2 hard negative 显著降低误检，但模型变保守，真实业务 recall 下降。</p>
-      <div class="grid">
-        <div class="card">
-          <b>第一版 all-overlay</b>
-          <p>business test recall <span class="warn">49.30%</span>，但 clean FP image rate <span class="bad">75.76%</span>，误擦 native/商品文字风险很高。</p>
-        </div>
-        <div class="card">
-          <b>V2 subtitle/watermark + hard negative</b>
-          <p>clean FP image rate 降到 <span class="good">10.10%</span>，但 business test recall 只有 <span class="bad">28.05%</span>。</p>
-        </div>
-        <div class="card">
-          <b>下一步重点</b>
-          <p>不要只继续加 epoch，应调整数据分布、真实退化、9:16 版式、小目标采样，并在业务 val 上做阈值扫描。</p>
-        </div>
-      </div>
-    </section>
+<header>
+  <h1>Overlay 检测路线对比：YOLO OBB vs PP-OCRv6</h1>
+  <p>精简汇报版：对比 YOLO11m-OBB、PP-OCRv6 第一版、PP-OCRv6 V2，说明合成数据在业务 benchmark 上泛化不足，以及下一步数据集调整方向。</p>
+</header>
+<main>
+  <section>
+    <h2>一句话结论</h2>
+    <p class="lead">三条路线都证明了训练链路可跑通，但当前主要瓶颈不是模型是否能收敛，而是合成数据与真实业务视频分布不一致。YOLO 在统一评估中召回最高，但 clean/native 误检重；PP-OCRv6 V2 用 hard negative 压低误检，但真实 overlay 召回不足。下一步应围绕真实字幕/水印、小目标、9:16 版式和 hard negative 比例重构数据。</p>
+    <div class="grid">
+      <div class="card"><b>YOLO11m-OBB</b>统一 evaluator recall <span class="good">90.96%</span>，但 clean FP rate <span class="bad">64.00%</span>。</div>
+      <div class="card"><b>PP-OCRv6 continue</b>统一 evaluator recall <span class="warn">86.70%</span>，clean FP rate <span class="warn">24.00%</span>。</div>
+      <div class="card"><b>PP-OCRv6 V2 旧 benchmark</b>hard negative 后 clean FP 降到 <span class="good">10.10%</span>，但 test recall 只有 <span class="bad">28.05%</span>。</div>
+    </div>
+  </section>
 
-    <section>
-      <h2>模型与训练配置对比</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>项目</th>
-            <th>第一版 all-overlay</th>
-            <th>V2 subtitle/watermark + hard negative</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>模型</td>
-            <td>PP-OCRv6 medium det，DB，PPLCNetV4 + RepLKPAN + DBHead</td>
-            <td>PP-OCRv6 medium det，DB，PPLCNetV4 + RepLKPAN + DBHead</td>
-          </tr>
-          <tr>
-            <td>Checkpoint</td>
-            <td><code>output/PP-OCRv6_overlay_realbg_synth_medium_det/best_accuracy</code></td>
-            <td><code>output/PP-OCRv6_overlay_subtitle45_wm25_continue_b48_det/best_accuracy</code></td>
-          </tr>
-          <tr>
-            <td>初始化</td>
-            <td>PP-OCRv6 medium det 官方预训练权重</td>
-            <td>从第一版 best checkpoint 继续训练</td>
-          </tr>
-          <tr>
-            <td>训练数据</td>
-            <td><code>work/ppocr_realbg_abo_synth_20k_v4</code></td>
-            <td><code>work/ppocr_realbg_abo_synth_subtitle45_title15_watermark25_hn_26k_v2</code></td>
-          </tr>
-          <tr>
-            <td>epoch / best</td>
-            <td>40 epoch；报告中 best epoch 32，训练步数约 80,000</td>
-            <td>50 epoch；评估快照 best epoch 26</td>
-          </tr>
-          <tr>
-            <td>batch / LR</td>
-            <td>batch_size_per_card=8，Adam cosine LR 2e-4，warmup 2 epoch</td>
-            <td>batch_size_per_card=48，Adam cosine LR 5e-5，warmup 1 epoch</td>
-          </tr>
-          <tr>
-            <td>输入与增强</td>
-            <td>640x640 RandomCrop，ColorJitter，Flip，Affine rotate [-15,15]，Perspective</td>
-            <td>640x640 RandomCrop，ColorJitter，Flip，Affine rotate [-15,15]，Perspective</td>
-          </tr>
-          <tr>
-            <td>后处理</td>
-            <td>thresh=0.15，box_thresh=0.35，unclip_ratio=1.8</td>
-            <td>thresh=0.15，box_thresh=0.35，unclip_ratio=1.8</td>
-          </tr>
-          <tr>
-            <td>主指标</td>
-            <td>DetMetric recall</td>
-            <td>DetMetric recall</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
+  <section>
+    <h2>统一评估结果</h2>
+    <p class="muted">同一批 Business6k test 子集，134 张图，188 个 overlay GT；polygon IoU >= 0.5，一对一贪心匹配。YOLO 使用当前导出的 conf=0.25, imgsz=1280 预测；PP-OCR 使用完整 test 推理结果。该表最适合直接横向比较当前输出框。</p>
+    <table>
+      <thead><tr><th>模型</th><th class="num">Precision</th><th class="num">Recall</th><th class="num">F1</th><th class="num">TP/FP/FN</th><th class="num">Clean FP Rate</th><th class="num">FP Boxes/Image</th><th>解读</th></tr></thead>
+      <tbody>
+        <tr><td>YOLO11m OBB</td><td class="num">65.77%</td><td class="num good">90.96%</td><td class="num">76.34%</td><td class="num">171 / 89 / 17</td><td class="num bad">64.00%</td><td class="num">0.66</td><td>召回最高，但误擦 native/clean 风险最大。</td></tr>
+        <tr><td>PP-OCRv6 continue</td><td class="num">61.74%</td><td class="num warn">86.70%</td><td class="num">72.12%</td><td class="num">163 / 101 / 25</td><td class="num warn">24.00%</td><td class="num">0.75</td><td>召回接近 YOLO，clean FP 明显更低，适合作为 OCR 继续迭代主线。</td></tr>
+        <tr><td>PP-OCRv6 from pretrained</td><td class="num">61.60%</td><td class="num">77.66%</td><td class="num">68.71%</td><td class="num">146 / 91 / 42</td><td class="num bad">52.00%</td><td class="num">0.68</td><td>不如 continue，说明从第一版权重继续训有收益。</td></tr>
+      </tbody>
+    </table>
+  </section>
 
-    <section>
-      <h2>数据集配置对比</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>项目</th>
-            <th>第一版 all-overlay</th>
-            <th>V2 subtitle/watermark + hard negative</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>目标</td>
-            <td>所有可擦 overlay：字幕、水印、emoji/sticker、价格/标题、banner/图形 overlay</td>
-            <td>字幕和水印优先，低占比保留 UI、symbol、emoji/sticker、banner</td>
-          </tr>
-          <tr>
-            <td>训练规模</td>
-            <td>20,000 images：17,000 positive + 3,000 clean negative</td>
-            <td>26,000 images：20,000 positive + 3,000 clean negative + 3,000 hard negative</td>
-          </tr>
-          <tr>
-            <td>验证规模</td>
-            <td>synthetic val_no_empty，positive-only，用于观察收敛</td>
-            <td>2,600 images：2,000 positive + 300 clean negative + 300 hard negative；eval 使用 val_no_empty</td>
-          </tr>
-          <tr>
-            <td>V2 目标采样权重</td>
-            <td>未按字幕/水印主目标收敛，偏 all-overlay 覆盖</td>
-            <td>subtitle 45%，title text 15%，watermark 25%，screen UI 5%，symbol 3%，sticker/emoji 4%，price/banner 3%</td>
-          </tr>
-          <tr>
-            <td>V2 实际实例分布</td>
-            <td>无同口径统计</td>
-            <td>train：subtitle 51.01%，watermark 22.17%，title text 13.43%，其他 13.39%</td>
-          </tr>
-          <tr>
-            <td>框形态</td>
-            <td>四边形标注，旋转增强较强</td>
-            <td>多行字幕按行拆框，框按 alpha 非透明内容收紧；旋转框约 12%</td>
-          </tr>
-          <tr>
-            <td>hard negative</td>
-            <td>没有系统 hard negative</td>
-            <td>来自 OpenFoodFacts、OpenImages、ABO 360，标签为空，用于压 native/包装文字误检</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
+  <section>
+    <h2>训练与数据配置</h2>
+    <table>
+      <thead><tr><th>路线</th><th>模型/初始化</th><th>训练数据</th><th>关键训练配置</th><th>数据特点</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>YOLO11m-OBB v1</td>
+          <td><code>YOLO11m-OBB</code></td>
+          <td><code>ft_yolo/work/yolo_realbg_abo_synth_20k_obb_v1</code></td>
+          <td>80 epochs；imgsz=640；batch=8；OBB 四边形检测</td>
+          <td>真实商品背景 + 程序化合成 overlay；合成 val mAP50-95 约 0.989。</td>
+        </tr>
+        <tr>
+          <td>PP-OCRv6 第一版</td>
+          <td>PP-OCRv6 medium det；官方预训练</td>
+          <td><code>work/ppocr_realbg_abo_synth_20k_v4</code></td>
+          <td>40 epochs；640x640 RandomCrop；batch=8；LR=2e-4；DBPostProcess box_thresh=0.35</td>
+          <td>20k 图：17k positive + 3k clean negative；目标是 all-overlay。</td>
+        </tr>
+        <tr>
+          <td>PP-OCRv6 V2</td>
+          <td>从 PP-OCRv6 第一版 best 继续训</td>
+          <td><code>work/ppocr_realbg_abo_synth_subtitle45_title15_watermark25_hn_26k_v2</code></td>
+          <td>50 epochs；640x640 RandomCrop；batch=48；LR=5e-5；box_thresh=0.35</td>
+          <td>26k 图：20k positive + 3k clean + 3k hard negative；subtitle 51.01%，watermark 22.17%，旋转框约 12%。</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
 
-    <section>
-      <h2>Benchmark 数据与评估口径</h2>
-      <p>业务 benchmark 来自 <code>benchmark/adtext_benchmark_merged_reviewed.json</code>，输出目录 <code>work/business_benchmark</code>。该 reviewed business dataset 只做 benchmark，不参与训练。</p>
-      <table>
-        <thead>
-          <tr>
-            <th>Split</th>
-            <th class="num">Images</th>
-            <th class="num">Positive Images</th>
-            <th class="num">Clean/Native Images</th>
-            <th class="num">Overlay Anns</th>
-            <th class="num">Native Anns</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>val_business</td><td class="num">318</td><td class="num">180</td><td class="num">138</td><td class="num">319</td><td class="num">216</td></tr>
-          <tr><td>test_business</td><td class="num">690</td><td class="num">492</td><td class="num">198</td><td class="num">1,073</td><td class="num">586</td></tr>
-        </tbody>
-      </table>
-      <p class="muted">Recall 口径为标准检测 recall：<code>TP / GT overlay boxes</code>，polygon IoU >= 0.5 一对一匹配。clean/native 不计算 recall，只统计 FP image rate 和 FP boxes/image。</p>
-    </section>
+  <section>
+    <h2>早期大 Benchmark 结果</h2>
+    <p class="muted">该口径来自早期 690 张 reviewed business benchmark，不同于上面的 134 张统一 evaluator；主要用于说明“合成 val 高分不代表业务泛化”。</p>
+    <table>
+      <thead><tr><th>模型</th><th class="num">Synthetic Val</th><th class="num">Business Test Precision</th><th class="num">Business Test Recall</th><th class="num">Clean FP Rate</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>YOLO11m-OBB v1</td><td class="num">mAP50-95 98.86%</td><td class="num">40.10%</td><td class="num">36.70%</td><td class="num">33.84% @ conf=0.35</td><td>合成集学得很好，但业务漏检和 native 误检都明显。</td></tr>
+        <tr><td>PP-OCRv6 第一版</td><td class="num">Recall 85.01%</td><td class="num">36.41%</td><td class="num warn">49.30%</td><td class="num bad">75.76% @ box=0.35</td><td>文字先验带来更高 recall，但 native/package text 误检非常重。</td></tr>
+        <tr><td>PP-OCRv6 V2</td><td class="num">Recall 79.53%</td><td class="num">41.29%</td><td class="num bad">28.05%</td><td class="num good">10.10% @ box=0.35</td><td>hard negative 有效，但模型变保守，字幕/水印召回不足。</td></tr>
+      </tbody>
+    </table>
+  </section>
 
-    <section>
-      <h2>核心结果</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>模型版本</th>
-            <th>Synthetic Val Precision</th>
-            <th>Synthetic Val Recall</th>
-            <th>Business Test Precision</th>
-            <th>Business Test Recall</th>
-            <th>Business Test Miss Rate</th>
-            <th>Clean FP Image Rate</th>
-            <th>Clean FP Boxes/Image</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>第一版 all-overlay</td>
-            <td class="num">89.03%</td>
-            <td class="num">85.01%</td>
-            <td class="num">36.41%</td>
-            <td class="num warn">49.30%</td>
-            <td class="num bad">50.70%</td>
-            <td class="num bad">75.76%</td>
-            <td class="num bad">1.601</td>
-          </tr>
-          <tr>
-            <td>V2 subtitle/watermark + hard negative</td>
-            <td class="num">88.67%</td>
-            <td class="num">79.53%</td>
-            <td class="num">41.29%</td>
-            <td class="num bad">28.05%</td>
-            <td class="num bad">71.95%</td>
-            <td class="num good">10.10%</td>
-            <td class="num good">0.141</td>
-          </tr>
-        </tbody>
-      </table>
-      <p>两版在 synthetic val 上都能达到较高 recall，但迁移到真实业务 test 后明显下降。V2 的 clean FP 明显改善，证明 hard negative 有价值；但业务 recall 更低，说明正样本合成难度和分布还不够。</p>
-    </section>
+  <section>
+    <h2>为什么合成数据业务表现不佳</h2>
+    <ul>
+      <li><b>真实字幕/水印退化不够。</b>真实视频有压缩毛边、低清重采样、运动模糊、描边阴影、半透明平台水印和用户名水印。</li>
+      <li><b>小目标和边缘目标覆盖不足。</b>水印、底部字幕、角落元素是业务高频，但当前合成和 640x640 crop 对这些目标不友好。</li>
+      <li><b>9:16 版式没有充分建模。</b>业务大部分是竖屏视频，正方形 crop 会破坏底部/顶部字幕和角落水印的空间分布。</li>
+      <li><b>hard negative 比例需要平衡。</b>V2 证明 hard negative 能降低误检，但正样本难例密度不足时会直接压低 recall。</li>
+      <li><b>评估不能只看 IoU recall。</b>擦除业务还需要 coverage recall：GT overlay 是否被预测框完整覆盖。</li>
+    </ul>
+  </section>
 
-    <section>
-      <h2>为什么合成数据在业务 Benchmark 表现不佳</h2>
-      <ul>
-        <li><b>真实字幕/水印样式覆盖不足。</b>真实视频存在压缩毛边、运动模糊、低清重采样、复杂描边、阴影、半透明、平台水印、用户名水印等，本轮合成退化还不够。</li>
-        <li><b>9:16 版式和训练 crop 不匹配。</b>业务视频大多是竖屏，当前训练仍使用 640x640 RandomCrop，容易破坏底部字幕、角落水印和边缘小目标的空间分布。</li>
-        <li><b>小目标召回差。</b>错误归因显示小水印、小字幕、小符号是主要漏检来源，尤其是 watermark 和底部元素。</li>
-        <li><b>hard negative 让模型更保守。</b>V2 clean FP 从 75.76% 降到 10.10%，但 overlay recall 从 49.30% 降到 28.05%，说明负样本有效但正样本难例密度不足。</li>
-        <li><b>IoU 指标不能完全代表擦除质量。</b>框略大可能利于擦除，但 IoU 会惩罚大框。后续需要补 coverage recall，衡量 GT overlay 是否被完整覆盖。</li>
-      </ul>
-    </section>
-
-    <section>
-      <h2>后续数据集调整</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>方向</th>
-            <th>调整内容</th>
-            <th>目标</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>真实业务风格正样本</td>
-            <td>补小字号底部字幕、多行字幕、描边/阴影字幕、低透明角落水印、平台/达人水印、用户名水印、压缩模糊退化</td>
-            <td>提升 subtitle/watermark recall</td>
-          </tr>
-          <tr>
-            <td>画幅与尺度</td>
-            <td>按 9:16 完整帧合成，减少正方形 crop 对版式的破坏；提高输入尺度或增加多尺度训练</td>
-            <td>改善底部字幕、角落水印、小目标</td>
-          </tr>
-          <tr>
-            <td>hard negative 比例</td>
-            <td>保留 hard negative，但降低压制强度或提高难正样本比例，避免模型只学会少出框</td>
-            <td>在 clean FP 可控前提下找回 recall</td>
-          </tr>
-          <tr>
-            <td>阈值与后处理</td>
-            <td>在业务 val 上扫描 box_thresh 0.10/0.15/0.20/0.25/0.30/0.35，同时观察 unclip_ratio</td>
-            <td>找到业务工作点，而不是只追 synthetic hmean</td>
-          </tr>
-          <tr>
-            <td>评估指标</td>
-            <td>保留 IoU@0.5 recall，同时新增 coverage@0.90/0.95 recall、clean FP、native overlap</td>
-            <td>更贴近擦除“无残留、少误擦”的目标</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-
-    <section>
-      <h2>汇报口径</h2>
-      <p>当前实验已经证明训练链路可跑通，PP-OCRv6 能在合成验证集上收敛，但合成数据到真实业务 benchmark 存在明显 domain gap。第一版主要问题是误检 native 内容，V2 通过 hard negative 显著降低误检，但召回过低。下一阶段重点应从“继续训练现有合成集”转向“按真实业务字幕/水印分布重构数据集 + 业务 val 阈值扫描 + coverage 指标”。</p>
-      <p class="muted">参考报告：<code>reports/ppocrv6_first_benchmark_eval.md</code>、<code>reports/ppocrv6_v2_best_business_benchmark_eval_2026-06-25.md</code>、<code>reports/synthetic_data_business_benchmark_gap_2026-06-25.md</code>、<code>reports/ppocr_subtitle45_title15_watermark25_hn_dataset_report_v2_2026-06-25.md</code></p>
-    </section>
-  </main>
+  <section>
+    <h2>下一步</h2>
+    <table>
+      <thead><tr><th>方向</th><th>动作</th><th>目标</th></tr></thead>
+      <tbody>
+        <tr><td>数据</td><td>重做真实业务风格合成：小字号底部字幕、多行字幕、角落/低透明水印、平台用户名水印、压缩退化。</td><td>提升 subtitle/watermark recall。</td></tr>
+        <tr><td>负样本</td><td>保留 hard negative，但降低压制强度或增加难正样本比例。</td><td>降低 clean FP，同时避免模型过保守。</td></tr>
+        <tr><td>训练</td><td>优先尝试 9:16 完整帧、多尺度或更高输入尺度；再决定继续 OCR 或 YOLO。</td><td>改善小目标和边缘字幕/水印。</td></tr>
+        <tr><td>评估</td><td>固定同一套 val/test，报告 IoU@0.5 recall、coverage@0.90/0.95、clean FP、native overlap。</td><td>贴近“无残留、少误擦”的业务目标。</td></tr>
+      </tbody>
+    </table>
+  </section>
+</main>
 </body>
 </html>
