@@ -1,0 +1,2407 @@
+{
+  "split": "work/ppocr_business_split_synth_v3 test_business held-out",
+  "iou_thresh": 0.5,
+  "native_iou_thresh": 0.3,
+  "thresholds": {
+    "0.15": {
+      "gt": 198,
+      "pred": 273,
+      "tp": 188,
+      "fp": 85,
+      "fn": 10,
+      "precision": 0.6886446886446886,
+      "recall": 0.9494949494949495,
+      "hmean": 0.7983014861995753,
+      "miss_rate": 0.0505050505050505,
+      "clean_images": 25,
+      "clean_fp_images": 6,
+      "clean_fp_rate": 0.24,
+      "clean_fp_boxes": 10,
+      "clean_fp_boxes_per_image": 0.4,
+      "by_text_type": [
+        {
+          "text_type": "screen_ui",
+          "gt": 1,
+          "tp": 0,
+          "fn": 1,
+          "recall": 0.0
+        },
+        {
+          "text_type": "watermark",
+          "gt": 66,
+          "tp": 58,
+          "fn": 8,
+          "recall": 0.8787878787878788
+        },
+        {
+          "text_type": "subtitle",
+          "gt": 31,
+          "tp": 30,
+          "fn": 1,
+          "recall": 0.967741935483871
+        },
+        {
+          "text_type": "title_overlay",
+          "gt": 87,
+          "tp": 87,
+          "fn": 0,
+          "recall": 1.0
+        },
+        {
+          "text_type": "sticker_with_text",
+          "gt": 9,
+          "tp": 9,
+          "fn": 0,
+          "recall": 1.0
+        },
+        {
+          "text_type": "product_label",
+          "gt": 4,
+          "tp": 4,
+          "fn": 0,
+          "recall": 1.0
+        }
+      ],
+      "by_category": [
+        {
+          "category": "overlay_watermark_ui",
+          "gt": 67,
+          "tp": 58,
+          "fn": 9,
+          "recall": 0.8656716417910447
+        },
+        {
+          "category": "overlay_subtitle",
+          "gt": 35,
+          "tp": 34,
+          "fn": 1,
+          "recall": 0.9714285714285714
+        },
+        {
+          "category": "overlay_title_price",
+          "gt": 87,
+          "tp": 87,
+          "fn": 0,
+          "recall": 1.0
+        },
+        {
+          "category": "overlay_graphic",
+          "gt": 9,
+          "tp": 9,
+          "fn": 0,
+          "recall": 1.0
+        }
+      ],
+      "fn_examples": [
+        {
+          "image": "test_business/overlay/video_011/scene_0002_frame_000193.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "Video by Cece Dini"
+        },
+        {
+          "image": "test_business/overlay/video_014/scene_0001_frame_000030.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "NVCASE"
+        },
+        {
+          "image": "test_business/overlay/video_014/scene_0002_frame_000209.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "NVCASES"
+        },
+        {
+          "image": "test_business/overlay/video_031/scene_0006_frame_000293.jpg",
+          "text_type": "subtitle",
+          "category": "overlay_subtitle",
+          "text": "teksturnya lembut dan nggak lengket"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0001_frame_000029.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartinn"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0002_frame_000100.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartinn"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0003_frame_000145.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartinn"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0005_frame_000269.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartini"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0007_frame_000376.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartinn"
+        },
+        {
+          "image": "test_business/overlay/video_056/scene_0003_frame_000240.jpg",
+          "text_type": "screen_ui",
+          "category": "overlay_watermark_ui",
+          "text": "ShopeeVideo"
+        }
+      ],
+      "clean_fp_reason_counts": {
+        "tiny_noise_or_texture": 4,
+        "overlap_native_or_product_text": 1,
+        "visual_unknown_non_native": 5
+      },
+      "clean_fp_cases": [
+        {
+          "image": "test_business/clean/video_029/scene_0002_frame_000136.jpg",
+          "reason": "tiny_noise_or_texture",
+          "native_iou": 0.018421052631578946,
+          "native_text_type": "product_label",
+          "native_text": "CREATE INFINITY",
+          "points": [
+            [
+              329,
+              422
+            ],
+            [
+              339,
+              422
+            ],
+            [
+              339,
+              429
+            ],
+            [
+              329,
+              429
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_029/scene_0002_frame_000136.jpg",
+          "reason": "overlap_native_or_product_text",
+          "native_iou": 0.3477999021342267,
+          "native_text_type": "product_label",
+          "native_text": "LOULUEN",
+          "points": [
+            [
+              251,
+              386
+            ],
+            [
+              425,
+              401
+            ],
+            [
+              418,
+              477
+            ],
+            [
+              245,
+              462
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_029/scene_0004_frame_000324.jpg",
+          "reason": "visual_unknown_non_native",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              343,
+              981
+            ],
+            [
+              465,
+              981
+            ],
+            [
+              465,
+              1042
+            ],
+            [
+              343,
+              1042
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_076/scene_0004_frame_000272.jpg",
+          "reason": "tiny_noise_or_texture",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              161,
+              116
+            ],
+            [
+              165,
+              119
+            ],
+            [
+              161,
+              123
+            ],
+            [
+              157,
+              119
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_076/scene_0004_frame_000272.jpg",
+          "reason": "tiny_noise_or_texture",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              113,
+              110
+            ],
+            [
+              131,
+              110
+            ],
+            [
+              131,
+              116
+            ],
+            [
+              113,
+              116
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_076/scene_0004_frame_000272.jpg",
+          "reason": "visual_unknown_non_native",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              102,
+              92
+            ],
+            [
+              179,
+              103
+            ],
+            [
+              174,
+              144
+            ],
+            [
+              96,
+              133
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_076/scene_0004_frame_000290.jpg",
+          "reason": "tiny_noise_or_texture",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              161,
+              116
+            ],
+            [
+              165,
+              119
+            ],
+            [
+              161,
+              123
+            ],
+            [
+              157,
+              119
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_076/scene_0004_frame_000290.jpg",
+          "reason": "visual_unknown_non_native",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              102,
+              97
+            ],
+            [
+              176,
+              105
+            ],
+            [
+              173,
+              137
+            ],
+            [
+              99,
+              129
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_076/scene_0006_frame_000381.jpg",
+          "reason": "visual_unknown_non_native",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              77,
+              3
+            ],
+            [
+              181,
+              6
+            ],
+            [
+              180,
+              57
+            ],
+            [
+              75,
+              54
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_076/scene_0006_frame_000402.jpg",
+          "reason": "visual_unknown_non_native",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              76,
+              2
+            ],
+            [
+              183,
+              5
+            ],
+            [
+              181,
+              59
+            ],
+            [
+              75,
+              56
+            ]
+          ]
+        }
+      ]
+    },
+    "0.20": {
+      "gt": 198,
+      "pred": 269,
+      "tp": 188,
+      "fp": 81,
+      "fn": 10,
+      "precision": 0.6988847583643123,
+      "recall": 0.9494949494949495,
+      "hmean": 0.8051391862955033,
+      "miss_rate": 0.0505050505050505,
+      "clean_images": 25,
+      "clean_fp_images": 6,
+      "clean_fp_rate": 0.24,
+      "clean_fp_boxes": 10,
+      "clean_fp_boxes_per_image": 0.4,
+      "by_text_type": [
+        {
+          "text_type": "screen_ui",
+          "gt": 1,
+          "tp": 0,
+          "fn": 1,
+          "recall": 0.0
+        },
+        {
+          "text_type": "watermark",
+          "gt": 66,
+          "tp": 58,
+          "fn": 8,
+          "recall": 0.8787878787878788
+        },
+        {
+          "text_type": "subtitle",
+          "gt": 31,
+          "tp": 30,
+          "fn": 1,
+          "recall": 0.967741935483871
+        },
+        {
+          "text_type": "title_overlay",
+          "gt": 87,
+          "tp": 87,
+          "fn": 0,
+          "recall": 1.0
+        },
+        {
+          "text_type": "sticker_with_text",
+          "gt": 9,
+          "tp": 9,
+          "fn": 0,
+          "recall": 1.0
+        },
+        {
+          "text_type": "product_label",
+          "gt": 4,
+          "tp": 4,
+          "fn": 0,
+          "recall": 1.0
+        }
+      ],
+      "by_category": [
+        {
+          "category": "overlay_watermark_ui",
+          "gt": 67,
+          "tp": 58,
+          "fn": 9,
+          "recall": 0.8656716417910447
+        },
+        {
+          "category": "overlay_subtitle",
+          "gt": 35,
+          "tp": 34,
+          "fn": 1,
+          "recall": 0.9714285714285714
+        },
+        {
+          "category": "overlay_title_price",
+          "gt": 87,
+          "tp": 87,
+          "fn": 0,
+          "recall": 1.0
+        },
+        {
+          "category": "overlay_graphic",
+          "gt": 9,
+          "tp": 9,
+          "fn": 0,
+          "recall": 1.0
+        }
+      ],
+      "fn_examples": [
+        {
+          "image": "test_business/overlay/video_011/scene_0002_frame_000193.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "Video by Cece Dini"
+        },
+        {
+          "image": "test_business/overlay/video_014/scene_0001_frame_000030.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "NVCASE"
+        },
+        {
+          "image": "test_business/overlay/video_014/scene_0002_frame_000209.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "NVCASES"
+        },
+        {
+          "image": "test_business/overlay/video_031/scene_0006_frame_000293.jpg",
+          "text_type": "subtitle",
+          "category": "overlay_subtitle",
+          "text": "teksturnya lembut dan nggak lengket"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0001_frame_000029.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartinn"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0002_frame_000100.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartinn"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0003_frame_000145.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartinn"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0005_frame_000269.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartini"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0007_frame_000376.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartinn"
+        },
+        {
+          "image": "test_business/overlay/video_056/scene_0003_frame_000240.jpg",
+          "text_type": "screen_ui",
+          "category": "overlay_watermark_ui",
+          "text": "ShopeeVideo"
+        }
+      ],
+      "clean_fp_reason_counts": {
+        "tiny_noise_or_texture": 4,
+        "overlap_native_or_product_text": 1,
+        "visual_unknown_non_native": 5
+      },
+      "clean_fp_cases": [
+        {
+          "image": "test_business/clean/video_029/scene_0002_frame_000136.jpg",
+          "reason": "tiny_noise_or_texture",
+          "native_iou": 0.018421052631578946,
+          "native_text_type": "product_label",
+          "native_text": "CREATE INFINITY",
+          "points": [
+            [
+              329,
+              422
+            ],
+            [
+              339,
+              422
+            ],
+            [
+              339,
+              429
+            ],
+            [
+              329,
+              429
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_029/scene_0002_frame_000136.jpg",
+          "reason": "overlap_native_or_product_text",
+          "native_iou": 0.3477999021342267,
+          "native_text_type": "product_label",
+          "native_text": "LOULUEN",
+          "points": [
+            [
+              251,
+              386
+            ],
+            [
+              425,
+              401
+            ],
+            [
+              418,
+              477
+            ],
+            [
+              245,
+              462
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_029/scene_0004_frame_000324.jpg",
+          "reason": "visual_unknown_non_native",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              343,
+              981
+            ],
+            [
+              465,
+              981
+            ],
+            [
+              465,
+              1042
+            ],
+            [
+              343,
+              1042
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_076/scene_0004_frame_000272.jpg",
+          "reason": "tiny_noise_or_texture",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              161,
+              116
+            ],
+            [
+              165,
+              119
+            ],
+            [
+              161,
+              123
+            ],
+            [
+              157,
+              119
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_076/scene_0004_frame_000272.jpg",
+          "reason": "tiny_noise_or_texture",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              113,
+              110
+            ],
+            [
+              131,
+              110
+            ],
+            [
+              131,
+              116
+            ],
+            [
+              113,
+              116
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_076/scene_0004_frame_000272.jpg",
+          "reason": "visual_unknown_non_native",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              102,
+              92
+            ],
+            [
+              179,
+              103
+            ],
+            [
+              174,
+              144
+            ],
+            [
+              96,
+              133
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_076/scene_0004_frame_000290.jpg",
+          "reason": "tiny_noise_or_texture",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              161,
+              116
+            ],
+            [
+              165,
+              119
+            ],
+            [
+              161,
+              123
+            ],
+            [
+              157,
+              119
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_076/scene_0004_frame_000290.jpg",
+          "reason": "visual_unknown_non_native",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              102,
+              97
+            ],
+            [
+              176,
+              105
+            ],
+            [
+              173,
+              137
+            ],
+            [
+              99,
+              129
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_076/scene_0006_frame_000381.jpg",
+          "reason": "visual_unknown_non_native",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              77,
+              3
+            ],
+            [
+              181,
+              6
+            ],
+            [
+              180,
+              57
+            ],
+            [
+              75,
+              54
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_076/scene_0006_frame_000402.jpg",
+          "reason": "visual_unknown_non_native",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              76,
+              2
+            ],
+            [
+              183,
+              5
+            ],
+            [
+              181,
+              59
+            ],
+            [
+              75,
+              56
+            ]
+          ]
+        }
+      ]
+    },
+    "0.25": {
+      "gt": 198,
+      "pred": 255,
+      "tp": 188,
+      "fp": 67,
+      "fn": 10,
+      "precision": 0.7372549019607844,
+      "recall": 0.9494949494949495,
+      "hmean": 0.8300220750551877,
+      "miss_rate": 0.0505050505050505,
+      "clean_images": 25,
+      "clean_fp_images": 6,
+      "clean_fp_rate": 0.24,
+      "clean_fp_boxes": 9,
+      "clean_fp_boxes_per_image": 0.36,
+      "by_text_type": [
+        {
+          "text_type": "screen_ui",
+          "gt": 1,
+          "tp": 0,
+          "fn": 1,
+          "recall": 0.0
+        },
+        {
+          "text_type": "watermark",
+          "gt": 66,
+          "tp": 58,
+          "fn": 8,
+          "recall": 0.8787878787878788
+        },
+        {
+          "text_type": "subtitle",
+          "gt": 31,
+          "tp": 30,
+          "fn": 1,
+          "recall": 0.967741935483871
+        },
+        {
+          "text_type": "title_overlay",
+          "gt": 87,
+          "tp": 87,
+          "fn": 0,
+          "recall": 1.0
+        },
+        {
+          "text_type": "sticker_with_text",
+          "gt": 9,
+          "tp": 9,
+          "fn": 0,
+          "recall": 1.0
+        },
+        {
+          "text_type": "product_label",
+          "gt": 4,
+          "tp": 4,
+          "fn": 0,
+          "recall": 1.0
+        }
+      ],
+      "by_category": [
+        {
+          "category": "overlay_watermark_ui",
+          "gt": 67,
+          "tp": 58,
+          "fn": 9,
+          "recall": 0.8656716417910447
+        },
+        {
+          "category": "overlay_subtitle",
+          "gt": 35,
+          "tp": 34,
+          "fn": 1,
+          "recall": 0.9714285714285714
+        },
+        {
+          "category": "overlay_title_price",
+          "gt": 87,
+          "tp": 87,
+          "fn": 0,
+          "recall": 1.0
+        },
+        {
+          "category": "overlay_graphic",
+          "gt": 9,
+          "tp": 9,
+          "fn": 0,
+          "recall": 1.0
+        }
+      ],
+      "fn_examples": [
+        {
+          "image": "test_business/overlay/video_011/scene_0002_frame_000193.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "Video by Cece Dini"
+        },
+        {
+          "image": "test_business/overlay/video_014/scene_0001_frame_000030.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "NVCASE"
+        },
+        {
+          "image": "test_business/overlay/video_014/scene_0002_frame_000209.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "NVCASES"
+        },
+        {
+          "image": "test_business/overlay/video_031/scene_0006_frame_000293.jpg",
+          "text_type": "subtitle",
+          "category": "overlay_subtitle",
+          "text": "teksturnya lembut dan nggak lengket"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0001_frame_000029.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartinn"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0002_frame_000100.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartinn"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0003_frame_000145.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartinn"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0005_frame_000269.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartini"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0007_frame_000376.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartinn"
+        },
+        {
+          "image": "test_business/overlay/video_056/scene_0003_frame_000240.jpg",
+          "text_type": "screen_ui",
+          "category": "overlay_watermark_ui",
+          "text": "ShopeeVideo"
+        }
+      ],
+      "clean_fp_reason_counts": {
+        "tiny_noise_or_texture": 3,
+        "overlap_native_or_product_text": 1,
+        "visual_unknown_non_native": 5
+      },
+      "clean_fp_cases": [
+        {
+          "image": "test_business/clean/video_029/scene_0002_frame_000136.jpg",
+          "reason": "tiny_noise_or_texture",
+          "native_iou": 0.018421052631578946,
+          "native_text_type": "product_label",
+          "native_text": "CREATE INFINITY",
+          "points": [
+            [
+              329,
+              422
+            ],
+            [
+              339,
+              422
+            ],
+            [
+              339,
+              429
+            ],
+            [
+              329,
+              429
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_029/scene_0002_frame_000136.jpg",
+          "reason": "overlap_native_or_product_text",
+          "native_iou": 0.3477999021342267,
+          "native_text_type": "product_label",
+          "native_text": "LOULUEN",
+          "points": [
+            [
+              251,
+              386
+            ],
+            [
+              425,
+              401
+            ],
+            [
+              418,
+              477
+            ],
+            [
+              245,
+              462
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_029/scene_0004_frame_000324.jpg",
+          "reason": "visual_unknown_non_native",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              343,
+              981
+            ],
+            [
+              465,
+              981
+            ],
+            [
+              465,
+              1042
+            ],
+            [
+              343,
+              1042
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_076/scene_0004_frame_000272.jpg",
+          "reason": "tiny_noise_or_texture",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              161,
+              116
+            ],
+            [
+              165,
+              119
+            ],
+            [
+              161,
+              123
+            ],
+            [
+              157,
+              119
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_076/scene_0004_frame_000272.jpg",
+          "reason": "visual_unknown_non_native",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              102,
+              92
+            ],
+            [
+              179,
+              103
+            ],
+            [
+              174,
+              144
+            ],
+            [
+              96,
+              133
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_076/scene_0004_frame_000290.jpg",
+          "reason": "tiny_noise_or_texture",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              161,
+              116
+            ],
+            [
+              165,
+              119
+            ],
+            [
+              161,
+              123
+            ],
+            [
+              157,
+              119
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_076/scene_0004_frame_000290.jpg",
+          "reason": "visual_unknown_non_native",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              102,
+              97
+            ],
+            [
+              176,
+              105
+            ],
+            [
+              173,
+              137
+            ],
+            [
+              99,
+              129
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_076/scene_0006_frame_000381.jpg",
+          "reason": "visual_unknown_non_native",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              77,
+              3
+            ],
+            [
+              181,
+              6
+            ],
+            [
+              180,
+              57
+            ],
+            [
+              75,
+              54
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_076/scene_0006_frame_000402.jpg",
+          "reason": "visual_unknown_non_native",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              76,
+              2
+            ],
+            [
+              183,
+              5
+            ],
+            [
+              181,
+              59
+            ],
+            [
+              75,
+              56
+            ]
+          ]
+        }
+      ]
+    },
+    "0.30": {
+      "gt": 198,
+      "pred": 241,
+      "tp": 188,
+      "fp": 53,
+      "fn": 10,
+      "precision": 0.7800829875518672,
+      "recall": 0.9494949494949495,
+      "hmean": 0.8564920273348519,
+      "miss_rate": 0.0505050505050505,
+      "clean_images": 25,
+      "clean_fp_images": 6,
+      "clean_fp_rate": 0.24,
+      "clean_fp_boxes": 8,
+      "clean_fp_boxes_per_image": 0.32,
+      "by_text_type": [
+        {
+          "text_type": "screen_ui",
+          "gt": 1,
+          "tp": 0,
+          "fn": 1,
+          "recall": 0.0
+        },
+        {
+          "text_type": "watermark",
+          "gt": 66,
+          "tp": 58,
+          "fn": 8,
+          "recall": 0.8787878787878788
+        },
+        {
+          "text_type": "subtitle",
+          "gt": 31,
+          "tp": 30,
+          "fn": 1,
+          "recall": 0.967741935483871
+        },
+        {
+          "text_type": "title_overlay",
+          "gt": 87,
+          "tp": 87,
+          "fn": 0,
+          "recall": 1.0
+        },
+        {
+          "text_type": "sticker_with_text",
+          "gt": 9,
+          "tp": 9,
+          "fn": 0,
+          "recall": 1.0
+        },
+        {
+          "text_type": "product_label",
+          "gt": 4,
+          "tp": 4,
+          "fn": 0,
+          "recall": 1.0
+        }
+      ],
+      "by_category": [
+        {
+          "category": "overlay_watermark_ui",
+          "gt": 67,
+          "tp": 58,
+          "fn": 9,
+          "recall": 0.8656716417910447
+        },
+        {
+          "category": "overlay_subtitle",
+          "gt": 35,
+          "tp": 34,
+          "fn": 1,
+          "recall": 0.9714285714285714
+        },
+        {
+          "category": "overlay_title_price",
+          "gt": 87,
+          "tp": 87,
+          "fn": 0,
+          "recall": 1.0
+        },
+        {
+          "category": "overlay_graphic",
+          "gt": 9,
+          "tp": 9,
+          "fn": 0,
+          "recall": 1.0
+        }
+      ],
+      "fn_examples": [
+        {
+          "image": "test_business/overlay/video_011/scene_0002_frame_000193.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "Video by Cece Dini"
+        },
+        {
+          "image": "test_business/overlay/video_014/scene_0001_frame_000030.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "NVCASE"
+        },
+        {
+          "image": "test_business/overlay/video_014/scene_0002_frame_000209.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "NVCASES"
+        },
+        {
+          "image": "test_business/overlay/video_031/scene_0006_frame_000293.jpg",
+          "text_type": "subtitle",
+          "category": "overlay_subtitle",
+          "text": "teksturnya lembut dan nggak lengket"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0001_frame_000029.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartinn"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0002_frame_000100.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartinn"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0003_frame_000145.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartinn"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0005_frame_000269.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartini"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0007_frame_000376.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartinn"
+        },
+        {
+          "image": "test_business/overlay/video_056/scene_0003_frame_000240.jpg",
+          "text_type": "screen_ui",
+          "category": "overlay_watermark_ui",
+          "text": "ShopeeVideo"
+        }
+      ],
+      "clean_fp_reason_counts": {
+        "tiny_noise_or_texture": 2,
+        "overlap_native_or_product_text": 1,
+        "visual_unknown_non_native": 5
+      },
+      "clean_fp_cases": [
+        {
+          "image": "test_business/clean/video_029/scene_0002_frame_000136.jpg",
+          "reason": "tiny_noise_or_texture",
+          "native_iou": 0.018421052631578946,
+          "native_text_type": "product_label",
+          "native_text": "CREATE INFINITY",
+          "points": [
+            [
+              329,
+              422
+            ],
+            [
+              339,
+              422
+            ],
+            [
+              339,
+              429
+            ],
+            [
+              329,
+              429
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_029/scene_0002_frame_000136.jpg",
+          "reason": "overlap_native_or_product_text",
+          "native_iou": 0.3477999021342267,
+          "native_text_type": "product_label",
+          "native_text": "LOULUEN",
+          "points": [
+            [
+              251,
+              386
+            ],
+            [
+              425,
+              401
+            ],
+            [
+              418,
+              477
+            ],
+            [
+              245,
+              462
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_029/scene_0004_frame_000324.jpg",
+          "reason": "visual_unknown_non_native",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              343,
+              981
+            ],
+            [
+              465,
+              981
+            ],
+            [
+              465,
+              1042
+            ],
+            [
+              343,
+              1042
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_076/scene_0004_frame_000272.jpg",
+          "reason": "tiny_noise_or_texture",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              161,
+              116
+            ],
+            [
+              165,
+              119
+            ],
+            [
+              161,
+              123
+            ],
+            [
+              157,
+              119
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_076/scene_0004_frame_000272.jpg",
+          "reason": "visual_unknown_non_native",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              102,
+              92
+            ],
+            [
+              179,
+              103
+            ],
+            [
+              174,
+              144
+            ],
+            [
+              96,
+              133
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_076/scene_0004_frame_000290.jpg",
+          "reason": "visual_unknown_non_native",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              102,
+              97
+            ],
+            [
+              176,
+              105
+            ],
+            [
+              173,
+              137
+            ],
+            [
+              99,
+              129
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_076/scene_0006_frame_000381.jpg",
+          "reason": "visual_unknown_non_native",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              77,
+              3
+            ],
+            [
+              181,
+              6
+            ],
+            [
+              180,
+              57
+            ],
+            [
+              75,
+              54
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_076/scene_0006_frame_000402.jpg",
+          "reason": "visual_unknown_non_native",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              76,
+              2
+            ],
+            [
+              183,
+              5
+            ],
+            [
+              181,
+              59
+            ],
+            [
+              75,
+              56
+            ]
+          ]
+        }
+      ]
+    },
+    "0.35": {
+      "gt": 198,
+      "pred": 234,
+      "tp": 188,
+      "fp": 46,
+      "fn": 10,
+      "precision": 0.8034188034188035,
+      "recall": 0.9494949494949495,
+      "hmean": 0.8703703703703703,
+      "miss_rate": 0.0505050505050505,
+      "clean_images": 25,
+      "clean_fp_images": 4,
+      "clean_fp_rate": 0.16,
+      "clean_fp_boxes": 5,
+      "clean_fp_boxes_per_image": 0.2,
+      "by_text_type": [
+        {
+          "text_type": "screen_ui",
+          "gt": 1,
+          "tp": 0,
+          "fn": 1,
+          "recall": 0.0
+        },
+        {
+          "text_type": "watermark",
+          "gt": 66,
+          "tp": 58,
+          "fn": 8,
+          "recall": 0.8787878787878788
+        },
+        {
+          "text_type": "subtitle",
+          "gt": 31,
+          "tp": 30,
+          "fn": 1,
+          "recall": 0.967741935483871
+        },
+        {
+          "text_type": "title_overlay",
+          "gt": 87,
+          "tp": 87,
+          "fn": 0,
+          "recall": 1.0
+        },
+        {
+          "text_type": "sticker_with_text",
+          "gt": 9,
+          "tp": 9,
+          "fn": 0,
+          "recall": 1.0
+        },
+        {
+          "text_type": "product_label",
+          "gt": 4,
+          "tp": 4,
+          "fn": 0,
+          "recall": 1.0
+        }
+      ],
+      "by_category": [
+        {
+          "category": "overlay_watermark_ui",
+          "gt": 67,
+          "tp": 58,
+          "fn": 9,
+          "recall": 0.8656716417910447
+        },
+        {
+          "category": "overlay_subtitle",
+          "gt": 35,
+          "tp": 34,
+          "fn": 1,
+          "recall": 0.9714285714285714
+        },
+        {
+          "category": "overlay_title_price",
+          "gt": 87,
+          "tp": 87,
+          "fn": 0,
+          "recall": 1.0
+        },
+        {
+          "category": "overlay_graphic",
+          "gt": 9,
+          "tp": 9,
+          "fn": 0,
+          "recall": 1.0
+        }
+      ],
+      "fn_examples": [
+        {
+          "image": "test_business/overlay/video_011/scene_0002_frame_000193.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "Video by Cece Dini"
+        },
+        {
+          "image": "test_business/overlay/video_014/scene_0001_frame_000030.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "NVCASE"
+        },
+        {
+          "image": "test_business/overlay/video_014/scene_0002_frame_000209.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "NVCASES"
+        },
+        {
+          "image": "test_business/overlay/video_031/scene_0006_frame_000293.jpg",
+          "text_type": "subtitle",
+          "category": "overlay_subtitle",
+          "text": "teksturnya lembut dan nggak lengket"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0001_frame_000029.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartinn"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0002_frame_000100.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartinn"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0003_frame_000145.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartinn"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0005_frame_000269.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartini"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0007_frame_000376.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartinn"
+        },
+        {
+          "image": "test_business/overlay/video_056/scene_0003_frame_000240.jpg",
+          "text_type": "screen_ui",
+          "category": "overlay_watermark_ui",
+          "text": "ShopeeVideo"
+        }
+      ],
+      "clean_fp_reason_counts": {
+        "tiny_noise_or_texture": 1,
+        "overlap_native_or_product_text": 1,
+        "visual_unknown_non_native": 3
+      },
+      "clean_fp_cases": [
+        {
+          "image": "test_business/clean/video_029/scene_0002_frame_000136.jpg",
+          "reason": "tiny_noise_or_texture",
+          "native_iou": 0.018421052631578946,
+          "native_text_type": "product_label",
+          "native_text": "CREATE INFINITY",
+          "points": [
+            [
+              329,
+              422
+            ],
+            [
+              339,
+              422
+            ],
+            [
+              339,
+              429
+            ],
+            [
+              329,
+              429
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_029/scene_0002_frame_000136.jpg",
+          "reason": "overlap_native_or_product_text",
+          "native_iou": 0.3477999021342267,
+          "native_text_type": "product_label",
+          "native_text": "LOULUEN",
+          "points": [
+            [
+              251,
+              386
+            ],
+            [
+              425,
+              401
+            ],
+            [
+              418,
+              477
+            ],
+            [
+              245,
+              462
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_029/scene_0004_frame_000324.jpg",
+          "reason": "visual_unknown_non_native",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              343,
+              981
+            ],
+            [
+              465,
+              981
+            ],
+            [
+              465,
+              1042
+            ],
+            [
+              343,
+              1042
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_076/scene_0006_frame_000381.jpg",
+          "reason": "visual_unknown_non_native",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              77,
+              3
+            ],
+            [
+              181,
+              6
+            ],
+            [
+              180,
+              57
+            ],
+            [
+              75,
+              54
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_076/scene_0006_frame_000402.jpg",
+          "reason": "visual_unknown_non_native",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              76,
+              2
+            ],
+            [
+              183,
+              5
+            ],
+            [
+              181,
+              59
+            ],
+            [
+              75,
+              56
+            ]
+          ]
+        }
+      ]
+    },
+    "0.40": {
+      "gt": 198,
+      "pred": 227,
+      "tp": 188,
+      "fp": 39,
+      "fn": 10,
+      "precision": 0.8281938325991189,
+      "recall": 0.9494949494949495,
+      "hmean": 0.884705882352941,
+      "miss_rate": 0.0505050505050505,
+      "clean_images": 25,
+      "clean_fp_images": 4,
+      "clean_fp_rate": 0.16,
+      "clean_fp_boxes": 5,
+      "clean_fp_boxes_per_image": 0.2,
+      "by_text_type": [
+        {
+          "text_type": "screen_ui",
+          "gt": 1,
+          "tp": 0,
+          "fn": 1,
+          "recall": 0.0
+        },
+        {
+          "text_type": "watermark",
+          "gt": 66,
+          "tp": 58,
+          "fn": 8,
+          "recall": 0.8787878787878788
+        },
+        {
+          "text_type": "subtitle",
+          "gt": 31,
+          "tp": 30,
+          "fn": 1,
+          "recall": 0.967741935483871
+        },
+        {
+          "text_type": "title_overlay",
+          "gt": 87,
+          "tp": 87,
+          "fn": 0,
+          "recall": 1.0
+        },
+        {
+          "text_type": "sticker_with_text",
+          "gt": 9,
+          "tp": 9,
+          "fn": 0,
+          "recall": 1.0
+        },
+        {
+          "text_type": "product_label",
+          "gt": 4,
+          "tp": 4,
+          "fn": 0,
+          "recall": 1.0
+        }
+      ],
+      "by_category": [
+        {
+          "category": "overlay_watermark_ui",
+          "gt": 67,
+          "tp": 58,
+          "fn": 9,
+          "recall": 0.8656716417910447
+        },
+        {
+          "category": "overlay_subtitle",
+          "gt": 35,
+          "tp": 34,
+          "fn": 1,
+          "recall": 0.9714285714285714
+        },
+        {
+          "category": "overlay_title_price",
+          "gt": 87,
+          "tp": 87,
+          "fn": 0,
+          "recall": 1.0
+        },
+        {
+          "category": "overlay_graphic",
+          "gt": 9,
+          "tp": 9,
+          "fn": 0,
+          "recall": 1.0
+        }
+      ],
+      "fn_examples": [
+        {
+          "image": "test_business/overlay/video_011/scene_0002_frame_000193.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "Video by Cece Dini"
+        },
+        {
+          "image": "test_business/overlay/video_014/scene_0001_frame_000030.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "NVCASE"
+        },
+        {
+          "image": "test_business/overlay/video_014/scene_0002_frame_000209.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "NVCASES"
+        },
+        {
+          "image": "test_business/overlay/video_031/scene_0006_frame_000293.jpg",
+          "text_type": "subtitle",
+          "category": "overlay_subtitle",
+          "text": "teksturnya lembut dan nggak lengket"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0001_frame_000029.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartinn"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0002_frame_000100.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartinn"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0003_frame_000145.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartinn"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0005_frame_000269.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartini"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0007_frame_000376.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartinn"
+        },
+        {
+          "image": "test_business/overlay/video_056/scene_0003_frame_000240.jpg",
+          "text_type": "screen_ui",
+          "category": "overlay_watermark_ui",
+          "text": "ShopeeVideo"
+        }
+      ],
+      "clean_fp_reason_counts": {
+        "tiny_noise_or_texture": 1,
+        "overlap_native_or_product_text": 1,
+        "visual_unknown_non_native": 3
+      },
+      "clean_fp_cases": [
+        {
+          "image": "test_business/clean/video_029/scene_0002_frame_000136.jpg",
+          "reason": "tiny_noise_or_texture",
+          "native_iou": 0.018421052631578946,
+          "native_text_type": "product_label",
+          "native_text": "CREATE INFINITY",
+          "points": [
+            [
+              329,
+              422
+            ],
+            [
+              339,
+              422
+            ],
+            [
+              339,
+              429
+            ],
+            [
+              329,
+              429
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_029/scene_0002_frame_000136.jpg",
+          "reason": "overlap_native_or_product_text",
+          "native_iou": 0.3477999021342267,
+          "native_text_type": "product_label",
+          "native_text": "LOULUEN",
+          "points": [
+            [
+              251,
+              386
+            ],
+            [
+              425,
+              401
+            ],
+            [
+              418,
+              477
+            ],
+            [
+              245,
+              462
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_029/scene_0004_frame_000324.jpg",
+          "reason": "visual_unknown_non_native",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              343,
+              981
+            ],
+            [
+              465,
+              981
+            ],
+            [
+              465,
+              1042
+            ],
+            [
+              343,
+              1042
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_076/scene_0006_frame_000381.jpg",
+          "reason": "visual_unknown_non_native",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              77,
+              3
+            ],
+            [
+              181,
+              6
+            ],
+            [
+              180,
+              57
+            ],
+            [
+              75,
+              54
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_076/scene_0006_frame_000402.jpg",
+          "reason": "visual_unknown_non_native",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              76,
+              2
+            ],
+            [
+              183,
+              5
+            ],
+            [
+              181,
+              59
+            ],
+            [
+              75,
+              56
+            ]
+          ]
+        }
+      ]
+    },
+    "0.45": {
+      "gt": 198,
+      "pred": 222,
+      "tp": 186,
+      "fp": 36,
+      "fn": 12,
+      "precision": 0.8378378378378378,
+      "recall": 0.9393939393939394,
+      "hmean": 0.8857142857142858,
+      "miss_rate": 0.06060606060606055,
+      "clean_images": 25,
+      "clean_fp_images": 4,
+      "clean_fp_rate": 0.16,
+      "clean_fp_boxes": 4,
+      "clean_fp_boxes_per_image": 0.16,
+      "by_text_type": [
+        {
+          "text_type": "screen_ui",
+          "gt": 1,
+          "tp": 0,
+          "fn": 1,
+          "recall": 0.0
+        },
+        {
+          "text_type": "watermark",
+          "gt": 66,
+          "tp": 56,
+          "fn": 10,
+          "recall": 0.8484848484848485
+        },
+        {
+          "text_type": "subtitle",
+          "gt": 31,
+          "tp": 30,
+          "fn": 1,
+          "recall": 0.967741935483871
+        },
+        {
+          "text_type": "title_overlay",
+          "gt": 87,
+          "tp": 87,
+          "fn": 0,
+          "recall": 1.0
+        },
+        {
+          "text_type": "sticker_with_text",
+          "gt": 9,
+          "tp": 9,
+          "fn": 0,
+          "recall": 1.0
+        },
+        {
+          "text_type": "product_label",
+          "gt": 4,
+          "tp": 4,
+          "fn": 0,
+          "recall": 1.0
+        }
+      ],
+      "by_category": [
+        {
+          "category": "overlay_watermark_ui",
+          "gt": 67,
+          "tp": 56,
+          "fn": 11,
+          "recall": 0.835820895522388
+        },
+        {
+          "category": "overlay_subtitle",
+          "gt": 35,
+          "tp": 34,
+          "fn": 1,
+          "recall": 0.9714285714285714
+        },
+        {
+          "category": "overlay_title_price",
+          "gt": 87,
+          "tp": 87,
+          "fn": 0,
+          "recall": 1.0
+        },
+        {
+          "category": "overlay_graphic",
+          "gt": 9,
+          "tp": 9,
+          "fn": 0,
+          "recall": 1.0
+        }
+      ],
+      "fn_examples": [
+        {
+          "image": "test_business/overlay/video_011/scene_0002_frame_000193.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "Video by Cece Dini"
+        },
+        {
+          "image": "test_business/overlay/video_011/scene_0011_frame_000944.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "Video by Cece Dini"
+        },
+        {
+          "image": "test_business/overlay/video_011/scene_0011_frame_000980.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "Video by Cece Dini"
+        },
+        {
+          "image": "test_business/overlay/video_014/scene_0001_frame_000030.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "NVCASE"
+        },
+        {
+          "image": "test_business/overlay/video_014/scene_0002_frame_000209.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "NVCASES"
+        },
+        {
+          "image": "test_business/overlay/video_031/scene_0006_frame_000293.jpg",
+          "text_type": "subtitle",
+          "category": "overlay_subtitle",
+          "text": "teksturnya lembut dan nggak lengket"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0001_frame_000029.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartinn"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0002_frame_000100.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartinn"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0003_frame_000145.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartinn"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0005_frame_000269.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartini"
+        },
+        {
+          "image": "test_business/overlay/video_033/scene_0007_frame_000376.jpg",
+          "text_type": "watermark",
+          "category": "overlay_watermark_ui",
+          "text": "video milik @titin suhartinn"
+        },
+        {
+          "image": "test_business/overlay/video_056/scene_0003_frame_000240.jpg",
+          "text_type": "screen_ui",
+          "category": "overlay_watermark_ui",
+          "text": "ShopeeVideo"
+        }
+      ],
+      "clean_fp_reason_counts": {
+        "overlap_native_or_product_text": 1,
+        "visual_unknown_non_native": 3
+      },
+      "clean_fp_cases": [
+        {
+          "image": "test_business/clean/video_029/scene_0002_frame_000136.jpg",
+          "reason": "overlap_native_or_product_text",
+          "native_iou": 0.3477999021342267,
+          "native_text_type": "product_label",
+          "native_text": "LOULUEN",
+          "points": [
+            [
+              251,
+              386
+            ],
+            [
+              425,
+              401
+            ],
+            [
+              418,
+              477
+            ],
+            [
+              245,
+              462
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_029/scene_0004_frame_000324.jpg",
+          "reason": "visual_unknown_non_native",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              343,
+              981
+            ],
+            [
+              465,
+              981
+            ],
+            [
+              465,
+              1042
+            ],
+            [
+              343,
+              1042
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_076/scene_0006_frame_000381.jpg",
+          "reason": "visual_unknown_non_native",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              77,
+              3
+            ],
+            [
+              181,
+              6
+            ],
+            [
+              180,
+              57
+            ],
+            [
+              75,
+              54
+            ]
+          ]
+        },
+        {
+          "image": "test_business/clean/video_076/scene_0006_frame_000402.jpg",
+          "reason": "visual_unknown_non_native",
+          "native_iou": 0.0,
+          "native_text_type": null,
+          "native_text": null,
+          "points": [
+            [
+              76,
+              2
+            ],
+            [
+              183,
+              5
+            ],
+            [
+              181,
+              59
+            ],
+            [
+              75,
+              56
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  "meta_mismatch": []
+}

@@ -1,0 +1,206 @@
+{
+  "eval_split": "work/ppocr_business_split_synth_v3",
+  "image_root": "work/ppocr_business_split_synth_v3/images",
+  "postprocess": {
+    "thresh": 0.15,
+    "box_thresh": 0.25,
+    "unclip_ratio": 1.8
+  },
+  "models": {
+    "v1_continue": {
+      "val_overlay": {
+        "precision": 0.6703703703703704,
+        "recall": 0.9329896907216495,
+        "hmean": 0.7801724137931035,
+        "fps": 11.581778368732078
+      },
+      "test_overlay": {
+        "precision": 0.7372549019607844,
+        "recall": 0.9494949494949495,
+        "hmean": 0.8300220750551877,
+        "fps": 13.139710990191384
+      },
+      "clean_fp": {
+        "images": 25,
+        "fp_images": 6,
+        "fp_image_rate": 0.24,
+        "fp_boxes": 9,
+        "fp_boxes_per_image": 0.36,
+        "examples": [
+          {
+            "image": "/home/work/opa_common/zhanghaoran/ft_ocr_v6/work/ppocr_business_split_synth_v3/images/test_business/clean/video_029/scene_0002_frame_000136.jpg",
+            "boxes": 2
+          },
+          {
+            "image": "/home/work/opa_common/zhanghaoran/ft_ocr_v6/work/ppocr_business_split_synth_v3/images/test_business/clean/video_029/scene_0004_frame_000324.jpg",
+            "boxes": 1
+          },
+          {
+            "image": "/home/work/opa_common/zhanghaoran/ft_ocr_v6/work/ppocr_business_split_synth_v3/images/test_business/clean/video_076/scene_0004_frame_000272.jpg",
+            "boxes": 2
+          },
+          {
+            "image": "/home/work/opa_common/zhanghaoran/ft_ocr_v6/work/ppocr_business_split_synth_v3/images/test_business/clean/video_076/scene_0004_frame_000290.jpg",
+            "boxes": 2
+          },
+          {
+            "image": "/home/work/opa_common/zhanghaoran/ft_ocr_v6/work/ppocr_business_split_synth_v3/images/test_business/clean/video_076/scene_0006_frame_000381.jpg",
+            "boxes": 1
+          }
+        ]
+      }
+    },
+    "v2_tight": {
+      "val_overlay": {
+        "precision": 0.634020618556701,
+        "recall": 0.634020618556701,
+        "hmean": 0.634020618556701,
+        "fps": 13.048599599545668
+      },
+      "test_overlay": {
+        "precision": 0.5860655737704918,
+        "recall": 0.7222222222222222,
+        "hmean": 0.6470588235294119,
+        "fps": 11.597708673216626
+      },
+      "clean_fp": {
+        "images": 25,
+        "fp_images": 20,
+        "fp_image_rate": 0.8,
+        "fp_boxes": 21,
+        "fp_boxes_per_image": 0.84,
+        "examples": [
+          {
+            "image": "/home/work/opa_common/zhanghaoran/ft_ocr_v6/work/ppocr_business_split_synth_v3/images/test_business/clean/video_029/scene_0002_frame_000136.jpg",
+            "boxes": 1
+          },
+          {
+            "image": "/home/work/opa_common/zhanghaoran/ft_ocr_v6/work/ppocr_business_split_synth_v3/images/test_business/clean/video_076/scene_0001_frame_000019.jpg",
+            "boxes": 2
+          },
+          {
+            "image": "/home/work/opa_common/zhanghaoran/ft_ocr_v6/work/ppocr_business_split_synth_v3/images/test_business/clean/video_076/scene_0001_frame_000038.jpg",
+            "boxes": 1
+          },
+          {
+            "image": "/home/work/opa_common/zhanghaoran/ft_ocr_v6/work/ppocr_business_split_synth_v3/images/test_business/clean/video_076/scene_0002_frame_000099.jpg",
+            "boxes": 1
+          },
+          {
+            "image": "/home/work/opa_common/zhanghaoran/ft_ocr_v6/work/ppocr_business_split_synth_v3/images/test_business/clean/video_076/scene_0002_frame_000140.jpg",
+            "boxes": 1
+          }
+        ]
+      }
+    },
+    "v3_continue": {
+      "val_overlay": {
+        "precision": 0.7486910994764397,
+        "recall": 0.7371134020618557,
+        "hmean": 0.7428571428571429,
+        "fps": 12.963469314669931
+      },
+      "test_overlay": {
+        "precision": 0.65625,
+        "recall": 0.7424242424242424,
+        "hmean": 0.6966824644549764,
+        "fps": 12.727403408533021
+      },
+      "clean_fp": {
+        "images": 25,
+        "fp_images": 1,
+        "fp_image_rate": 0.04,
+        "fp_boxes": 1,
+        "fp_boxes_per_image": 0.04,
+        "examples": [
+          {
+            "image": "/home/work/opa_common/zhanghaoran/ft_ocr_v6/work/ppocr_business_split_synth_v3/images/test_business/clean/video_076/scene_0006_frame_000402.jpg",
+            "boxes": 1
+          }
+        ]
+      }
+    },
+    "v3_ptbest": {
+      "val_overlay": {
+        "precision": 0.6967741935483871,
+        "recall": 0.5567010309278351,
+        "hmean": 0.6189111747851003,
+        "fps": 13.03880938507326
+      },
+      "test_overlay": {
+        "precision": 0.5336322869955157,
+        "recall": 0.601010101010101,
+        "hmean": 0.5653206650831354,
+        "fps": 8.926546070919178
+      },
+      "clean_fp": {
+        "images": 25,
+        "fp_images": 13,
+        "fp_image_rate": 0.52,
+        "fp_boxes": 15,
+        "fp_boxes_per_image": 0.6,
+        "examples": [
+          {
+            "image": "/home/work/opa_common/zhanghaoran/ft_ocr_v6/work/ppocr_business_split_synth_v3/images/test_business/clean/video_029/scene_0004_frame_000324.jpg",
+            "boxes": 2
+          },
+          {
+            "image": "/home/work/opa_common/zhanghaoran/ft_ocr_v6/work/ppocr_business_split_synth_v3/images/test_business/clean/video_076/scene_0001_frame_000019.jpg",
+            "boxes": 1
+          },
+          {
+            "image": "/home/work/opa_common/zhanghaoran/ft_ocr_v6/work/ppocr_business_split_synth_v3/images/test_business/clean/video_076/scene_0001_frame_000038.jpg",
+            "boxes": 1
+          },
+          {
+            "image": "/home/work/opa_common/zhanghaoran/ft_ocr_v6/work/ppocr_business_split_synth_v3/images/test_business/clean/video_076/scene_0003_frame_000205.jpg",
+            "boxes": 1
+          },
+          {
+            "image": "/home/work/opa_common/zhanghaoran/ft_ocr_v6/work/ppocr_business_split_synth_v3/images/test_business/clean/video_076/scene_0004_frame_000290.jpg",
+            "boxes": 1
+          }
+        ]
+      }
+    },
+    "v3c_continue_lr2e5": {
+      "val_overlay": {
+        "precision": 0.764367816091954,
+        "recall": 0.6855670103092784,
+        "hmean": 0.7228260869565217,
+        "fps": 9.182974222174703
+      },
+      "test_overlay": {
+        "precision": 0.48695652173913045,
+        "recall": 0.5656565656565656,
+        "hmean": 0.5233644859813085,
+        "fps": 9.330471885252162
+      },
+      "clean_fp": {
+        "images": 25,
+        "fp_images": 4,
+        "fp_image_rate": 0.16,
+        "fp_boxes": 5,
+        "fp_boxes_per_image": 0.2,
+        "examples": [
+          {
+            "image": "/home/work/opa_common/zhanghaoran/ft_ocr_v6/work/ppocr_business_split_synth_v3/images/test_business/clean/video_029/scene_0002_frame_000136.jpg",
+            "boxes": 1
+          },
+          {
+            "image": "/home/work/opa_common/zhanghaoran/ft_ocr_v6/work/ppocr_business_split_synth_v3/images/test_business/clean/video_029/scene_0004_frame_000324.jpg",
+            "boxes": 1
+          },
+          {
+            "image": "/home/work/opa_common/zhanghaoran/ft_ocr_v6/work/ppocr_business_split_synth_v3/images/test_business/clean/video_076/scene_0006_frame_000381.jpg",
+            "boxes": 1
+          },
+          {
+            "image": "/home/work/opa_common/zhanghaoran/ft_ocr_v6/work/ppocr_business_split_synth_v3/images/test_business/clean/video_076/scene_0006_frame_000402.jpg",
+            "boxes": 2
+          }
+        ]
+      }
+    }
+  }
+}
