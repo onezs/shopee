@@ -29,16 +29,24 @@
     .twocol { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
     ul.reasons { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; list-style:none; padding:0; margin:0 0 14px; }
     ul.reasons li { background:#fff; border:1px solid var(--line); border-radius:8px; padding:12px; display:flex; justify-content:space-between; gap:12px; }
+    .casegrid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin-top:12px; }
+    .case { background:#fff; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+    .case img { width:100%; display:block; background:#e7ebef; aspect-ratio:9/16; object-fit:contain; }
+    .case .cap { padding:10px 12px; border-top:1px solid var(--line); }
+    .case .cap strong { display:block; font-size:13px; margin-bottom:4px; }
+    .legend { display:flex; gap:16px; flex-wrap:wrap; margin:10px 0 0; color:var(--muted); font-size:13px; }
+    .dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:5px; vertical-align:-1px; }
+    .gt { background:#21a95b; }
+    .pred { background:#ff9d00; }
     .small { font-size:12px; color:var(--muted); }
     footer { padding:20px 40px; color:var(--muted); border-top:1px solid var(--line); background:#fff; }
-    @media (max-width:900px) { header,main,footer { padding-left:18px; padding-right:18px; } .grid,.twocol,ul.reasons { grid-template-columns:1fr; } table { display:block; overflow-x:auto; } }
+    @media (max-width:900px) { header,main,footer { padding-left:18px; padding-right:18px; } .grid,.twocol,ul.reasons,.casegrid { grid-template-columns:1fr; } table { display:block; overflow-x:auto; } }
   </style>
 </head>
 <body>
   <header>
     <h1>PP-OCRv6 Overlay Detector: V1 Threshold and Error Review</h1>
     <p>统一使用 V1/V2/V3 共同 held-out split，评估 overlay recall、clean false positive、类型召回和 V1 阈值收益。</p>
-    
   </header>
   <main>
     <section class="grid">
@@ -55,20 +63,41 @@
     <h2>2. V1 Threshold Scan</h2>
     <p>V1 在 <code>box_thresh=0.15~0.40</code> 的 recall 都保持 94.95%，precision 持续提升；<code>0.45</code> 开始掉 recall。绿色行是推荐工作点。</p>
     <table><thead><tr><th>box_thresh</th><th>Precision</th><th>Recall</th><th>Miss</th><th>HMean</th><th>Pred</th><th>FP</th><th>Clean FP images</th><th>Clean FP boxes/image</th></tr></thead><tbody><tr><td>0.15</td><td>0.6886</td><td>0.9495</td><td>5.05%</td><td>0.7983</td><td>273</td><td>85</td><td>6/25 (24.00%)</td><td>0.40</td></tr><tr><td>0.20</td><td>0.6989</td><td>0.9495</td><td>5.05%</td><td>0.8051</td><td>269</td><td>81</td><td>6/25 (24.00%)</td><td>0.40</td></tr><tr><td>0.25</td><td>0.7373</td><td>0.9495</td><td>5.05%</td><td>0.8300</td><td>255</td><td>67</td><td>6/25 (24.00%)</td><td>0.36</td></tr><tr><td>0.30</td><td>0.7801</td><td>0.9495</td><td>5.05%</td><td>0.8565</td><td>241</td><td>53</td><td>6/25 (24.00%)</td><td>0.32</td></tr><tr><td>0.35</td><td>0.8034</td><td>0.9495</td><td>5.05%</td><td>0.8704</td><td>234</td><td>46</td><td>4/25 (16.00%)</td><td>0.20</td></tr><tr class="selected"><td>0.40</td><td>0.8282</td><td>0.9495</td><td>5.05%</td><td>0.8847</td><td>227</td><td>39</td><td>4/25 (16.00%)</td><td>0.20</td></tr><tr><td>0.45</td><td>0.8378</td><td>0.9394</td><td>6.06%</td><td>0.8857</td><td>222</td><td>36</td><td>4/25 (16.00%)</td><td>0.16</td></tr></tbody></table>
+    <div class="callout"><strong>推荐阈值：</strong><code>box_thresh=0.40</code>。在当前 held-out test 上 recall 仍为 <strong>94.95%</strong>，miss rate <strong>5.05%</strong>，同时 precision 提到 <strong>82.82%</strong>，clean FP 从 0.25 的 6/25 降到 <strong>4/25</strong>。</div>
 
-    <h2>3. Recall by Overlay Type at box_thresh=0.25</h2>
+    <h2>3. Recall by Overlay Type at box_thresh=0.40</h2>
     <div class="twocol">
       <div><table><thead><tr><th>text_type</th><th>GT</th><th>TP</th><th>FN</th><th>Recall</th></tr></thead><tbody><tr><td>title_overlay</td><td>87</td><td>87</td><td>0</td><td>100.00%</td></tr><tr><td>watermark</td><td>66</td><td>58</td><td>8</td><td>87.88%</td></tr><tr><td>subtitle</td><td>31</td><td>30</td><td>1</td><td>96.77%</td></tr><tr><td>sticker_with_text</td><td>9</td><td>9</td><td>0</td><td>100.00%</td></tr><tr><td>product_label</td><td>4</td><td>4</td><td>0</td><td>100.00%</td></tr><tr><td>screen_ui</td><td>1</td><td>0</td><td>1</td><td>0.00%</td></tr></tbody></table></div>
       <div><table><thead><tr><th>category</th><th>GT</th><th>TP</th><th>FN</th><th>Recall</th></tr></thead><tbody><tr><td>overlay_title_price</td><td>87</td><td>87</td><td>0</td><td>100.00%</td></tr><tr><td>overlay_watermark_ui</td><td>67</td><td>58</td><td>9</td><td>86.57%</td></tr><tr><td>overlay_subtitle</td><td>35</td><td>34</td><td>1</td><td>97.14%</td></tr><tr><td>overlay_graphic</td><td>9</td><td>9</td><td>0</td><td>100.00%</td></tr></tbody></table></div>
     </div>
 
-    <h2>4. V1 Clean FP Attribution at box_thresh=0.25</h2>
-    <ul class="reasons"><li><span>tiny_noise_or_texture</span><strong>3</strong></li><li><span>overlap_native_or_product_text</span><strong>1</strong></li><li><span>visual_unknown_non_native</span><strong>5</strong></li></ul>
-    <table><thead><tr><th>Image</th><th>Attribution</th></tr></thead><tbody><tr><td><code>test_business/clean/video_029/scene_0002_frame_000136.jpg</code></td><td>tiny_noise_or_texture (native IoU 0.02, native product_label); overlap_native_or_product_text (native IoU 0.35, native product_label)</td></tr><tr><td><code>test_business/clean/video_029/scene_0004_frame_000324.jpg</code></td><td>visual_unknown_non_native (native IoU 0.00, native -)</td></tr><tr><td><code>test_business/clean/video_076/scene_0004_frame_000272.jpg</code></td><td>tiny_noise_or_texture (native IoU 0.00, native -); visual_unknown_non_native (native IoU 0.00, native -)</td></tr><tr><td><code>test_business/clean/video_076/scene_0004_frame_000290.jpg</code></td><td>tiny_noise_or_texture (native IoU 0.00, native -); visual_unknown_non_native (native IoU 0.00, native -)</td></tr><tr><td><code>test_business/clean/video_076/scene_0006_frame_000381.jpg</code></td><td>visual_unknown_non_native (native IoU 0.00, native -)</td></tr><tr><td><code>test_business/clean/video_076/scene_0006_frame_000402.jpg</code></td><td>visual_unknown_non_native (native IoU 0.00, native -)</td></tr></tbody></table>
+    <h2>4. V1 Clean FP Attribution at box_thresh=0.40</h2>
+    <ul class="reasons"><li><span>tiny_noise_or_texture</span><strong>1</strong></li><li><span>overlap_native_or_product_text</span><strong>1</strong></li><li><span>visual_unknown_non_native</span><strong>3</strong></li></ul>
+    <table><thead><tr><th>Image</th><th>Attribution</th></tr></thead><tbody><tr><td><code>test_business/clean/video_029/scene_0002_frame_000136.jpg</code></td><td>tiny_noise_or_texture (native IoU 0.02, native product_label); overlap_native_or_product_text (native IoU 0.35, native product_label)</td></tr><tr><td><code>test_business/clean/video_029/scene_0004_frame_000324.jpg</code></td><td>visual_unknown_non_native (native IoU 0.00, native -)</td></tr><tr><td><code>test_business/clean/video_076/scene_0006_frame_000381.jpg</code></td><td>visual_unknown_non_native (native IoU 0.00, native -)</td></tr><tr><td><code>test_business/clean/video_076/scene_0006_frame_000402.jpg</code></td><td>visual_unknown_non_native (native IoU 0.00, native -)</td></tr></tbody></table>
 
-    <h2>5. Miss Examples at box_thresh=0.25</h2>
+    <h2>5. Miss Examples at box_thresh=0.40</h2>
     <p>漏检主要集中在小号/低对比水印；字幕只漏 1 个 instance。</p>
     <table><thead><tr><th>Image</th><th>text_type</th><th>category</th><th>text</th></tr></thead><tbody><tr><td><code>test_business/overlay/video_011/scene_0002_frame_000193.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>Video by Cece Dini</td></tr><tr><td><code>test_business/overlay/video_014/scene_0001_frame_000030.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>NVCASE</td></tr><tr><td><code>test_business/overlay/video_014/scene_0002_frame_000209.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>NVCASES</td></tr><tr><td><code>test_business/overlay/video_031/scene_0006_frame_000293.jpg</code></td><td>subtitle</td><td>overlay_subtitle</td><td>teksturnya lembut dan nggak lengket</td></tr><tr><td><code>test_business/overlay/video_033/scene_0001_frame_000029.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>video milik @titin suhartinn</td></tr><tr><td><code>test_business/overlay/video_033/scene_0002_frame_000100.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>video milik @titin suhartinn</td></tr><tr><td><code>test_business/overlay/video_033/scene_0003_frame_000145.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>video milik @titin suhartinn</td></tr><tr><td><code>test_business/overlay/video_033/scene_0005_frame_000269.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>video milik @titin suhartini</td></tr><tr><td><code>test_business/overlay/video_033/scene_0007_frame_000376.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>video milik @titin suhartinn</td></tr><tr><td><code>test_business/overlay/video_056/scene_0003_frame_000240.jpg</code></td><td>screen_ui</td><td>overlay_watermark_ui</td><td>ShopeeVideo</td></tr></tbody></table>
+
+    <h2>6. Case Review at box_thresh=0.40</h2>
+    <p>以下 case 使用推荐工作点 <code>box_thresh=0.40</code> 汇报。绿色是真实标签，橙色是 V1 continue 预测框；clean FP case 只有预测框。</p>
+    <div class="legend"><span><i class="dot gt"></i>GT overlay</span><span><i class="dot pred"></i>V1 continue prediction</span></div>
+    <h3>Watermark / UI Miss Cases</h3>
+    <div class="casegrid">
+      <article class="case"><img src="cases/watermark_miss_01_scene_0002_frame_000193.jpg" alt="watermark miss Video by Cece Dini"><div class="cap"><strong>Watermark miss</strong><span class="small">Video by Cece Dini，低对比小水印。</span></div></article>
+      <article class="case"><img src="cases/watermark_miss_02_scene_0001_frame_000030.jpg" alt="watermark miss NVCASE"><div class="cap"><strong>Watermark miss</strong><span class="small">NVCASE，短小英文水印。</span></div></article>
+      <article class="case"><img src="cases/watermark_miss_03_scene_0002_frame_000209.jpg" alt="watermark miss NVCASES"><div class="cap"><strong>Watermark miss</strong><span class="small">NVCASES，重复出现但仍未稳定召回。</span></div></article>
+      <article class="case"><img src="cases/watermark_miss_04_scene_0001_frame_000029.jpg" alt="watermark miss titin"><div class="cap"><strong>Watermark miss</strong><span class="small">video milik @titin...，细字叠在复杂背景上。</span></div></article>
+      <article class="case"><img src="cases/watermark_miss_06_scene_0003_frame_000145.jpg" alt="watermark miss titin repeated"><div class="cap"><strong>Watermark miss</strong><span class="small">同类水印跨帧重复漏检，是下一轮补数据重点。</span></div></article>
+      <article class="case"><img src="cases/watermark_miss_09_scene_0003_frame_000240.jpg" alt="screen ui miss ShopeeVideo"><div class="cap"><strong>Screen UI miss</strong><span class="small">ShopeeVideo UI 字样，当前按 overlay_watermark_ui 计入漏检。</span></div></article>
+    </div>
+    <h3>Clean False Positive Cases</h3>
+    <div class="casegrid">
+      <article class="case"><img src="cases/clean_fp_01_scene_0002_frame_000136.jpg" alt="clean false positive native product text"><div class="cap"><strong>Clean FP</strong><span class="small">商品包装/native text 附近误框，属于 native/overlay 边界混淆。</span></div></article>
+      <article class="case"><img src="cases/clean_fp_02_scene_0004_frame_000324.jpg" alt="clean false positive visual unknown"><div class="cap"><strong>Clean FP</strong><span class="small">非标注视觉区域误框，后续用少量 clean hard negative 压制。</span></div></article>
+      <article class="case"><img src="cases/clean_fp_03_scene_0006_frame_000381.jpg" alt="clean false positive top region"><div class="cap"><strong>Clean FP</strong><span class="small">顶部图案/边缘区域误框，0.40 后仍残留。</span></div></article>
+      <article class="case"><img src="cases/clean_fp_04_scene_0006_frame_000402.jpg" alt="clean false positive top region repeated"><div class="cap"><strong>Clean FP</strong><span class="small">同视频相邻帧重复误检，适合加入 hard negative。</span></div></article>
+    </div>
 
     <h2>Recommendation</h2>
     <div class="callout"><strong>建议：</strong>线上候选先用 V1 continue，工作点从 <code>box_thresh=0.25</code> 提到 <code>0.40</code>。下一轮数据提升重点补 watermark 漏检，不要大比例增加 hard negative，避免复现 V2 的 recall 退化。</div>
