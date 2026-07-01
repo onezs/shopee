@@ -82,6 +82,15 @@
     <h2>6. Case Review at box_thresh=0.40</h2>
     <p>以下 case 使用推荐工作点 <code>box_thresh=0.40</code> 汇报。绿色是真实标签，橙色是 V1 continue 预测框；clean FP case 只有预测框。</p>
     <div class="legend"><span><i class="dot gt"></i>GT overlay</span><span><i class="dot pred"></i>V1 continue prediction</span></div>
+    <h3>Good Cases</h3>
+    <div class="casegrid">
+      <article class="case"><img src="cases/good_01_scene_0002_frame_000030.jpg" alt="good case subtitle and watermark"><div class="cap"><strong>Subtitle + watermark matched</strong><span class="small">3 个 GT 全部命中，覆盖顶部字幕和底部手写水印，min IoU 0.71。</span></div></article>
+      <article class="case"><img src="cases/good_02_scene_0009_frame_000568.jpg" alt="good case title and watermark"><div class="cap"><strong>Title + watermark matched</strong><span class="small">4 个 GT 全部命中，标题文字和水印同时召回，min IoU 0.60。</span></div></article>
+      <article class="case"><img src="cases/good_03_scene_0005_frame_000392.jpg" alt="good case dense title text"><div class="cap"><strong>Dense title text matched</strong><span class="small">5 个标题/卖点文字全命中，适合说明多框 overlay text 检测能力。</span></div></article>
+      <article class="case"><img src="cases/good_04_scene_0002_frame_000185.jpg" alt="good case sticker text"><div class="cap"><strong>Sticker text matched</strong><span class="small">水印和贴纸文字都被框住，min IoU 0.78。</span></div></article>
+      <article class="case"><img src="cases/good_05_scene_0007_frame_000453.jpg" alt="good case title overlay product label"><div class="cap"><strong>Overlay text matched</strong><span class="small">2 个 GT 全命中，预测框紧贴目标区域，min IoU 0.84。</span></div></article>
+      <article class="case"><img src="cases/good_06_scene_0010_frame_000630.jpg" alt="good case title and watermark"><div class="cap"><strong>Title + watermark matched</strong><span class="small">标题和水印同时命中，min IoU 0.77。</span></div></article>
+    </div>
     <h3>Watermark / UI Miss Cases</h3>
     <div class="casegrid">
       <article class="case"><img src="cases/watermark_miss_01_scene_0002_frame_000193.jpg" alt="watermark miss Video by Cece Dini"><div class="cap"><strong>Watermark miss</strong><span class="small">Video by Cece Dini，低对比小水印。</span></div></article>
