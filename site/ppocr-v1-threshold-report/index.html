@@ -100,24 +100,33 @@
     <table><thead><tr><th>Image</th><th>Attribution</th></tr></thead><tbody><tr><td><code>test_business/clean/video_029/scene_0002_frame_000136.jpg</code></td><td>tiny_noise_or_texture (native IoU 0.02, native product_label); overlap_native_or_product_text (native IoU 0.35, native product_label)</td></tr><tr><td><code>test_business/clean/video_029/scene_0004_frame_000324.jpg</code></td><td>visual_unknown_non_native (native IoU 0.00, native -)</td></tr><tr><td><code>test_business/clean/video_076/scene_0006_frame_000381.jpg</code></td><td>visual_unknown_non_native (native IoU 0.00, native -)</td></tr><tr><td><code>test_business/clean/video_076/scene_0006_frame_000402.jpg</code></td><td>visual_unknown_non_native (native IoU 0.00, native -)</td></tr></tbody></table>
 
     <h2>5. Miss Examples at box_thresh=0.40</h2>
-    <p>当前 GT=200 口径下，V1 continue 在推荐工作点共漏检 12 个 instance：watermark 8 个、subtitle 1 个、sticker 2 个、screen_ui 1 个。下表列出完整 FN。</p>
-    <table><thead><tr><th>Image</th><th>text_type</th><th>category</th><th>text</th></tr></thead><tbody>
-      <tr><td><code>test_business/overlay/video_011/scene_0002_frame_000193.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>Video by Cece Dini</td></tr>
-      <tr><td><code>test_business/overlay/video_014/scene_0001_frame_000030.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>NVCASE</td></tr>
-      <tr><td><code>test_business/overlay/video_014/scene_0002_frame_000209.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>NVCASES</td></tr>
-      <tr><td><code>test_business/overlay/video_031/scene_0006_frame_000293.jpg</code></td><td>subtitle</td><td>overlay_subtitle</td><td>teksturnya lembut dan nggak lengket</td></tr>
-      <tr><td><code>test_business/overlay/video_033/scene_0001_frame_000029.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>video milik @titin suhartinn</td></tr>
-      <tr><td><code>test_business/overlay/video_033/scene_0002_frame_000100.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>video milik @titin suhartinn</td></tr>
-      <tr><td><code>test_business/overlay/video_033/scene_0003_frame_000145.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>video milik @titin suhartinn</td></tr>
-      <tr><td><code>test_business/overlay/video_033/scene_0005_frame_000269.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>video milik @titin suhartini</td></tr>
-      <tr><td><code>test_business/overlay/video_033/scene_0007_frame_000376.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>video milik @titin suhartinn</td></tr>
-      <tr><td><code>test_business/overlay/video_056/scene_0001_frame_000030.jpg</code></td><td>sticker</td><td>overlay_graphic</td><td>#DISKON RAGUN SHOPEE</td></tr>
-      <tr><td><code>test_business/overlay/video_056/scene_0002_frame_000151.jpg</code></td><td>sticker</td><td>overlay_graphic</td><td>#DISKON RAGUN SHOPEE</td></tr>
-      <tr><td><code>test_business/overlay/video_056/scene_0003_frame_000240.jpg</code></td><td>screen_ui</td><td>overlay_watermark_ui</td><td>ShopeeVideo</td></tr>
+    <p>当前 GT=200 口径下，V1 continue 在推荐工作点共漏检 12 个 instance。按类型召回行整理如下：title_text、product_label 无漏检；主要漏检集中在 watermark。</p>
+    <table><thead><tr><th>text_type</th><th>Recall</th><th>TP / GT</th><th>FN</th><th>Readout</th></tr></thead><tbody>
+      <tr><td>title_text</td><td>100.00%</td><td>87 / 87</td><td>0</td><td>无漏检</td></tr>
+      <tr><td>watermark</td><td>87.88%</td><td>58 / 66</td><td>8</td><td>低对比、小号、贴近复杂背景是主要问题</td></tr>
+      <tr><td>subtitle</td><td>96.77%</td><td>30 / 31</td><td>1</td><td>1 个细字/低对比 subtitle 未达到 IoU 0.50</td></tr>
+      <tr><td>sticker</td><td>81.82%</td><td>9 / 11</td><td>2</td><td>图形贴纸文字被部分检测，但框不够覆盖</td></tr>
+      <tr><td>product_label</td><td>100.00%</td><td>4 / 4</td><td>0</td><td>无漏检</td></tr>
+      <tr><td>screen_ui</td><td>0.00%</td><td>0 / 1</td><td>1</td><td>唯一 UI 水印未有效匹配</td></tr>
+    </tbody></table>
+    <p>下面是完整 FN 明细。<code>pred boxes</code> 是该帧 V1 输出框数量；<code>best IoU</code> 是该 GT 与所有预测框的最高 IoU，低于 0.50 计为漏检。<code>pred boxes=0</code> 表示该帧完全没有预测框。</p>
+    <table><thead><tr><th>Image</th><th>text_type</th><th>pred boxes</th><th>best IoU</th><th>text</th></tr></thead><tbody>
+      <tr><td><code>test_business/overlay/video_011/scene_0002_frame_000193.jpg</code></td><td>watermark</td><td>1</td><td>0.13</td><td>Video by Cece Dini</td></tr>
+      <tr><td><code>test_business/overlay/video_014/scene_0001_frame_000030.jpg</code></td><td>watermark</td><td>2</td><td>0.00</td><td>NVCASE</td></tr>
+      <tr><td><code>test_business/overlay/video_014/scene_0002_frame_000209.jpg</code></td><td>watermark</td><td>4</td><td>0.12</td><td>NVCASES</td></tr>
+      <tr><td><code>test_business/overlay/video_031/scene_0006_frame_000293.jpg</code></td><td>subtitle</td><td>3</td><td>0.39</td><td>teksturnya lembut dan nggak lengket</td></tr>
+      <tr><td><code>test_business/overlay/video_033/scene_0001_frame_000029.jpg</code></td><td>watermark</td><td>3</td><td>0.45</td><td>video milik @titin suhartinn</td></tr>
+      <tr><td><code>test_business/overlay/video_033/scene_0002_frame_000100.jpg</code></td><td>watermark</td><td>3</td><td>0.29</td><td>video milik @titin suhartinn</td></tr>
+      <tr><td><code>test_business/overlay/video_033/scene_0003_frame_000145.jpg</code></td><td>watermark</td><td>0</td><td>0.00</td><td>video milik @titin suhartinn</td></tr>
+      <tr><td><code>test_business/overlay/video_033/scene_0005_frame_000269.jpg</code></td><td>watermark</td><td>4</td><td>0.00</td><td>video milik @titin suhartini</td></tr>
+      <tr><td><code>test_business/overlay/video_033/scene_0007_frame_000376.jpg</code></td><td>watermark</td><td>3</td><td>0.00</td><td>video milik @titin suhartinn</td></tr>
+      <tr><td><code>test_business/overlay/video_056/scene_0001_frame_000030.jpg</code></td><td>sticker</td><td>7</td><td>0.34</td><td>#DISKON RAGUN SHOPEE</td></tr>
+      <tr><td><code>test_business/overlay/video_056/scene_0002_frame_000151.jpg</code></td><td>sticker</td><td>5</td><td>0.36</td><td>#DISKON RAGUN SHOPEE</td></tr>
+      <tr><td><code>test_business/overlay/video_056/scene_0003_frame_000240.jpg</code></td><td>screen_ui</td><td>5</td><td>0.11</td><td>ShopeeVideo</td></tr>
     </tbody></table>
 
     <h2>6. Case Review at box_thresh=0.40</h2>
-    <p>以下 case 使用推荐工作点 <code>box_thresh=0.40</code> 汇报。绿色是真实标签，橙色是 V1 continue 预测框；clean FP case 只有预测框。</p>
+    <p>以下 case 使用推荐工作点 <code>box_thresh=0.40</code> 汇报。绿色是真实标签，橙色是 V1 continue 预测框；若 miss 图里没有橙色框，表示该帧没有预测框。</p>
     <div class="legend"><span><i class="dot gt"></i>GT overlay</span><span><i class="dot pred"></i>V1 continue prediction</span></div>
     <h3>Good Cases</h3>
     <div class="casegrid">
@@ -128,17 +137,20 @@
       <article class="case"><img src="cases/good_05_scene_0007_frame_000453.jpg" alt="good case title overlay product label"><div class="cap"><strong>Overlay text matched</strong><span class="small">2 个 GT 全命中，预测框紧贴目标区域，min IoU 0.84。</span></div></article>
       <article class="case"><img src="cases/good_06_scene_0010_frame_000630.jpg" alt="good case title and watermark"><div class="cap"><strong>Title + watermark matched</strong><span class="small">标题和水印同时命中，min IoU 0.77。</span></div></article>
     </div>
-    <h3>Watermark / Subtitle / Sticker / UI Miss Cases</h3>
+    <h3>Miss Cases Grouped by Type</h3>
     <div class="casegrid">
-      <article class="case"><img src="cases/watermark_miss_01_scene_0002_frame_000193.jpg" alt="watermark miss Video by Cece Dini"><div class="cap"><strong>Watermark miss</strong><span class="small">Video by Cece Dini，低对比小水印。</span></div></article>
-      <article class="case"><img src="cases/watermark_miss_02_scene_0001_frame_000030.jpg" alt="watermark miss NVCASE"><div class="cap"><strong>Watermark miss</strong><span class="small">NVCASE，短小英文水印。</span></div></article>
-      <article class="case"><img src="cases/watermark_miss_03_scene_0002_frame_000209.jpg" alt="watermark miss NVCASES"><div class="cap"><strong>Watermark miss</strong><span class="small">NVCASES，重复出现但仍未稳定召回。</span></div></article>
-      <article class="case"><img src="cases/watermark_miss_04_scene_0001_frame_000029.jpg" alt="watermark miss titin"><div class="cap"><strong>Watermark miss</strong><span class="small">video milik @titin...，细字叠在复杂背景上。</span></div></article>
-      <article class="case"><img src="cases/watermark_miss_06_scene_0003_frame_000145.jpg" alt="watermark miss titin repeated"><div class="cap"><strong>Watermark miss</strong><span class="small">同类水印跨帧重复漏检，是下一轮补数据重点。</span></div></article>
-      <article class="case"><img src="cases/watermark_miss_09_scene_0003_frame_000240.jpg" alt="screen ui miss ShopeeVideo"><div class="cap"><strong>Screen UI miss</strong><span class="small">ShopeeVideo UI 字样，当前按 overlay_watermark_ui 计入漏检。</span></div></article>
-      <article class="case"><img src="cases/subtitle_miss_01_scene_0006_frame_000293.jpg" alt="subtitle miss"><div class="cap"><strong>Subtitle miss</strong><span class="small">低对比/细字 subtitle 漏检：teksturnya lembut dan nggak lengket。</span></div></article>
-      <article class="case"><img src="cases/sticker_miss_01_scene_0001_frame_000030.jpg" alt="sticker miss diskon racun shopee"><div class="cap"><strong>Sticker miss</strong><span class="small">#DISKON RAGUN SHOPEE 图形贴纸文字漏检，属于 overlay_graphic。</span></div></article>
-      <article class="case"><img src="cases/sticker_miss_02_scene_0002_frame_000151.jpg" alt="sticker miss diskon racun shopee repeated"><div class="cap"><strong>Sticker miss</strong><span class="small">同类 sticker 跨帧重复漏检，后续需要补贴纸/图形文字样本。</span></div></article>
+      <article class="case"><img src="cases/miss_by_type_01_watermark_scene_0002_frame_000193.jpg" alt="watermark miss Video by Cece Dini"><div class="cap"><strong>Watermark miss</strong><span class="small">pred boxes 1，best IoU 0.13：Video by Cece Dini。</span></div></article>
+      <article class="case"><img src="cases/miss_by_type_02_watermark_scene_0001_frame_000030.jpg" alt="watermark miss NVCASE"><div class="cap"><strong>Watermark miss</strong><span class="small">pred boxes 2，best IoU 0.00：NVCASE。</span></div></article>
+      <article class="case"><img src="cases/miss_by_type_03_watermark_scene_0002_frame_000209.jpg" alt="watermark miss NVCASES"><div class="cap"><strong>Watermark miss</strong><span class="small">pred boxes 4，best IoU 0.12：NVCASES。</span></div></article>
+      <article class="case"><img src="cases/miss_by_type_05_watermark_scene_0001_frame_000029.jpg" alt="watermark miss titin 1"><div class="cap"><strong>Watermark miss</strong><span class="small">pred boxes 3，best IoU 0.45：video milik @titin...</span></div></article>
+      <article class="case"><img src="cases/miss_by_type_06_watermark_scene_0002_frame_000100.jpg" alt="watermark miss titin 2"><div class="cap"><strong>Watermark miss</strong><span class="small">pred boxes 3，best IoU 0.29：video milik @titin...</span></div></article>
+      <article class="case"><img src="cases/miss_by_type_07_watermark_scene_0003_frame_000145.jpg" alt="watermark miss no prediction"><div class="cap"><strong>Watermark miss</strong><span class="small">pred boxes 0：该帧没有预测框，只显示绿色 GT。</span></div></article>
+      <article class="case"><img src="cases/miss_by_type_08_watermark_scene_0005_frame_000269.jpg" alt="watermark miss titin 4"><div class="cap"><strong>Watermark miss</strong><span class="small">pred boxes 4，best IoU 0.00：video milik @titin...</span></div></article>
+      <article class="case"><img src="cases/miss_by_type_09_watermark_scene_0007_frame_000376.jpg" alt="watermark miss titin 5"><div class="cap"><strong>Watermark miss</strong><span class="small">pred boxes 3，best IoU 0.00：video milik @titin...</span></div></article>
+      <article class="case"><img src="cases/miss_by_type_04_subtitle_scene_0006_frame_000293.jpg" alt="subtitle miss"><div class="cap"><strong>Subtitle miss</strong><span class="small">pred boxes 3，best IoU 0.39：teksturnya lembut dan nggak lengket。</span></div></article>
+      <article class="case"><img src="cases/miss_by_type_10_sticker_scene_0001_frame_000030.jpg" alt="sticker miss diskon racun shopee"><div class="cap"><strong>Sticker miss</strong><span class="small">pred boxes 7，best IoU 0.34：#DISKON RAGUN SHOPEE。</span></div></article>
+      <article class="case"><img src="cases/miss_by_type_11_sticker_scene_0002_frame_000151.jpg" alt="sticker miss diskon racun shopee repeated"><div class="cap"><strong>Sticker miss</strong><span class="small">pred boxes 5，best IoU 0.36：#DISKON RAGUN SHOPEE。</span></div></article>
+      <article class="case"><img src="cases/miss_by_type_12_screen_ui_scene_0003_frame_000240.jpg" alt="screen ui miss ShopeeVideo"><div class="cap"><strong>Screen UI miss</strong><span class="small">pred boxes 5，best IoU 0.11：ShopeeVideo。</span></div></article>
     </div>
     <h3>Clean False Positive Cases</h3>
     <div class="casegrid">
