@@ -46,30 +46,51 @@
 <body>
   <header>
     <h1>PP-OCRv6 Overlay Detector: V1 Threshold and Error Review</h1>
-    <p>统一使用 V1/V2/V3 共同 held-out split，评估 overlay recall、clean false positive、类型召回和 V1 阈值收益。</p>
+    <p>统一使用当前 held-out split 和 GT=200 口径，评估 overlay recall、clean false positive、类型召回、V1 阈值收益，并补充 V4/V5/V6/V7 结果。</p>
   </header>
   <main>
     <section class="grid">
-      <div class="metric"><div class="label">当前最佳召回模型</div><div class="value">V1 continue</div><div class="note">test recall 94.95%</div></div>
+      <div class="metric"><div class="label">当前最佳召回模型</div><div class="value">V1 continue</div><div class="note">test recall 94.00% (current GT=200)</div></div>
       <div class="metric"><div class="label">推荐工作点</div><div class="value">box 0.40</div><div class="note">recall 不掉，FP 更少</div></div>
       <div class="metric"><div class="label">主漏检类型</div><div class="value">Watermark</div><div class="note">recall 87.88%</div></div>
-      <div class="metric"><div class="label">V3 优势</div><div class="value">Clean FP</div><div class="note">1/25 at box 0.25</div></div>
+      <div class="metric"><div class="label">V7 结论</div><div class="value">Close</div><div class="note">93.50% recall, not above V1</div></div>
     </section>
 
-    <h2>1. Unified V1 / V2 / V3 Held-Out Comparison</h2>
-    <p>Split: <code>work/ppocr_business_split_synth_v3</code>. Postprocess: <code>thresh=0.15</code>, <code>box_thresh=0.25</code>, <code>unclip_ratio=1.8</code>. Match: polygon IoU >= 0.50.</p>
-    <table><thead><tr><th>Model</th><th>Test Precision</th><th>Test Recall</th><th>Test HMean</th><th>Clean FP images</th><th>Clean FP boxes/image</th></tr></thead><tbody><tr><td>V1 continue</td><td>0.7373</td><td>0.9495</td><td>0.8300</td><td>6/25 (24.00%)</td><td>0.36</td></tr><tr><td>V2 tight</td><td>0.5861</td><td>0.7222</td><td>0.6471</td><td>20/25 (80.00%)</td><td>0.84</td></tr><tr><td>V3 continue</td><td>0.6562</td><td>0.7424</td><td>0.6967</td><td>1/25 (4.00%)</td><td>0.04</td></tr><tr><td>V3 ptbest</td><td>0.5336</td><td>0.6010</td><td>0.5653</td><td>13/25 (52.00%)</td><td>0.60</td></tr><tr><td>V3c lr2e-5</td><td>0.4870</td><td>0.5657</td><td>0.5234</td><td>4/25 (16.00%)</td><td>0.20</td></tr></tbody></table>
+    <h2>1. Current Unified V1 / V4 / V5 / V6 / V7 Held-Out Comparison</h2>
+    <p>当前主表统一使用最新 checked-in label：<code>work/ppocr_business_split_synth_v3/labels/test_business.txt</code>。该口径下 test images 为 134，GT boxes 为 200，clean images 为 25。Postprocess: <code>thresh=0.15</code>, <code>box_thresh=0.40</code>, <code>unclip_ratio=1.8</code>. Match: polygon IoU >= 0.50.</p>
+    <div class="callout warn"><strong>口径更正：</strong>旧报告里的 V1 recall <strong>94.95%</strong> 使用旧 label，GT=198，V1 TP=188。当前 label 更新后 GT=200，V1 TP 仍为 188，因此当前同口径 V1 recall 是 <strong>94.00%</strong>。这不是模型退化，而是 GT 口径变化。</div>
+    <table><thead><tr><th>Model</th><th>Pred</th><th>TP</th><th>FP</th><th>FN</th><th>Precision</th><th>Recall</th><th>HMean/F1</th><th>Clean FP images</th><th>Watermark recall</th><th>Readout</th></tr></thead><tbody>
+      <tr class="selected"><td>V1 continue</td><td>232</td><td>188</td><td>44</td><td>12</td><td>81.03%</td><td>94.00%</td><td>87.04%</td><td>4/25 (16.00%)</td><td>87.88% (58/66)</td><td>当前最佳主模型</td></tr>
+      <tr><td>V4 best</td><td>260</td><td>178</td><td>82</td><td>22</td><td>68.46%</td><td>89.00%</td><td>77.39%</td><td>12/25 (48.00%)</td><td>90.91% (60/66)</td><td>watermark 高，但整体 recall/FP 明显差</td></tr>
+      <tr><td>V5 best</td><td>240</td><td>186</td><td>54</td><td>14</td><td>77.50%</td><td>93.00%</td><td>84.55%</td><td>5/25 (20.00%)</td><td>84.85% (56/66)</td><td>比 V4 稳定，但仍低于 V1</td></tr>
+      <tr><td>V6 best</td><td>230</td><td>183</td><td>47</td><td>17</td><td>79.57%</td><td>91.50%</td><td>85.12%</td><td>4/25 (16.00%)</td><td>81.82% (54/66)</td><td>水印专项训练退化</td></tr>
+      <tr><td>V7 best</td><td>230</td><td>187</td><td>43</td><td>13</td><td>81.30%</td><td>93.50%</td><td>86.98%</td><td>4/25 (16.00%)</td><td>86.36% (57/66)</td><td>修复 V6 退化，接近但未超过 V1</td></tr>
+      <tr><td>V7 latest</td><td>231</td><td>186</td><td>45</td><td>14</td><td>80.52%</td><td>93.00%</td><td>86.31%</td><td>4/25 (16.00%)</td><td>83.33% (55/66)</td><td>不如 V7 best</td></tr>
+    </tbody></table>
 
-    <h2>2. V1 Threshold Scan</h2>
-    <p>V1 在 <code>box_thresh=0.15~0.40</code> 的 recall 都保持 94.95%，precision 持续提升；<code>0.45</code> 开始掉 recall。绿色行是推荐工作点。</p>
-    <table><thead><tr><th>box_thresh</th><th>Precision</th><th>Recall</th><th>Miss</th><th>HMean</th><th>Pred</th><th>FP</th><th>Clean FP images</th><th>Clean FP boxes/image</th></tr></thead><tbody><tr><td>0.15</td><td>0.6886</td><td>0.9495</td><td>5.05%</td><td>0.7983</td><td>273</td><td>85</td><td>6/25 (24.00%)</td><td>0.40</td></tr><tr><td>0.20</td><td>0.6989</td><td>0.9495</td><td>5.05%</td><td>0.8051</td><td>269</td><td>81</td><td>6/25 (24.00%)</td><td>0.40</td></tr><tr><td>0.25</td><td>0.7373</td><td>0.9495</td><td>5.05%</td><td>0.8300</td><td>255</td><td>67</td><td>6/25 (24.00%)</td><td>0.36</td></tr><tr><td>0.30</td><td>0.7801</td><td>0.9495</td><td>5.05%</td><td>0.8565</td><td>241</td><td>53</td><td>6/25 (24.00%)</td><td>0.32</td></tr><tr><td>0.35</td><td>0.8034</td><td>0.9495</td><td>5.05%</td><td>0.8704</td><td>234</td><td>46</td><td>4/25 (16.00%)</td><td>0.20</td></tr><tr class="selected"><td>0.40</td><td>0.8282</td><td>0.9495</td><td>5.05%</td><td>0.8847</td><td>227</td><td>39</td><td>4/25 (16.00%)</td><td>0.20</td></tr><tr><td>0.45</td><td>0.8378</td><td>0.9394</td><td>6.06%</td><td>0.8857</td><td>222</td><td>36</td><td>4/25 (16.00%)</td><td>0.16</td></tr></tbody></table>
-    <div class="callout"><strong>推荐阈值：</strong><code>box_thresh=0.40</code>。在当前 held-out test 上 recall 仍为 <strong>94.95%</strong>，miss rate <strong>5.05%</strong>，同时 precision 提到 <strong>82.82%</strong>，clean FP 从 0.25 的 6/25 降到 <strong>4/25</strong>。</div>
+    <h2>2. V1 Threshold Scan, Corrected to Current GT=200</h2>
+    <p>V1 在 <code>box_thresh=0.15~0.40</code> 的 TP 均为 188；由于当前 GT=200，recall 为 94.00%。<code>0.45</code> 开始掉到 93.00%。绿色行是当前推荐工作点。</p>
+    <table><thead><tr><th>box_thresh</th><th>Precision</th><th>Recall</th><th>Miss</th><th>HMean</th><th>Pred</th><th>TP</th><th>FP</th><th>FN</th><th>Clean FP images</th><th>Clean FP boxes/image</th></tr></thead><tbody>
+      <tr><td>0.15</td><td>0.6643</td><td>0.9400</td><td>6.00%</td><td>0.7785</td><td>283</td><td>188</td><td>95</td><td>12</td><td>6/25 (24.00%)</td><td>0.40</td></tr>
+      <tr><td>0.20</td><td>0.6738</td><td>0.9400</td><td>6.00%</td><td>0.7850</td><td>279</td><td>188</td><td>91</td><td>12</td><td>6/25 (24.00%)</td><td>0.40</td></tr>
+      <tr><td>0.25</td><td>0.7121</td><td>0.9400</td><td>6.00%</td><td>0.8103</td><td>264</td><td>188</td><td>76</td><td>12</td><td>6/25 (24.00%)</td><td>0.36</td></tr>
+      <tr><td>0.30</td><td>0.7550</td><td>0.9400</td><td>6.00%</td><td>0.8374</td><td>249</td><td>188</td><td>61</td><td>12</td><td>6/25 (24.00%)</td><td>0.32</td></tr>
+      <tr><td>0.35</td><td>0.7866</td><td>0.9400</td><td>6.00%</td><td>0.8565</td><td>239</td><td>188</td><td>51</td><td>12</td><td>4/25 (16.00%)</td><td>0.20</td></tr>
+      <tr class="selected"><td>0.40</td><td>0.8103</td><td>0.9400</td><td>6.00%</td><td>0.8704</td><td>232</td><td>188</td><td>44</td><td>12</td><td>4/25 (16.00%)</td><td>0.20</td></tr>
+      <tr><td>0.45</td><td>0.8230</td><td>0.9300</td><td>7.00%</td><td>0.8732</td><td>226</td><td>186</td><td>40</td><td>14</td><td>4/25 (16.00%)</td><td>0.16</td></tr>
+    </tbody></table>
+    <div class="callout"><strong>推荐阈值：</strong><code>box_thresh=0.40</code>。在当前 held-out test 上 recall 为 <strong>94.00%</strong>，miss rate <strong>6.00%</strong>，precision 为 <strong>81.03%</strong>，clean FP 为 <strong>4/25</strong>。</div>
 
     <h2>3. Recall by Overlay Type at box_thresh=0.40</h2>
-    <div class="twocol">
-      <div><table><thead><tr><th>text_type</th><th>GT</th><th>TP</th><th>FN</th><th>Recall</th></tr></thead><tbody><tr><td>title_overlay</td><td>87</td><td>87</td><td>0</td><td>100.00%</td></tr><tr><td>watermark</td><td>66</td><td>58</td><td>8</td><td>87.88%</td></tr><tr><td>subtitle</td><td>31</td><td>30</td><td>1</td><td>96.77%</td></tr><tr><td>sticker_with_text</td><td>9</td><td>9</td><td>0</td><td>100.00%</td></tr><tr><td>product_label</td><td>4</td><td>4</td><td>0</td><td>100.00%</td></tr><tr><td>screen_ui</td><td>1</td><td>0</td><td>1</td><td>0.00%</td></tr></tbody></table></div>
-      <div><table><thead><tr><th>category</th><th>GT</th><th>TP</th><th>FN</th><th>Recall</th></tr></thead><tbody><tr><td>overlay_title_price</td><td>87</td><td>87</td><td>0</td><td>100.00%</td></tr><tr><td>overlay_watermark_ui</td><td>67</td><td>58</td><td>9</td><td>86.57%</td></tr><tr><td>overlay_subtitle</td><td>35</td><td>34</td><td>1</td><td>97.14%</td></tr><tr><td>overlay_graphic</td><td>9</td><td>9</td><td>0</td><td>100.00%</td></tr></tbody></table></div>
-    </div>
+    <p>下表补充所有有类型拆分结果的 V4-V7。V4 的 watermark recall 最高，但 title/sticker 和 clean FP 明显变差；V7 best 相比 V6 恢复 watermark，但仍低于 V1。</p>
+    <table><thead><tr><th>Model</th><th>title_text</th><th>watermark</th><th>subtitle</th><th>sticker</th><th>product_label</th><th>screen_ui</th></tr></thead><tbody>
+      <tr class="selected"><td>V1 continue</td><td>100.00% (87/87)</td><td>87.88% (58/66)</td><td>96.77% (30/31)</td><td>81.82% (9/11)</td><td>100.00% (4/4)</td><td>0.00% (0/1)</td></tr>
+      <tr><td>V4 best</td><td>88.51% (77/87)</td><td>90.91% (60/66)</td><td>93.55% (29/31)</td><td>63.64% (7/11)</td><td>100.00% (4/4)</td><td>100.00% (1/1)</td></tr>
+      <tr><td>V5 best</td><td>100.00% (87/87)</td><td>84.85% (56/66)</td><td>96.77% (30/31)</td><td>81.82% (9/11)</td><td>100.00% (4/4)</td><td>0.00% (0/1)</td></tr>
+      <tr><td>V6 best</td><td>98.85% (86/87)</td><td>81.82% (54/66)</td><td>96.77% (30/31)</td><td>81.82% (9/11)</td><td>100.00% (4/4)</td><td>0.00% (0/1)</td></tr>
+      <tr><td>V7 best</td><td>100.00% (87/87)</td><td>86.36% (57/66)</td><td>96.77% (30/31)</td><td>81.82% (9/11)</td><td>100.00% (4/4)</td><td>0.00% (0/1)</td></tr>
+      <tr><td>V7 latest</td><td>100.00% (87/87)</td><td>83.33% (55/66)</td><td>96.77% (30/31)</td><td>90.91% (10/11)</td><td>100.00% (4/4)</td><td>0.00% (0/1)</td></tr>
+    </tbody></table>
 
     <h2>4. V1 Clean FP Attribution at box_thresh=0.40</h2>
     <ul class="reasons"><li><span>tiny_noise_or_texture</span><strong>1</strong></li><li><span>overlap_native_or_product_text</span><strong>1</strong></li><li><span>visual_unknown_non_native</span><strong>3</strong></li></ul>
@@ -109,10 +130,10 @@
     </div>
 
     <h2>Recommendation</h2>
-    <div class="callout"><strong>建议：</strong>线上候选先用 V1 continue，工作点从 <code>box_thresh=0.25</code> 提到 <code>0.40</code>。下一轮数据提升重点补 watermark 漏检，不要大比例增加 hard negative，避免复现 V2 的 recall 退化。</div>
+    <div class="callout"><strong>建议：</strong>线上候选仍先用 V1 continue，推荐工作点 <code>box_thresh=0.40</code>。V7 best 已修复 V6 退化但仍未超过 V1；下一轮提升重点继续围绕细长/低对比 watermark，同时避免牺牲 title/subtitle recall 和 clean FP。</div>
   </main>
   <footer>
-    Artifacts: <code>reports/v1_threshold_type_fp_attribution_2026-07-01.md</code>, <code>reports/ppocr_v1_v2_v3_unified_heldout_eval_2026-07-01.md</code>
+    Artifacts: <code>reports/v1_threshold_type_fp_attribution_2026-07-01.md</code>, <code>reports/ppocr_v1_v4_v5_same_standard_eval_2026-07-05.md</code>, <code>reports/ppocr_v1_v6_v7_watermark_same_standard_eval_2026-07-06.md</code>
   </footer>
 </body>
 </html>
