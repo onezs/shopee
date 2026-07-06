@@ -46,7 +46,7 @@
 <body>
   <header>
     <h1>PP-OCRv6 Overlay Detector: V1 Threshold and Error Review</h1>
-    <p>统一使用当前 held-out split 和 GT=200 口径，评估 overlay recall、clean false positive、类型召回、V1 阈值收益，并补充 V4/V5/V6/V7 结果。</p>
+    <p>统一使用当前 held-out split 和 GT=200 口径，评估 overlay recall、clean false positive、类型召回、V1 阈值收益，并补充官方预训练 baseline、V4/V5/V6/V7 结果。</p>
   </header>
   <main>
     <section class="grid">
@@ -56,11 +56,13 @@
       <div class="metric"><div class="label">V7 结论</div><div class="value">Close</div><div class="note">93.50% recall, not above V1</div></div>
     </section>
 
-    <h2>1. Current Unified V1 / V4 / V5 / V6 / V7 Held-Out Comparison</h2>
+    <h2>1. Current Unified Baseline / V1 / V4 / V5 / V6 / V7 Held-Out Comparison</h2>
     <p>当前主表统一使用最新 checked-in label：<code>work/ppocr_business_split_synth_v3/labels/test_business.txt</code>。该口径下 test images 为 134，GT boxes 为 200，clean images 为 25。Postprocess: <code>thresh=0.15</code>, <code>box_thresh=0.40</code>, <code>unclip_ratio=1.8</code>. Match: polygon IoU >= 0.50.</p>
     <div class="callout warn"><strong>口径更正：</strong>旧报告里的 V1 recall <strong>94.95%</strong> 使用旧 label，GT=198，V1 TP=188。当前 label 更新后 GT=200，V1 TP 仍为 188，因此当前同口径 V1 recall 是 <strong>94.00%</strong>。这不是模型退化，而是 GT 口径变化。</div>
+    <div class="callout"><strong>Official pretrained baseline：</strong><code>reports/ppocrv6_official_pretrained_baseline_2026-06-29.md</code> 是旧 <code>work/business_benchmark</code> 口径，不能直接比较；下表的 official pretrained 行是 2026-07-06 在当前 GT=200 held-out split 上重跑的同口径结果。</div>
     <table><thead><tr><th>Model</th><th>Pred</th><th>TP</th><th>FP</th><th>FN</th><th>Precision</th><th>Recall</th><th>HMean/F1</th><th>Clean FP images</th><th>Watermark recall</th><th>Readout</th></tr></thead><tbody>
       <tr class="selected"><td>V1 continue</td><td>232</td><td>188</td><td>44</td><td>12</td><td>81.03%</td><td>94.00%</td><td>87.04%</td><td>4/25 (16.00%)</td><td>87.88% (58/66)</td><td>当前最佳主模型</td></tr>
+      <tr><td>Official pretrained</td><td>384</td><td>183</td><td>201</td><td>17</td><td>47.66%</td><td>91.50%</td><td>62.67%</td><td>11/25 (44.00%)</td><td>81.82% (54/66)</td><td>文字先验强，但 clean/native 误检多</td></tr>
       <tr><td>V4 best</td><td>260</td><td>178</td><td>82</td><td>22</td><td>68.46%</td><td>89.00%</td><td>77.39%</td><td>12/25 (48.00%)</td><td>90.91% (60/66)</td><td>watermark 高，但整体 recall/FP 明显差</td></tr>
       <tr><td>V5 best</td><td>240</td><td>186</td><td>54</td><td>14</td><td>77.50%</td><td>93.00%</td><td>84.55%</td><td>5/25 (20.00%)</td><td>84.85% (56/66)</td><td>比 V4 稳定，但仍低于 V1</td></tr>
       <tr><td>V6 best</td><td>230</td><td>183</td><td>47</td><td>17</td><td>79.57%</td><td>91.50%</td><td>85.12%</td><td>4/25 (16.00%)</td><td>81.82% (54/66)</td><td>水印专项训练退化</td></tr>
@@ -82,9 +84,10 @@
     <div class="callout"><strong>推荐阈值：</strong><code>box_thresh=0.40</code>。在当前 held-out test 上 recall 为 <strong>94.00%</strong>，miss rate <strong>6.00%</strong>，precision 为 <strong>81.03%</strong>，clean FP 为 <strong>4/25</strong>。</div>
 
     <h2>3. Recall by Overlay Type at box_thresh=0.40</h2>
-    <p>下表补充所有有类型拆分结果的 V4-V7。V4 的 watermark recall 最高，但 title/sticker 和 clean FP 明显变差；V7 best 相比 V6 恢复 watermark，但仍低于 V1。</p>
+    <p>下表补充 official pretrained 和所有有类型拆分结果的 V4-V7。官方预训练对字幕/标题有较强文字先验，但 watermark 和 clean FP 明显弱于 V1；V4 的 watermark recall 最高，但 title/sticker 和 clean FP 明显变差；V7 best 相比 V6 恢复 watermark，但仍低于 V1。</p>
     <table><thead><tr><th>Model</th><th>title_text</th><th>watermark</th><th>subtitle</th><th>sticker</th><th>product_label</th><th>screen_ui</th></tr></thead><tbody>
       <tr class="selected"><td>V1 continue</td><td>100.00% (87/87)</td><td>87.88% (58/66)</td><td>96.77% (30/31)</td><td>81.82% (9/11)</td><td>100.00% (4/4)</td><td>0.00% (0/1)</td></tr>
+      <tr><td>Official pretrained</td><td>96.55% (84/87)</td><td>81.82% (54/66)</td><td>96.77% (30/31)</td><td>90.91% (10/11)</td><td>100.00% (4/4)</td><td>100.00% (1/1)</td></tr>
       <tr><td>V4 best</td><td>88.51% (77/87)</td><td>90.91% (60/66)</td><td>93.55% (29/31)</td><td>63.64% (7/11)</td><td>100.00% (4/4)</td><td>100.00% (1/1)</td></tr>
       <tr><td>V5 best</td><td>100.00% (87/87)</td><td>84.85% (56/66)</td><td>96.77% (30/31)</td><td>81.82% (9/11)</td><td>100.00% (4/4)</td><td>0.00% (0/1)</td></tr>
       <tr><td>V6 best</td><td>98.85% (86/87)</td><td>81.82% (54/66)</td><td>96.77% (30/31)</td><td>81.82% (9/11)</td><td>100.00% (4/4)</td><td>0.00% (0/1)</td></tr>
@@ -146,10 +149,10 @@
     </div>
 
     <h2>Recommendation</h2>
-    <div class="callout"><strong>建议：</strong>线上候选仍先用 V1 continue，推荐工作点 <code>box_thresh=0.40</code>。V7 best 已修复 V6 退化但仍未超过 V1；下一轮提升重点继续围绕细长/低对比 watermark，同时避免牺牲 title/subtitle recall 和 clean FP。</div>
+    <div class="callout"><strong>建议：</strong>线上候选仍先用 V1 continue，推荐工作点 <code>box_thresh=0.40</code>。相比官方预训练，V1 在同口径下把 precision 从 47.66% 提到 81.03%，clean FP 从 11/25 降到 4/25，同时 recall 从 91.50% 提到 94.00%。V7 best 已修复 V6 退化但仍未超过 V1；下一轮提升重点继续围绕细长/低对比 watermark，同时避免牺牲 title/subtitle recall 和 clean FP。</div>
   </main>
   <footer>
-    Artifacts: <code>reports/v1_threshold_type_fp_attribution_2026-07-01.md</code>, <code>reports/ppocr_v1_v4_v5_same_standard_eval_2026-07-05.md</code>, <code>reports/ppocr_v1_v6_v7_watermark_same_standard_eval_2026-07-06.md</code>
+    Artifacts: <code>reports/v1_threshold_type_fp_attribution_2026-07-01.md</code>, <code>reports/ppocr_v1_v4_v5_same_standard_eval_2026-07-05.md</code>, <code>reports/ppocr_v1_v6_v7_watermark_same_standard_eval_2026-07-06.md</code>, <code>reports/ppocrv6_official_pretrained_same_standard_baseline_2026-07-06.md</code>
   </footer>
 </body>
 </html>
