@@ -97,8 +97,21 @@
     <table><thead><tr><th>Image</th><th>Attribution</th></tr></thead><tbody><tr><td><code>test_business/clean/video_029/scene_0002_frame_000136.jpg</code></td><td>tiny_noise_or_texture (native IoU 0.02, native product_label); overlap_native_or_product_text (native IoU 0.35, native product_label)</td></tr><tr><td><code>test_business/clean/video_029/scene_0004_frame_000324.jpg</code></td><td>visual_unknown_non_native (native IoU 0.00, native -)</td></tr><tr><td><code>test_business/clean/video_076/scene_0006_frame_000381.jpg</code></td><td>visual_unknown_non_native (native IoU 0.00, native -)</td></tr><tr><td><code>test_business/clean/video_076/scene_0006_frame_000402.jpg</code></td><td>visual_unknown_non_native (native IoU 0.00, native -)</td></tr></tbody></table>
 
     <h2>5. Miss Examples at box_thresh=0.40</h2>
-    <p>漏检主要集中在小号/低对比水印；字幕只漏 1 个 instance。</p>
-    <table><thead><tr><th>Image</th><th>text_type</th><th>category</th><th>text</th></tr></thead><tbody><tr><td><code>test_business/overlay/video_011/scene_0002_frame_000193.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>Video by Cece Dini</td></tr><tr><td><code>test_business/overlay/video_014/scene_0001_frame_000030.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>NVCASE</td></tr><tr><td><code>test_business/overlay/video_014/scene_0002_frame_000209.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>NVCASES</td></tr><tr><td><code>test_business/overlay/video_031/scene_0006_frame_000293.jpg</code></td><td>subtitle</td><td>overlay_subtitle</td><td>teksturnya lembut dan nggak lengket</td></tr><tr><td><code>test_business/overlay/video_033/scene_0001_frame_000029.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>video milik @titin suhartinn</td></tr><tr><td><code>test_business/overlay/video_033/scene_0002_frame_000100.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>video milik @titin suhartinn</td></tr><tr><td><code>test_business/overlay/video_033/scene_0003_frame_000145.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>video milik @titin suhartinn</td></tr><tr><td><code>test_business/overlay/video_033/scene_0005_frame_000269.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>video milik @titin suhartini</td></tr><tr><td><code>test_business/overlay/video_033/scene_0007_frame_000376.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>video milik @titin suhartinn</td></tr><tr><td><code>test_business/overlay/video_056/scene_0003_frame_000240.jpg</code></td><td>screen_ui</td><td>overlay_watermark_ui</td><td>ShopeeVideo</td></tr></tbody></table>
+    <p>当前 GT=200 口径下，V1 continue 在推荐工作点共漏检 12 个 instance：watermark 8 个、subtitle 1 个、sticker 2 个、screen_ui 1 个。下表列出完整 FN。</p>
+    <table><thead><tr><th>Image</th><th>text_type</th><th>category</th><th>text</th></tr></thead><tbody>
+      <tr><td><code>test_business/overlay/video_011/scene_0002_frame_000193.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>Video by Cece Dini</td></tr>
+      <tr><td><code>test_business/overlay/video_014/scene_0001_frame_000030.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>NVCASE</td></tr>
+      <tr><td><code>test_business/overlay/video_014/scene_0002_frame_000209.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>NVCASES</td></tr>
+      <tr><td><code>test_business/overlay/video_031/scene_0006_frame_000293.jpg</code></td><td>subtitle</td><td>overlay_subtitle</td><td>teksturnya lembut dan nggak lengket</td></tr>
+      <tr><td><code>test_business/overlay/video_033/scene_0001_frame_000029.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>video milik @titin suhartinn</td></tr>
+      <tr><td><code>test_business/overlay/video_033/scene_0002_frame_000100.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>video milik @titin suhartinn</td></tr>
+      <tr><td><code>test_business/overlay/video_033/scene_0003_frame_000145.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>video milik @titin suhartinn</td></tr>
+      <tr><td><code>test_business/overlay/video_033/scene_0005_frame_000269.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>video milik @titin suhartini</td></tr>
+      <tr><td><code>test_business/overlay/video_033/scene_0007_frame_000376.jpg</code></td><td>watermark</td><td>overlay_watermark_ui</td><td>video milik @titin suhartinn</td></tr>
+      <tr><td><code>test_business/overlay/video_056/scene_0001_frame_000030.jpg</code></td><td>sticker</td><td>overlay_graphic</td><td>#DISKON RAGUN SHOPEE</td></tr>
+      <tr><td><code>test_business/overlay/video_056/scene_0002_frame_000151.jpg</code></td><td>sticker</td><td>overlay_graphic</td><td>#DISKON RAGUN SHOPEE</td></tr>
+      <tr><td><code>test_business/overlay/video_056/scene_0003_frame_000240.jpg</code></td><td>screen_ui</td><td>overlay_watermark_ui</td><td>ShopeeVideo</td></tr>
+    </tbody></table>
 
     <h2>6. Case Review at box_thresh=0.40</h2>
     <p>以下 case 使用推荐工作点 <code>box_thresh=0.40</code> 汇报。绿色是真实标签，橙色是 V1 continue 预测框；clean FP case 只有预测框。</p>
@@ -112,7 +125,7 @@
       <article class="case"><img src="cases/good_05_scene_0007_frame_000453.jpg" alt="good case title overlay product label"><div class="cap"><strong>Overlay text matched</strong><span class="small">2 个 GT 全命中，预测框紧贴目标区域，min IoU 0.84。</span></div></article>
       <article class="case"><img src="cases/good_06_scene_0010_frame_000630.jpg" alt="good case title and watermark"><div class="cap"><strong>Title + watermark matched</strong><span class="small">标题和水印同时命中，min IoU 0.77。</span></div></article>
     </div>
-    <h3>Watermark / UI Miss Cases</h3>
+    <h3>Watermark / Subtitle / Sticker / UI Miss Cases</h3>
     <div class="casegrid">
       <article class="case"><img src="cases/watermark_miss_01_scene_0002_frame_000193.jpg" alt="watermark miss Video by Cece Dini"><div class="cap"><strong>Watermark miss</strong><span class="small">Video by Cece Dini，低对比小水印。</span></div></article>
       <article class="case"><img src="cases/watermark_miss_02_scene_0001_frame_000030.jpg" alt="watermark miss NVCASE"><div class="cap"><strong>Watermark miss</strong><span class="small">NVCASE，短小英文水印。</span></div></article>
@@ -120,6 +133,9 @@
       <article class="case"><img src="cases/watermark_miss_04_scene_0001_frame_000029.jpg" alt="watermark miss titin"><div class="cap"><strong>Watermark miss</strong><span class="small">video milik @titin...，细字叠在复杂背景上。</span></div></article>
       <article class="case"><img src="cases/watermark_miss_06_scene_0003_frame_000145.jpg" alt="watermark miss titin repeated"><div class="cap"><strong>Watermark miss</strong><span class="small">同类水印跨帧重复漏检，是下一轮补数据重点。</span></div></article>
       <article class="case"><img src="cases/watermark_miss_09_scene_0003_frame_000240.jpg" alt="screen ui miss ShopeeVideo"><div class="cap"><strong>Screen UI miss</strong><span class="small">ShopeeVideo UI 字样，当前按 overlay_watermark_ui 计入漏检。</span></div></article>
+      <article class="case"><img src="cases/subtitle_miss_01_scene_0006_frame_000293.jpg" alt="subtitle miss"><div class="cap"><strong>Subtitle miss</strong><span class="small">低对比/细字 subtitle 漏检：teksturnya lembut dan nggak lengket。</span></div></article>
+      <article class="case"><img src="cases/sticker_miss_01_scene_0001_frame_000030.jpg" alt="sticker miss diskon racun shopee"><div class="cap"><strong>Sticker miss</strong><span class="small">#DISKON RAGUN SHOPEE 图形贴纸文字漏检，属于 overlay_graphic。</span></div></article>
+      <article class="case"><img src="cases/sticker_miss_02_scene_0002_frame_000151.jpg" alt="sticker miss diskon racun shopee repeated"><div class="cap"><strong>Sticker miss</strong><span class="small">同类 sticker 跨帧重复漏检，后续需要补贴纸/图形文字样本。</span></div></article>
     </div>
     <h3>Clean False Positive Cases</h3>
     <div class="casegrid">
