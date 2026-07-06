@@ -1,0 +1,70 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>PP-OCRv6 Watermark Pipeline Debug</title>
+<style>
+body{font-family:Arial,sans-serif;margin:24px;background:#f6f7f9;color:#18202a}h1{font-size:26px}h2{font-size:18px;margin-top:0}h3{font-size:15px}.case{background:white;border:1px solid #d9dde5;border-radius:8px;padding:18px;margin:18px 0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}figure{margin:0}img{max-width:100%;border:1px solid #ccd2dc;background:#111}figcaption{font-size:13px;color:#4b5563;margin-top:4px}table{border-collapse:collapse;width:100%;font-size:13px;margin:8px 0 14px}th,td{border:1px solid #d9dde5;padding:6px;text-align:left}th{background:#eef1f5}code{background:#eef1f5;padding:2px 4px;border-radius:4px}
+</style></head><body>
+<h1>PP-OCRv6 Watermark Pipeline Debug</h1>
+<p>模型：<code>/home/work/opa_common/zhanghaoran/ft_ocr_v6/output/PP-OCRv6_overlay_business6k_continue_v2_b20_det/best_accuracy</code>；配置：<code>/home/work/opa_common/zhanghaoran/ft_ocr_v6/configs/PP-OCRv6_overlay_business_split_synth_v3_from_v1continuebest_b20_det.yml</code>；后处理：<code>thresh=0.15</code>，<code>box_thresh=0.4</code>，<code>unclip_ratio=1.8</code>。</p>
+<p>判断逻辑：如果 GT 区域 <code>max/p90/二值覆盖</code> 很低，说明模型概率图没有激活水印；如果二值覆盖有但轮廓 <code>score</code> 低，说明被 <code>box_thresh</code> 过滤；如果有通过轮廓但最终 IoU 低，说明响应碎片化或框覆盖不完整。</p>
+
+<section class="case">
+  <h2>test_business/overlay/video_011/scene_0002_frame_000193.jpg</h2>
+  <p>GT=1，final pred=1。绿色=GT，橙色=最终预测，轮廓图里红色=被后处理过滤，绿色=通过 box score。</p>
+  <div class="grid"><figure><img src="assets/test_business__overlay__video_011__scene_0002_frame_000193/01_original_gt_pred.jpg"><figcaption>原图 + GT/最终预测</figcaption></figure><figure><img src="assets/test_business__overlay__video_011__scene_0002_frame_000193/03_prob_heatmap.jpg"><figcaption>模型概率图 heatmap</figcaption></figure><figure><img src="assets/test_business__overlay__video_011__scene_0002_frame_000193/04_binary_thresh.jpg"><figcaption>二值图 pred > 0.15</figcaption></figure><figure><img src="assets/test_business__overlay__video_011__scene_0002_frame_000193/05_contours_score.jpg"><figcaption>轮廓分数，绿=通过 box_thresh 0.4</figcaption></figure></div>
+  <h3>GT 区域概率统计</h3>
+  <table><thead><tr><th>#</th><th>text</th><th>mean</th><th>p90</th><th>max</th><th>二值覆盖</th><th>最终框 best IoU</th></tr></thead><tbody><tr><td>0</td><td>Video by Cece Dini</td><td>0.026</td><td>0.001</td><td>0.997</td><td>3.3%</td><td>0.129</td></tr></tbody></table>
+  <h3>Top contours after binary threshold</h3>
+  <table><thead><tr><th>contour</th><th>status</th><th>score</th><th>short side</th></tr></thead><tbody><tr><td>36</td><td>pass_score</td><td>0.582</td><td>19.7</td></tr><tr><td>0</td><td>drop_small</td><td>0.000</td><td>0.0</td></tr><tr><td>1</td><td>drop_small</td><td>0.000</td><td>0.0</td></tr><tr><td>2</td><td>drop_small</td><td>0.000</td><td>0.0</td></tr><tr><td>3</td><td>drop_small</td><td>0.000</td><td>0.0</td></tr><tr><td>4</td><td>drop_small</td><td>0.000</td><td>0.0</td></tr><tr><td>5</td><td>drop_small</td><td>0.000</td><td>0.0</td></tr><tr><td>6</td><td>drop_small</td><td>0.000</td><td>0.0</td></tr><tr><td>7</td><td>drop_small</td><td>0.000</td><td>0.0</td></tr><tr><td>8</td><td>drop_small</td><td>0.000</td><td>0.0</td></tr><tr><td>9</td><td>drop_small</td><td>0.000</td><td>1.4</td></tr><tr><td>10</td><td>drop_small</td><td>0.000</td><td>1.4</td></tr></tbody></table>
+</section>
+
+<section class="case">
+  <h2>test_business/overlay/video_014/scene_0001_frame_000030.jpg</h2>
+  <p>GT=3，final pred=2。绿色=GT，橙色=最终预测，轮廓图里红色=被后处理过滤，绿色=通过 box score。</p>
+  <div class="grid"><figure><img src="assets/test_business__overlay__video_014__scene_0001_frame_000030/01_original_gt_pred.jpg"><figcaption>原图 + GT/最终预测</figcaption></figure><figure><img src="assets/test_business__overlay__video_014__scene_0001_frame_000030/03_prob_heatmap.jpg"><figcaption>模型概率图 heatmap</figcaption></figure><figure><img src="assets/test_business__overlay__video_014__scene_0001_frame_000030/04_binary_thresh.jpg"><figcaption>二值图 pred > 0.15</figcaption></figure><figure><img src="assets/test_business__overlay__video_014__scene_0001_frame_000030/05_contours_score.jpg"><figcaption>轮廓分数，绿=通过 box_thresh 0.4</figcaption></figure></div>
+  <h3>GT 区域概率统计</h3>
+  <table><thead><tr><th>#</th><th>text</th><th>mean</th><th>p90</th><th>max</th><th>二值覆盖</th><th>最终框 best IoU</th></tr></thead><tbody><tr><td>0</td><td>Sudah lama pake ga menguning sama sekali</td><td>0.235</td><td>1.000</td><td>1.000</td><td>23.8%</td><td>0.758</td></tr><tr><td>1</td><td>NVCASE</td><td>0.005</td><td>0.001</td><td>0.962</td><td>1.0%</td><td>0.000</td></tr><tr><td>2</td><td>Sudah lama pake ga menguning sama sekali</td><td>0.242</td><td>1.000</td><td>1.000</td><td>24.7%</td><td>0.861</td></tr></tbody></table>
+  <h3>Top contours after binary threshold</h3>
+  <table><thead><tr><th>contour</th><th>status</th><th>score</th><th>short side</th></tr></thead><tbody><tr><td>5</td><td>pass_score</td><td>0.907</td><td>16.8</td></tr><tr><td>9</td><td>pass_score</td><td>0.690</td><td>21.5</td></tr><tr><td>3</td><td>drop_box_score</td><td>0.259</td><td>5.0</td></tr><tr><td>0</td><td>drop_small</td><td>0.000</td><td>1.4</td></tr><tr><td>1</td><td>drop_small</td><td>0.000</td><td>0.0</td></tr><tr><td>2</td><td>drop_small</td><td>0.000</td><td>1.4</td></tr><tr><td>4</td><td>drop_small</td><td>0.000</td><td>0.0</td></tr><tr><td>6</td><td>drop_small</td><td>0.000</td><td>0.0</td></tr><tr><td>7</td><td>drop_small</td><td>0.000</td><td>1.4</td></tr><tr><td>8</td><td>drop_small</td><td>0.000</td><td>1.4</td></tr></tbody></table>
+</section>
+
+<section class="case">
+  <h2>test_business/overlay/video_014/scene_0002_frame_000209.jpg</h2>
+  <p>GT=3，final pred=4。绿色=GT，橙色=最终预测，轮廓图里红色=被后处理过滤，绿色=通过 box score。</p>
+  <div class="grid"><figure><img src="assets/test_business__overlay__video_014__scene_0002_frame_000209/01_original_gt_pred.jpg"><figcaption>原图 + GT/最终预测</figcaption></figure><figure><img src="assets/test_business__overlay__video_014__scene_0002_frame_000209/03_prob_heatmap.jpg"><figcaption>模型概率图 heatmap</figcaption></figure><figure><img src="assets/test_business__overlay__video_014__scene_0002_frame_000209/04_binary_thresh.jpg"><figcaption>二值图 pred > 0.15</figcaption></figure><figure><img src="assets/test_business__overlay__video_014__scene_0002_frame_000209/05_contours_score.jpg"><figcaption>轮廓分数，绿=通过 box_thresh 0.4</figcaption></figure></div>
+  <h3>GT 区域概率统计</h3>
+  <table><thead><tr><th>#</th><th>text</th><th>mean</th><th>p90</th><th>max</th><th>二值覆盖</th><th>最终框 best IoU</th></tr></thead><tbody><tr><td>0</td><td>Sudah lama pake ga menguning sama sekali</td><td>0.233</td><td>1.000</td><td>1.000</td><td>23.7%</td><td>0.726</td></tr><tr><td>1</td><td>NVCASES</td><td>0.027</td><td>0.000</td><td>0.990</td><td>3.4%</td><td>0.125</td></tr><tr><td>2</td><td>Sudah lama pake ga menguning sama sekali</td><td>0.242</td><td>1.000</td><td>1.000</td><td>24.6%</td><td>0.799</td></tr></tbody></table>
+  <h3>Top contours after binary threshold</h3>
+  <table><thead><tr><th>contour</th><th>status</th><th>score</th><th>short side</th></tr></thead><tbody><tr><td>1</td><td>pass_score</td><td>0.888</td><td>16.7</td></tr><tr><td>0</td><td>pass_score</td><td>0.659</td><td>8.0</td></tr><tr><td>3</td><td>pass_score</td><td>0.634</td><td>22.6</td></tr><tr><td>2</td><td>pass_score</td><td>0.543</td><td>8.0</td></tr></tbody></table>
+</section>
+
+<section class="case">
+  <h2>test_business/overlay/video_033/scene_0001_frame_000029.jpg</h2>
+  <p>GT=3，final pred=3。绿色=GT，橙色=最终预测，轮廓图里红色=被后处理过滤，绿色=通过 box score。</p>
+  <div class="grid"><figure><img src="assets/test_business__overlay__video_033__scene_0001_frame_000029/01_original_gt_pred.jpg"><figcaption>原图 + GT/最终预测</figcaption></figure><figure><img src="assets/test_business__overlay__video_033__scene_0001_frame_000029/03_prob_heatmap.jpg"><figcaption>模型概率图 heatmap</figcaption></figure><figure><img src="assets/test_business__overlay__video_033__scene_0001_frame_000029/04_binary_thresh.jpg"><figcaption>二值图 pred > 0.15</figcaption></figure><figure><img src="assets/test_business__overlay__video_033__scene_0001_frame_000029/05_contours_score.jpg"><figcaption>轮廓分数，绿=通过 box_thresh 0.4</figcaption></figure></div>
+  <h3>GT 区域概率统计</h3>
+  <table><thead><tr><th>#</th><th>text</th><th>mean</th><th>p90</th><th>max</th><th>二值覆盖</th><th>最终框 best IoU</th></tr></thead><tbody><tr><td>0</td><td>juara 1</td><td>0.262</td><td>1.000</td><td>1.000</td><td>26.9%</td><td>0.895</td></tr><tr><td>1</td><td>LOMBA CLAY</td><td>0.262</td><td>1.000</td><td>1.000</td><td>26.8%</td><td>0.878</td></tr><tr><td>2</td><td>video milik @titin suhartinn</td><td>0.133</td><td>0.992</td><td>1.000</td><td>14.0%</td><td>0.458</td></tr></tbody></table>
+  <h3>Top contours after binary threshold</h3>
+  <table><thead><tr><th>contour</th><th>status</th><th>score</th><th>short side</th></tr></thead><tbody><tr><td>28</td><td>pass_score</td><td>0.885</td><td>44.2</td></tr><tr><td>44</td><td>pass_score</td><td>0.818</td><td>57.8</td></tr><tr><td>9</td><td>pass_score</td><td>0.793</td><td>15.5</td></tr><tr><td>0</td><td>drop_small</td><td>0.000</td><td>1.4</td></tr><tr><td>1</td><td>drop_small</td><td>0.000</td><td>1.4</td></tr><tr><td>2</td><td>drop_small</td><td>0.000</td><td>1.4</td></tr><tr><td>3</td><td>drop_small</td><td>0.000</td><td>1.4</td></tr><tr><td>4</td><td>drop_small</td><td>0.000</td><td>1.4</td></tr><tr><td>5</td><td>drop_small</td><td>0.000</td><td>1.4</td></tr><tr><td>6</td><td>drop_small</td><td>0.000</td><td>0.0</td></tr><tr><td>7</td><td>drop_small</td><td>0.000</td><td>2.0</td></tr><tr><td>8</td><td>drop_small</td><td>0.000</td><td>0.0</td></tr></tbody></table>
+</section>
+
+<section class="case">
+  <h2>test_business/overlay/video_033/scene_0003_frame_000145.jpg</h2>
+  <p>GT=1，final pred=0。绿色=GT，橙色=最终预测，轮廓图里红色=被后处理过滤，绿色=通过 box score。</p>
+  <div class="grid"><figure><img src="assets/test_business__overlay__video_033__scene_0003_frame_000145/01_original_gt_pred.jpg"><figcaption>原图 + GT/最终预测</figcaption></figure><figure><img src="assets/test_business__overlay__video_033__scene_0003_frame_000145/03_prob_heatmap.jpg"><figcaption>模型概率图 heatmap</figcaption></figure><figure><img src="assets/test_business__overlay__video_033__scene_0003_frame_000145/04_binary_thresh.jpg"><figcaption>二值图 pred > 0.15</figcaption></figure><figure><img src="assets/test_business__overlay__video_033__scene_0003_frame_000145/05_contours_score.jpg"><figcaption>轮廓分数，绿=通过 box_thresh 0.4</figcaption></figure></div>
+  <h3>GT 区域概率统计</h3>
+  <table><thead><tr><th>#</th><th>text</th><th>mean</th><th>p90</th><th>max</th><th>二值覆盖</th><th>最终框 best IoU</th></tr></thead><tbody><tr><td>0</td><td>video milik @titin suhartinn</td><td>0.001</td><td>0.001</td><td>0.174</td><td>0.0%</td><td>0.000</td></tr></tbody></table>
+  <h3>Top contours after binary threshold</h3>
+  <table><thead><tr><th>contour</th><th>status</th><th>score</th><th>short side</th></tr></thead><tbody><tr><td>0</td><td>drop_small</td><td>0.000</td><td>0.0</td></tr><tr><td>1</td><td>drop_small</td><td>0.000</td><td>0.0</td></tr><tr><td>2</td><td>drop_small</td><td>0.000</td><td>0.0</td></tr><tr><td>3</td><td>drop_small</td><td>0.000</td><td>0.0</td></tr></tbody></table>
+</section>
+
+<section class="case">
+  <h2>test_business/overlay/video_056/scene_0003_frame_000240.jpg</h2>
+  <p>GT=4，final pred=5。绿色=GT，橙色=最终预测，轮廓图里红色=被后处理过滤，绿色=通过 box score。</p>
+  <div class="grid"><figure><img src="assets/test_business__overlay__video_056__scene_0003_frame_000240/01_original_gt_pred.jpg"><figcaption>原图 + GT/最终预测</figcaption></figure><figure><img src="assets/test_business__overlay__video_056__scene_0003_frame_000240/03_prob_heatmap.jpg"><figcaption>模型概率图 heatmap</figcaption></figure><figure><img src="assets/test_business__overlay__video_056__scene_0003_frame_000240/04_binary_thresh.jpg"><figcaption>二值图 pred > 0.15</figcaption></figure><figure><img src="assets/test_business__overlay__video_056__scene_0003_frame_000240/05_contours_score.jpg"><figcaption>轮廓分数，绿=通过 box_thresh 0.4</figcaption></figure></div>
+  <h3>GT 区域概率统计</h3>
+  <table><thead><tr><th>#</th><th>text</th><th>mean</th><th>p90</th><th>max</th><th>二值覆盖</th><th>最终框 best IoU</th></tr></thead><tbody><tr><td>0</td><td>ShopeeVideo</td><td>0.027</td><td>0.003</td><td>0.986</td><td>3.5%</td><td>0.120</td></tr><tr><td>1</td><td>Tersedia ukuran</td><td>0.426</td><td>1.000</td><td>1.000</td><td>44.2%</td><td>0.638</td></tr><tr><td>2</td><td>120-200</td><td>0.223</td><td>1.000</td><td>1.000</td><td>22.8%</td><td>0.731</td></tr><tr><td>3</td><td>120-200</td><td>0.283</td><td>1.000</td><td>1.000</td><td>29.1%</td><td>0.738</td></tr></tbody></table>
+  <h3>Top contours after binary threshold</h3>
+  <table><thead><tr><th>contour</th><th>status</th><th>score</th><th>short side</th></tr></thead><tbody><tr><td>1</td><td>pass_score</td><td>0.872</td><td>14.5</td></tr><tr><td>0</td><td>pass_score</td><td>0.864</td><td>17.1</td></tr><tr><td>7</td><td>pass_score</td><td>0.807</td><td>27.8</td></tr><tr><td>55</td><td>pass_score</td><td>0.801</td><td>66.0</td></tr><tr><td>68</td><td>pass_score</td><td>0.564</td><td>4.0</td></tr><tr><td>2</td><td>drop_small</td><td>0.000</td><td>0.0</td></tr><tr><td>3</td><td>drop_small</td><td>0.000</td><td>1.4</td></tr><tr><td>4</td><td>drop_small</td><td>0.000</td><td>2.1</td></tr><tr><td>5</td><td>drop_small</td><td>0.000</td><td>0.0</td></tr><tr><td>6</td><td>drop_small</td><td>0.000</td><td>0.0</td></tr><tr><td>8</td><td>drop_small</td><td>0.000</td><td>0.0</td></tr><tr><td>9</td><td>drop_small</td><td>0.000</td><td>0.0</td></tr></tbody></table>
+</section>
+
+</body></html>

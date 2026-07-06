@@ -1,0 +1,1112 @@
+[
+  {
+    "rel": "test_business/overlay/video_011/scene_0002_frame_000193.jpg",
+    "gt_count": 1,
+    "pred_count": 1,
+    "gt_stats": [
+      {
+        "idx": 0,
+        "text": "Video by Cece Dini",
+        "prob_mean": 0.025784369558095932,
+        "prob_p90": 0.0014582438161596656,
+        "prob_max": 0.9972569346427917,
+        "bin_ratio": 0.032705512294295906,
+        "best_final_iou": 0.12927926884808064
+      }
+    ],
+    "top_contours": [
+      {
+        "idx": 36,
+        "status": "pass_score",
+        "score": 0.5823358392409008,
+        "sside": 19.730241775512695,
+        "raw_box": [
+          [
+            373,
+            1322
+          ],
+          [
+            642,
+            1325
+          ],
+          [
+            642,
+            1345
+          ],
+          [
+            373,
+            1341
+          ]
+        ],
+        "box": [
+          [
+            356,
+            1304
+          ],
+          [
+            659,
+            1308
+          ],
+          [
+            659,
+            1362
+          ],
+          [
+            355,
+            1358
+          ]
+        ]
+      },
+      {
+        "idx": 0,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 0.0,
+        "box": null
+      },
+      {
+        "idx": 1,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 0.0,
+        "box": null
+      },
+      {
+        "idx": 2,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 0.0,
+        "box": null
+      },
+      {
+        "idx": 3,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 0.0,
+        "box": null
+      },
+      {
+        "idx": 4,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 0.0,
+        "box": null
+      },
+      {
+        "idx": 5,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 0.0,
+        "box": null
+      },
+      {
+        "idx": 6,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 0.0,
+        "box": null
+      },
+      {
+        "idx": 7,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 0.0,
+        "box": null
+      },
+      {
+        "idx": 8,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 0.0,
+        "box": null
+      },
+      {
+        "idx": 9,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 1.4142134189605713,
+        "box": null
+      },
+      {
+        "idx": 10,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 1.4142134189605713,
+        "box": null
+      }
+    ]
+  },
+  {
+    "rel": "test_business/overlay/video_014/scene_0001_frame_000030.jpg",
+    "gt_count": 3,
+    "pred_count": 2,
+    "gt_stats": [
+      {
+        "idx": 0,
+        "text": "Sudah lama pake ga menguning sama sekali",
+        "prob_mean": 0.23511047661304474,
+        "prob_p90": 0.9999878406524658,
+        "prob_max": 0.9999998807907104,
+        "bin_ratio": 0.23815951866707807,
+        "best_final_iou": 0.7583383503913306
+      },
+      {
+        "idx": 1,
+        "text": "NVCASE",
+        "prob_mean": 0.005250871181488037,
+        "prob_p90": 0.0008575505344197154,
+        "prob_max": 0.9618096947669983,
+        "bin_ratio": 0.009721203228173148,
+        "best_final_iou": 0.0
+      },
+      {
+        "idx": 2,
+        "text": "Sudah lama pake ga menguning sama sekali",
+        "prob_mean": 0.2418263554573059,
+        "prob_p90": 0.9999953508377075,
+        "prob_max": 0.9999998807907104,
+        "bin_ratio": 0.24699231117141565,
+        "best_final_iou": 0.8607743960931368
+      }
+    ],
+    "top_contours": [
+      {
+        "idx": 5,
+        "status": "pass_score",
+        "score": 0.9073741697846981,
+        "sside": 16.827606201171875,
+        "raw_box": [
+          [
+            166,
+            247
+          ],
+          [
+            539,
+            246
+          ],
+          [
+            539,
+            262
+          ],
+          [
+            166,
+            263
+          ]
+        ],
+        "box": [
+          [
+            152,
+            232
+          ],
+          [
+            553,
+            230
+          ],
+          [
+            553,
+            276
+          ],
+          [
+            152,
+            278
+          ]
+        ]
+      },
+      {
+        "idx": 9,
+        "status": "pass_score",
+        "score": 0.689799285963462,
+        "sside": 21.486072540283203,
+        "raw_box": [
+          [
+            192,
+            195
+          ],
+          [
+            528,
+            202
+          ],
+          [
+            527,
+            223
+          ],
+          [
+            191,
+            216
+          ]
+        ],
+        "box": [
+          [
+            174,
+            176
+          ],
+          [
+            545,
+            185
+          ],
+          [
+            544,
+            241
+          ],
+          [
+            173,
+            233
+          ]
+        ]
+      },
+      {
+        "idx": 3,
+        "status": "drop_box_score",
+        "score": 0.25900980723184547,
+        "sside": 5.0,
+        "raw_box": [
+          [
+            333,
+            1027
+          ],
+          [
+            364,
+            1027
+          ],
+          [
+            364,
+            1032
+          ],
+          [
+            333,
+            1032
+          ]
+        ],
+        "box": null
+      },
+      {
+        "idx": 0,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 1.4142134189605713,
+        "box": null
+      },
+      {
+        "idx": 1,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 0.0,
+        "box": null
+      },
+      {
+        "idx": 2,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 1.4142134189605713,
+        "box": null
+      },
+      {
+        "idx": 4,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 0.0,
+        "box": null
+      },
+      {
+        "idx": 6,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 0.0,
+        "box": null
+      },
+      {
+        "idx": 7,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 1.4142134189605713,
+        "box": null
+      },
+      {
+        "idx": 8,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 1.4142134189605713,
+        "box": null
+      }
+    ]
+  },
+  {
+    "rel": "test_business/overlay/video_014/scene_0002_frame_000209.jpg",
+    "gt_count": 3,
+    "pred_count": 4,
+    "gt_stats": [
+      {
+        "idx": 0,
+        "text": "Sudah lama pake ga menguning sama sekali",
+        "prob_mean": 0.23253779113292694,
+        "prob_p90": 0.9999971389770508,
+        "prob_max": 1.0,
+        "bin_ratio": 0.23671366594360085,
+        "best_final_iou": 0.7256601491634751
+      },
+      {
+        "idx": 1,
+        "text": "NVCASES",
+        "prob_mean": 0.026997700333595276,
+        "prob_p90": 0.00018059714057017118,
+        "prob_max": 0.99024897813797,
+        "bin_ratio": 0.03413006029285099,
+        "best_final_iou": 0.125
+      },
+      {
+        "idx": 2,
+        "text": "Sudah lama pake ga menguning sama sekali",
+        "prob_mean": 0.24212290346622467,
+        "prob_p90": 0.999997615814209,
+        "prob_max": 1.0,
+        "bin_ratio": 0.24560359040117238,
+        "best_final_iou": 0.7991451235049937
+      }
+    ],
+    "top_contours": [
+      {
+        "idx": 1,
+        "status": "pass_score",
+        "score": 0.8876747503798145,
+        "sside": 16.669357299804688,
+        "raw_box": [
+          [
+            167,
+            247
+          ],
+          [
+            538,
+            246
+          ],
+          [
+            538,
+            262
+          ],
+          [
+            167,
+            263
+          ]
+        ],
+        "box": [
+          [
+            153,
+            233
+          ],
+          [
+            552,
+            231
+          ],
+          [
+            552,
+            275
+          ],
+          [
+            153,
+            277
+          ]
+        ]
+      },
+      {
+        "idx": 0,
+        "status": "pass_score",
+        "score": 0.6587991720854204,
+        "sside": 8.0,
+        "raw_box": [
+          [
+            332,
+            1026
+          ],
+          [
+            372,
+            1026
+          ],
+          [
+            372,
+            1034
+          ],
+          [
+            332,
+            1034
+          ]
+        ],
+        "box": [
+          [
+            326,
+            1020
+          ],
+          [
+            378,
+            1020
+          ],
+          [
+            378,
+            1040
+          ],
+          [
+            326,
+            1040
+          ]
+        ]
+      },
+      {
+        "idx": 3,
+        "status": "pass_score",
+        "score": 0.634017447897937,
+        "sside": 22.56097984313965,
+        "raw_box": [
+          [
+            190,
+            194
+          ],
+          [
+            528,
+            202
+          ],
+          [
+            528,
+            224
+          ],
+          [
+            189,
+            216
+          ]
+        ],
+        "box": [
+          [
+            171,
+            174
+          ],
+          [
+            547,
+            184
+          ],
+          [
+            546,
+            243
+          ],
+          [
+            170,
+            234
+          ]
+        ]
+      },
+      {
+        "idx": 2,
+        "status": "pass_score",
+        "score": 0.5434789066231234,
+        "sside": 8.0,
+        "raw_box": [
+          [
+            540,
+            240
+          ],
+          [
+            555,
+            240
+          ],
+          [
+            555,
+            248
+          ],
+          [
+            540,
+            248
+          ]
+        ],
+        "box": [
+          [
+            535,
+            235
+          ],
+          [
+            560,
+            235
+          ],
+          [
+            560,
+            253
+          ],
+          [
+            535,
+            253
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "rel": "test_business/overlay/video_033/scene_0001_frame_000029.jpg",
+    "gt_count": 3,
+    "pred_count": 3,
+    "gt_stats": [
+      {
+        "idx": 0,
+        "text": "juara 1",
+        "prob_mean": 0.26185086369514465,
+        "prob_p90": 0.9999920129776001,
+        "prob_max": 1.0,
+        "bin_ratio": 0.2688557553683891,
+        "best_final_iou": 0.8954340525798252
+      },
+      {
+        "idx": 1,
+        "text": "LOMBA CLAY",
+        "prob_mean": 0.26236143708229065,
+        "prob_p90": 0.9999725818634033,
+        "prob_max": 0.9999995231628418,
+        "bin_ratio": 0.2675956156716418,
+        "best_final_iou": 0.8776018869759751
+      },
+      {
+        "idx": 2,
+        "text": "video milik @titin suhartinn",
+        "prob_mean": 0.13312003016471863,
+        "prob_p90": 0.9921737909317017,
+        "prob_max": 0.9999772310256958,
+        "bin_ratio": 0.14037055923848377,
+        "best_final_iou": 0.45762771291329196
+      }
+    ],
+    "top_contours": [
+      {
+        "idx": 28,
+        "status": "pass_score",
+        "score": 0.8847972539050473,
+        "sside": 44.22176742553711,
+        "raw_box": [
+          [
+            80,
+            319
+          ],
+          [
+            625,
+            323
+          ],
+          [
+            625,
+            366
+          ],
+          [
+            80,
+            362
+          ]
+        ],
+        "box": [
+          [
+            44,
+            281
+          ],
+          [
+            662,
+            286
+          ],
+          [
+            661,
+            402
+          ],
+          [
+            43,
+            397
+          ]
+        ]
+      },
+      {
+        "idx": 44,
+        "status": "pass_score",
+        "score": 0.8179164131520166,
+        "sside": 57.76822280883789,
+        "raw_box": [
+          [
+            205,
+            203
+          ],
+          [
+            487,
+            191
+          ],
+          [
+            490,
+            248
+          ],
+          [
+            207,
+            259
+          ]
+        ],
+        "box": [
+          [
+            160,
+            163
+          ],
+          [
+            528,
+            148
+          ],
+          [
+            533,
+            287
+          ],
+          [
+            166,
+            302
+          ]
+        ]
+      },
+      {
+        "idx": 9,
+        "status": "pass_score",
+        "score": 0.7928985969567007,
+        "sside": 15.484617233276367,
+        "raw_box": [
+          [
+            111,
+            1128
+          ],
+          [
+            402,
+            1124
+          ],
+          [
+            402,
+            1139
+          ],
+          [
+            112,
+            1144
+          ]
+        ],
+        "box": [
+          [
+            98,
+            1115
+          ],
+          [
+            414,
+            1110
+          ],
+          [
+            415,
+            1151
+          ],
+          [
+            98,
+            1156
+          ]
+        ]
+      },
+      {
+        "idx": 0,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 1.4142134189605713,
+        "box": null
+      },
+      {
+        "idx": 1,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 1.4142134189605713,
+        "box": null
+      },
+      {
+        "idx": 2,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 1.4142134189605713,
+        "box": null
+      },
+      {
+        "idx": 3,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 1.4142134189605713,
+        "box": null
+      },
+      {
+        "idx": 4,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 1.4142134189605713,
+        "box": null
+      },
+      {
+        "idx": 5,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 1.4142134189605713,
+        "box": null
+      },
+      {
+        "idx": 6,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 0.0,
+        "box": null
+      },
+      {
+        "idx": 7,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 2.0,
+        "box": null
+      },
+      {
+        "idx": 8,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 0.0,
+        "box": null
+      }
+    ]
+  },
+  {
+    "rel": "test_business/overlay/video_033/scene_0003_frame_000145.jpg",
+    "gt_count": 1,
+    "pred_count": 0,
+    "gt_stats": [
+      {
+        "idx": 0,
+        "text": "video milik @titin suhartinn",
+        "prob_mean": 0.001094234292395413,
+        "prob_p90": 0.0005801872466690838,
+        "prob_max": 0.17364323139190674,
+        "bin_ratio": 0.00020641254988303288,
+        "best_final_iou": 0.0
+      }
+    ],
+    "top_contours": [
+      {
+        "idx": 0,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 0.0,
+        "box": null
+      },
+      {
+        "idx": 1,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 0.0,
+        "box": null
+      },
+      {
+        "idx": 2,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 0.0,
+        "box": null
+      },
+      {
+        "idx": 3,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 0.0,
+        "box": null
+      }
+    ]
+  },
+  {
+    "rel": "test_business/overlay/video_056/scene_0003_frame_000240.jpg",
+    "gt_count": 4,
+    "pred_count": 5,
+    "gt_stats": [
+      {
+        "idx": 0,
+        "text": "ShopeeVideo",
+        "prob_mean": 0.027358977124094963,
+        "prob_p90": 0.0031678401865065098,
+        "prob_max": 0.985658586025238,
+        "bin_ratio": 0.03484712230215827,
+        "best_final_iou": 0.12001897533206832
+      },
+      {
+        "idx": 1,
+        "text": "Tersedia ukuran",
+        "prob_mean": 0.4263702929019928,
+        "prob_p90": 0.9999222755432129,
+        "prob_max": 0.9999990463256836,
+        "bin_ratio": 0.4424117774410046,
+        "best_final_iou": 0.6379601821834165
+      },
+      {
+        "idx": 2,
+        "text": "120-200",
+        "prob_mean": 0.22303156554698944,
+        "prob_p90": 0.9999784231185913,
+        "prob_max": 0.9999994039535522,
+        "bin_ratio": 0.22795497185741087,
+        "best_final_iou": 0.7313988935305408
+      },
+      {
+        "idx": 3,
+        "text": "120-200",
+        "prob_mean": 0.2825782895088196,
+        "prob_p90": 0.9999727010726929,
+        "prob_max": 0.9999982118606567,
+        "bin_ratio": 0.29084745762711867,
+        "best_final_iou": 0.7378440039925852
+      }
+    ],
+    "top_contours": [
+      {
+        "idx": 1,
+        "status": "pass_score",
+        "score": 0.871995802196196,
+        "sside": 14.529528617858887,
+        "raw_box": [
+          [
+            136,
+            665
+          ],
+          [
+            582,
+            667
+          ],
+          [
+            582,
+            681
+          ],
+          [
+            136,
+            679
+          ]
+        ],
+        "box": [
+          [
+            122,
+            652
+          ],
+          [
+            595,
+            655
+          ],
+          [
+            595,
+            695
+          ],
+          [
+            122,
+            692
+          ]
+        ]
+      },
+      {
+        "idx": 0,
+        "status": "pass_score",
+        "score": 0.864459076583878,
+        "sside": 17.125118255615234,
+        "raw_box": [
+          [
+            242,
+            705
+          ],
+          [
+            475,
+            702
+          ],
+          [
+            476,
+            719
+          ],
+          [
+            243,
+            722
+          ]
+        ],
+        "box": [
+          [
+            228,
+            692
+          ],
+          [
+            489,
+            688
+          ],
+          [
+            489,
+            731
+          ],
+          [
+            228,
+            736
+          ]
+        ]
+      },
+      {
+        "idx": 7,
+        "status": "pass_score",
+        "score": 0.807177370204949,
+        "sside": 27.813575744628906,
+        "raw_box": [
+          [
+            286,
+            548
+          ],
+          [
+            455,
+            550
+          ],
+          [
+            455,
+            577
+          ],
+          [
+            286,
+            576
+          ]
+        ],
+        "box": [
+          [
+            264,
+            526
+          ],
+          [
+            477,
+            528
+          ],
+          [
+            476,
+            598
+          ],
+          [
+            263,
+            596
+          ]
+        ]
+      },
+      {
+        "idx": 55,
+        "status": "pass_score",
+        "score": 0.8005194399789167,
+        "sside": 66.0,
+        "raw_box": [
+          [
+            254,
+            479
+          ],
+          [
+            467,
+            479
+          ],
+          [
+            467,
+            543
+          ],
+          [
+            254,
+            543
+          ]
+        ],
+        "box": [
+          [
+            209,
+            434
+          ],
+          [
+            512,
+            434
+          ],
+          [
+            512,
+            588
+          ],
+          [
+            209,
+            588
+          ]
+        ]
+      },
+      {
+        "idx": 68,
+        "status": "pass_score",
+        "score": 0.5642891409676295,
+        "sside": 4.0,
+        "raw_box": [
+          [
+            314,
+            453
+          ],
+          [
+            353,
+            453
+          ],
+          [
+            353,
+            457
+          ],
+          [
+            314,
+            457
+          ]
+        ],
+        "box": [
+          [
+            311,
+            450
+          ],
+          [
+            356,
+            450
+          ],
+          [
+            356,
+            460
+          ],
+          [
+            311,
+            460
+          ]
+        ]
+      },
+      {
+        "idx": 2,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 0.0,
+        "box": null
+      },
+      {
+        "idx": 3,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 1.4142134189605713,
+        "box": null
+      },
+      {
+        "idx": 4,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 2.1213202476501465,
+        "box": null
+      },
+      {
+        "idx": 5,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 0.0,
+        "box": null
+      },
+      {
+        "idx": 6,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 0.0,
+        "box": null
+      },
+      {
+        "idx": 8,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 0.0,
+        "box": null
+      },
+      {
+        "idx": 9,
+        "status": "drop_small",
+        "score": 0.0,
+        "sside": 0.0,
+        "box": null
+      }
+    ]
+  }
+]
