@@ -1,0 +1,727 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TTS Smoke Test Report - VoxCPM2 / VieNeu-TTS / JaiTTS</title>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --panel: #ffffff;
+      --ink: #18202a;
+      --muted: #647181;
+      --line: #d7dde5;
+      --brand: #0f6b5f;
+      --accent: #b64f1d;
+      --blue: #2457a6;
+      --soft-green: #e5f3ef;
+      --soft-orange: #fff0e7;
+      --soft-blue: #e9f0fb;
+      --soft-gray: #eef1f4;
+      --shadow: 0 14px 34px rgba(26, 35, 48, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      letter-spacing: 0;
+    }
+
+    a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .wrap {
+      width: min(1180px, calc(100% - 36px));
+      margin: 0 auto;
+    }
+
+    header {
+      background: #fbfcfd;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .top {
+      padding: 34px 0 28px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: end;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(28px, 4vw, 46px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 0;
+      max-width: 820px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    .meta {
+      display: grid;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 0 0 18px;
+    }
+
+    .nav a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 7px 12px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      color: #344052;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    main {
+      padding: 28px 0 48px;
+    }
+
+    section {
+      margin: 0 0 26px;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 22px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+      line-height: 1.35;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0 0 10px;
+      color: #354052;
+      line-height: 1.75;
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .cards {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .card,
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .card {
+      padding: 18px;
+      min-height: 120px;
+    }
+
+    .metric {
+      display: block;
+      margin: 8px 0 6px;
+      font-size: 34px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .panel {
+      padding: 18px;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: var(--soft-green);
+      padding: 14px 16px;
+      border-radius: 6px;
+    }
+
+    .warning {
+      border-left-color: var(--accent);
+      background: var(--soft-orange);
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: var(--soft-gray);
+      color: #344052;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .chip.green {
+      background: var(--soft-green);
+      color: #0e5f54;
+    }
+
+    .chip.orange {
+      background: var(--soft-orange);
+      color: #97420f;
+    }
+
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    video,
+    audio {
+      width: 100%;
+      display: block;
+    }
+
+    video {
+      aspect-ratio: 16 / 9;
+      background: #111820;
+      border-radius: 6px;
+    }
+
+    .source-card {
+      padding: 14px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .source-card .row {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 10px;
+      align-items: center;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .source-card audio {
+      min-width: 0;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 980px;
+    }
+
+    th,
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: middle;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    th {
+      background: #f8fafc;
+      color: #344052;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    td audio {
+      width: 260px;
+      max-width: 42vw;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--soft-blue);
+      color: #204f98;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .tag.v {
+      background: var(--soft-green);
+      color: #0e5f54;
+    }
+
+    .tag.t {
+      background: var(--soft-orange);
+      color: #97420f;
+    }
+
+    .delta-bad {
+      color: #9a3412;
+      font-weight: 800;
+    }
+
+    .delta-mid {
+      color: #6b5f00;
+      font-weight: 800;
+    }
+
+    .notes {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    ul {
+      margin: 8px 0 0;
+      padding-left: 18px;
+      color: #354052;
+      line-height: 1.7;
+    }
+
+    footer {
+      padding: 24px 0 34px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 920px) {
+      .top,
+      .summary,
+      .media-grid,
+      .notes {
+        grid-template-columns: 1fr;
+      }
+
+      .cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .meta {
+        text-align: left;
+        white-space: normal;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .wrap {
+        width: min(100% - 24px, 1180px);
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .card,
+      .panel {
+        padding: 14px;
+      }
+
+      td audio {
+        width: 220px;
+        max-width: 70vw;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap top">
+      <div>
+        <h1>TTS 多模型 Smoke Test 汇报</h1>
+        <p class="subtitle">面向视频翻译配音场景，对 VoxCPM2、VieNeu-TTS、JaiTTS-F5TTS 做最小可行验证。重点验证模型能否跑通、目标语种音频是否可生成、以及同一视频下的听感对比入口。</p>
+      </div>
+      <div class="meta">
+        <span>测试日期：2026-07-06</span>
+        <span>报告生成：2026-07-07</span>
+        <span>样本：2 个短视频</span>
+      </div>
+    </div>
+    <div class="wrap nav">
+      <a href="#summary">结论</a>
+      <a href="#sources">源视频</a>
+      <a href="#compare">三模型对比</a>
+      <a href="#markets">VoxCPM2 多市场</a>
+      <a href="#risks">风险与下一步</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section id="summary">
+      <div class="grid cards">
+        <article class="card">
+          <span class="label">生成任务</span>
+          <span class="metric">18/18</span>
+          <span class="label">全部成功产出 wav，可进入人工听评。</span>
+        </article>
+        <article class="card">
+          <span class="label">VoxCPM2</span>
+          <span class="metric">14</span>
+          <span class="label">覆盖 TH / VN / ID / SG / BR / MY / TW。</span>
+        </article>
+        <article class="card">
+          <span class="label">专项模型</span>
+          <span class="metric">4</span>
+          <span class="label">VieNeu-TTS 2 条越南语，JaiTTS 2 条泰语。</span>
+        </article>
+        <article class="card">
+          <span class="label">源视频</span>
+          <span class="metric">2</span>
+          <span class="label">电商广告和教程类视频各一条。</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="summary">
+      <div class="panel">
+        <h2>当前结论</h2>
+        <div class="callout">
+          <p><strong>VoxCPM2 可以作为首轮 PoC 主力继续推进。</strong> 本次 smoke test 中，VoxCPM2 在两个视频样本上完成了泰语、越南语、印尼语、新加坡英语、巴西葡语、马来语、台湾繁中 7 个目标输出，说明环境、推理链路和基础语种覆盖已经跑通。</p>
+        </div>
+        <p>VieNeu-TTS 和 JaiTTS 更适合作为 VN / TH 的专项质量对照。是否替换 VoxCPM2 的单语种合成环节，需要母语者听评后决定。</p>
+        <div class="chips">
+          <span class="chip green">主力候选：VoxCPM2</span>
+          <span class="chip">VN 对照：VieNeu-TTS</span>
+          <span class="chip">TH 对照：JaiTTS-F5TTS</span>
+          <span class="chip orange">暂未做视频回填</span>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>重要限制</h2>
+        <div class="callout warning">
+          <p><strong>本轮不是最终配音质量验收。</strong> 目标文本为 smoke-test 脚本，不是对源视频逐句 ASR + 翻译后的严格对齐文案；时长控制也尚未调参。</p>
+        </div>
+        <ul>
+          <li>可用于判断模型能否部署、是否能出声、语种发音是否值得继续。</li>
+          <li>不应用于判断最终口型同步、完整翻译质量或线上生产稳定性。</li>
+          <li>JaiTTS 的参考 transcript 仍是近似值，正式评估要补 exact transcript。</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="sources">
+      <h2>源视频与参考音频</h2>
+      <div class="media-grid">
+        <article class="source-card">
+          <h3>Sample A：现代电商广告，25.6s</h3>
+          <video controls preload="metadata" src="assets/clips/smoke_sg_ad_25s.mp4"></video>
+          <div class="row">
+            <strong>参考音频</strong>
+            <audio controls preload="metadata" src="assets/references/smoke_sg_ad_ref_15s.wav"></audio>
+          </div>
+        </article>
+        <article class="source-card">
+          <h3>Sample B：Mac 教程类视频，45.0s</h3>
+          <video controls preload="metadata" src="assets/clips/smoke_mac_tutorial_45s.mp4"></video>
+          <div class="row">
+            <strong>参考音频</strong>
+            <audio controls preload="metadata" src="assets/references/smoke_mac_tutorial_ref_15s.wav"></audio>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="compare">
+      <h2>三模型对比：泰语 / 越南语</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>样本</th>
+              <th>语种</th>
+              <th>模型</th>
+              <th>状态</th>
+              <th>输出时长</th>
+              <th>源视频时长</th>
+              <th>偏差</th>
+              <th>播放</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Sample A 电商广告</td>
+              <td><span class="tag t">TH</span></td>
+              <td>VoxCPM2</td>
+              <td>ok</td>
+              <td>7.84s</td>
+              <td>25.60s</td>
+              <td class="delta-bad">-69.4%</td>
+              <td><audio controls preload="metadata" src="assets/audio/voxcpm2/sg_ad.th.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Sample A 电商广告</td>
+              <td><span class="tag t">TH</span></td>
+              <td>JaiTTS-F5TTS</td>
+              <td>ok</td>
+              <td>38.99s</td>
+              <td>25.60s</td>
+              <td class="delta-bad">+52.3%</td>
+              <td><audio controls preload="metadata" src="assets/audio/jaitts/sg_ad.th.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Sample A 电商广告</td>
+              <td><span class="tag v">VN</span></td>
+              <td>VoxCPM2</td>
+              <td>ok</td>
+              <td>7.36s</td>
+              <td>25.60s</td>
+              <td class="delta-bad">-71.2%</td>
+              <td><audio controls preload="metadata" src="assets/audio/voxcpm2/sg_ad.vi.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Sample A 电商广告</td>
+              <td><span class="tag v">VN</span></td>
+              <td>VieNeu-TTS</td>
+              <td>ok</td>
+              <td>10.00s</td>
+              <td>25.60s</td>
+              <td class="delta-bad">-60.9%</td>
+              <td><audio controls preload="metadata" src="assets/audio/vieneu/sg_ad.vi.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Sample B Mac 教程</td>
+              <td><span class="tag t">TH</span></td>
+              <td>VoxCPM2</td>
+              <td>ok</td>
+              <td>14.08s</td>
+              <td>45.00s</td>
+              <td class="delta-bad">-68.7%</td>
+              <td><audio controls preload="metadata" src="assets/audio/voxcpm2/mac_tutorial.th.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Sample B Mac 教程</td>
+              <td><span class="tag t">TH</span></td>
+              <td>JaiTTS-F5TTS</td>
+              <td>ok</td>
+              <td>38.86s</td>
+              <td>45.00s</td>
+              <td class="delta-mid">-13.6%</td>
+              <td><audio controls preload="metadata" src="assets/audio/jaitts/mac_tutorial.th.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Sample B Mac 教程</td>
+              <td><span class="tag v">VN</span></td>
+              <td>VoxCPM2</td>
+              <td>ok</td>
+              <td>11.52s</td>
+              <td>45.00s</td>
+              <td class="delta-bad">-74.4%</td>
+              <td><audio controls preload="metadata" src="assets/audio/voxcpm2/mac_tutorial.vi.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Sample B Mac 教程</td>
+              <td><span class="tag v">VN</span></td>
+              <td>VieNeu-TTS</td>
+              <td>ok</td>
+              <td>11.44s</td>
+              <td>45.00s</td>
+              <td class="delta-bad">-74.6%</td>
+              <td><audio controls preload="metadata" src="assets/audio/vieneu/mac_tutorial.vi.wav"></audio></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="markets">
+      <h2>VoxCPM2 额外市场输出</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>样本</th>
+              <th>市场</th>
+              <th>说明</th>
+              <th>输出时长</th>
+              <th>偏差</th>
+              <th>播放</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Sample A 电商广告</td>
+              <td><span class="tag">ID</span></td>
+              <td>印尼语</td>
+              <td>8.00s</td>
+              <td class="delta-bad">-68.8%</td>
+              <td><audio controls preload="metadata" src="assets/audio/voxcpm2/sg_ad.id.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Sample A 电商广告</td>
+              <td><span class="tag">SG</span></td>
+              <td>英语，新加坡市场口吻待听评</td>
+              <td>5.92s</td>
+              <td class="delta-bad">-76.9%</td>
+              <td><audio controls preload="metadata" src="assets/audio/voxcpm2/sg_ad.sg.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Sample A 电商广告</td>
+              <td><span class="tag">BR</span></td>
+              <td>葡萄牙语，巴西口音需母语者确认</td>
+              <td>7.52s</td>
+              <td class="delta-bad">-70.6%</td>
+              <td><audio controls preload="metadata" src="assets/audio/voxcpm2/sg_ad.br.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Sample A 电商广告</td>
+              <td><span class="tag">MY</span></td>
+              <td>马来语</td>
+              <td>7.36s</td>
+              <td class="delta-bad">-71.2%</td>
+              <td><audio controls preload="metadata" src="assets/audio/voxcpm2/sg_ad.my.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Sample A 电商广告</td>
+              <td><span class="tag">TW</span></td>
+              <td>繁体中文 / 台湾用词口吻待确认</td>
+              <td>7.36s</td>
+              <td class="delta-bad">-71.2%</td>
+              <td><audio controls preload="metadata" src="assets/audio/voxcpm2/sg_ad.tw.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Sample B Mac 教程</td>
+              <td><span class="tag">ID</span></td>
+              <td>印尼语</td>
+              <td>14.72s</td>
+              <td class="delta-bad">-67.3%</td>
+              <td><audio controls preload="metadata" src="assets/audio/voxcpm2/mac_tutorial.id.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Sample B Mac 教程</td>
+              <td><span class="tag">SG</span></td>
+              <td>英语，新加坡市场口吻待听评</td>
+              <td>11.20s</td>
+              <td class="delta-bad">-75.1%</td>
+              <td><audio controls preload="metadata" src="assets/audio/voxcpm2/mac_tutorial.sg.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Sample B Mac 教程</td>
+              <td><span class="tag">BR</span></td>
+              <td>葡萄牙语，巴西口音需母语者确认</td>
+              <td>12.96s</td>
+              <td class="delta-bad">-71.2%</td>
+              <td><audio controls preload="metadata" src="assets/audio/voxcpm2/mac_tutorial.br.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Sample B Mac 教程</td>
+              <td><span class="tag">MY</span></td>
+              <td>马来语</td>
+              <td>13.44s</td>
+              <td class="delta-bad">-70.1%</td>
+              <td><audio controls preload="metadata" src="assets/audio/voxcpm2/mac_tutorial.my.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Sample B Mac 教程</td>
+              <td><span class="tag">TW</span></td>
+              <td>繁体中文 / 台湾用词口吻待确认</td>
+              <td>13.44s</td>
+              <td class="delta-bad">-70.1%</td>
+              <td><audio controls preload="metadata" src="assets/audio/voxcpm2/mac_tutorial.tw.wav"></audio></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="risks">
+      <h2>风险与下一步</h2>
+      <div class="notes">
+        <article class="panel">
+          <h3>1. 先做母语者听评</h3>
+          <p>本轮已经具备听评材料。建议按发音准确性、自然度、音色相似度、语调保留四项打分，优先确认 TH、VN、ID、MY、BR、TW。</p>
+        </article>
+        <article class="panel">
+          <h3>2. 再做时长控制</h3>
+          <p>目前大多数输出明显短于源视频。下一轮应使用 ASR 时间戳、逐句翻译、文本长度约束、语速参数和必要的 time-stretch 做对齐。</p>
+        </article>
+        <article class="panel">
+          <h3>3. 补齐生产验证</h3>
+          <p>需要补多人声切分、带 BGM 视频的人声分离、批量失败率、GPU 吞吐、授权与生成日志。通过后再决定是否接入 API 兜底。</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>附件</h2>
+      <div class="panel">
+        <p>原始检查表：<a href="assets/metadata/smoke_output_check.csv">smoke_output_check.csv</a></p>
+        <p>生成说明：<a href="assets/metadata/smoke_generation_notes.md">smoke_generation_notes.md</a></p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      本页面为 smoke test 汇报页，音频仅用于模型验证和内部听评。正式上线前需重新使用授权素材、准确翻译文本、母语者听评和合规审查。
+    </div>
+  </footer>
+</body>
+</html>
