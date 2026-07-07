@@ -338,6 +338,32 @@
       gap: 14px;
     }
 
+    .aligned-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .aligned-card {
+      padding: 12px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .aligned-card h3 {
+      min-height: 44px;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .aligned-card .sub {
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
     ul {
       margin: 8px 0 0;
       padding-left: 18px;
@@ -357,7 +383,8 @@
       .top,
       .summary,
       .media-grid,
-      .notes {
+      .notes,
+      .aligned-grid {
         grid-template-columns: 1fr;
       }
 
@@ -397,7 +424,7 @@
     <div class="wrap top">
       <div>
         <h1>TTS 多模型 Smoke Test 汇报</h1>
-        <p class="subtitle">面向视频翻译配音场景，对 VoxCPM2、VieNeu-TTS、JaiTTS-F5TTS 做最小可行验证。重点验证模型能否跑通、目标语种音频是否可生成、以及同一视频下的听感对比入口。</p>
+        <p class="subtitle">面向视频翻译配音场景，对 VoxCPM2、VieNeu-TTS、JaiTTS-F5TTS 做最小可行验证。当前页面只保留已做短时长对齐的 MP4，方便直接看音画长度和基础听感。</p>
       </div>
       <div class="meta">
         <span>测试日期：2026-07-06</span>
@@ -408,8 +435,7 @@
     <div class="wrap nav">
       <a href="#summary">结论</a>
       <a href="#sources">源视频</a>
-      <a href="#compare">三模型对比</a>
-      <a href="#markets">VoxCPM2 多市场</a>
+      <a href="#aligned">对齐版视频</a>
       <a href="#risks">风险与下一步</a>
     </div>
   </header>
@@ -418,9 +444,9 @@
     <section id="summary">
       <div class="grid cards">
         <article class="card">
-          <span class="label">生成任务</span>
+          <span class="label">对齐视频</span>
           <span class="metric">18/18</span>
-          <span class="label">全部成功产出 wav，可进入人工听评。</span>
+          <span class="label">全部已回填成 MP4，可直接看音画长度。</span>
         </article>
         <article class="card">
           <span class="label">VoxCPM2</span>
@@ -451,7 +477,7 @@
           <span class="chip green">主力候选：VoxCPM2</span>
           <span class="chip">VN 对照：VieNeu-TTS</span>
           <span class="chip">TH 对照：JaiTTS-F5TTS</span>
-          <span class="chip orange">暂未做视频回填</span>
+          <span class="chip orange">已补短时长对齐版</span>
         </div>
       </div>
       <div class="panel">
@@ -468,226 +494,115 @@
     </section>
 
     <section id="sources">
-      <h2>源视频与参考音频</h2>
+      <h2>源视频</h2>
       <div class="media-grid">
         <article class="source-card">
           <h3>Sample A：现代电商广告，25.6s</h3>
           <video controls preload="metadata" src="assets/clips/smoke_sg_ad_25s.mp4"></video>
-          <div class="row">
-            <strong>参考音频</strong>
-            <audio controls preload="metadata" src="assets/references/smoke_sg_ad_ref_15s.wav"></audio>
-          </div>
         </article>
         <article class="source-card">
           <h3>Sample B：Mac 教程类视频，45.0s</h3>
           <video controls preload="metadata" src="assets/clips/smoke_mac_tutorial_45s.mp4"></video>
-          <div class="row">
-            <strong>参考音频</strong>
-            <audio controls preload="metadata" src="assets/references/smoke_mac_tutorial_ref_15s.wav"></audio>
-          </div>
         </article>
       </div>
     </section>
 
-    <section id="compare">
-      <h2>三模型对比：泰语 / 越南语</h2>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>样本</th>
-              <th>语种</th>
-              <th>模型</th>
-              <th>状态</th>
-              <th>输出时长</th>
-              <th>源视频时长</th>
-              <th>偏差</th>
-              <th>播放</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Sample A 电商广告</td>
-              <td><span class="tag t">TH</span></td>
-              <td>VoxCPM2</td>
-              <td>ok</td>
-              <td>7.84s</td>
-              <td>25.60s</td>
-              <td class="delta-bad">-69.4%</td>
-              <td><audio controls preload="metadata" src="assets/audio/voxcpm2/sg_ad.th.wav"></audio></td>
-            </tr>
-            <tr>
-              <td>Sample A 电商广告</td>
-              <td><span class="tag t">TH</span></td>
-              <td>JaiTTS-F5TTS</td>
-              <td>ok</td>
-              <td>38.99s</td>
-              <td>25.60s</td>
-              <td class="delta-bad">+52.3%</td>
-              <td><audio controls preload="metadata" src="assets/audio/jaitts/sg_ad.th.wav"></audio></td>
-            </tr>
-            <tr>
-              <td>Sample A 电商广告</td>
-              <td><span class="tag v">VN</span></td>
-              <td>VoxCPM2</td>
-              <td>ok</td>
-              <td>7.36s</td>
-              <td>25.60s</td>
-              <td class="delta-bad">-71.2%</td>
-              <td><audio controls preload="metadata" src="assets/audio/voxcpm2/sg_ad.vi.wav"></audio></td>
-            </tr>
-            <tr>
-              <td>Sample A 电商广告</td>
-              <td><span class="tag v">VN</span></td>
-              <td>VieNeu-TTS</td>
-              <td>ok</td>
-              <td>10.00s</td>
-              <td>25.60s</td>
-              <td class="delta-bad">-60.9%</td>
-              <td><audio controls preload="metadata" src="assets/audio/vieneu/sg_ad.vi.wav"></audio></td>
-            </tr>
-            <tr>
-              <td>Sample B Mac 教程</td>
-              <td><span class="tag t">TH</span></td>
-              <td>VoxCPM2</td>
-              <td>ok</td>
-              <td>14.08s</td>
-              <td>45.00s</td>
-              <td class="delta-bad">-68.7%</td>
-              <td><audio controls preload="metadata" src="assets/audio/voxcpm2/mac_tutorial.th.wav"></audio></td>
-            </tr>
-            <tr>
-              <td>Sample B Mac 教程</td>
-              <td><span class="tag t">TH</span></td>
-              <td>JaiTTS-F5TTS</td>
-              <td>ok</td>
-              <td>38.86s</td>
-              <td>45.00s</td>
-              <td class="delta-mid">-13.6%</td>
-              <td><audio controls preload="metadata" src="assets/audio/jaitts/mac_tutorial.th.wav"></audio></td>
-            </tr>
-            <tr>
-              <td>Sample B Mac 教程</td>
-              <td><span class="tag v">VN</span></td>
-              <td>VoxCPM2</td>
-              <td>ok</td>
-              <td>11.52s</td>
-              <td>45.00s</td>
-              <td class="delta-bad">-74.4%</td>
-              <td><audio controls preload="metadata" src="assets/audio/voxcpm2/mac_tutorial.vi.wav"></audio></td>
-            </tr>
-            <tr>
-              <td>Sample B Mac 教程</td>
-              <td><span class="tag v">VN</span></td>
-              <td>VieNeu-TTS</td>
-              <td>ok</td>
-              <td>11.44s</td>
-              <td>45.00s</td>
-              <td class="delta-bad">-74.6%</td>
-              <td><audio controls preload="metadata" src="assets/audio/vieneu/mac_tutorial.vi.wav"></audio></td>
-            </tr>
-          </tbody>
-        </table>
+    <section id="aligned">
+      <h2>短时长对齐版视频</h2>
+      <div class="panel">
+        <p>对齐方式：以每条 TTS 输出时长为准裁剪源视频，并将 TTS 作为唯一音轨回填。该版本用于快速汇报和听感对比；它解决了“音频和视频总时长不一致”的问题，但还不是逐句时间戳对齐或口型同步。</p>
       </div>
-    </section>
-
-    <section id="markets">
-      <h2>VoxCPM2 额外市场输出</h2>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>样本</th>
-              <th>市场</th>
-              <th>说明</th>
-              <th>输出时长</th>
-              <th>偏差</th>
-              <th>播放</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Sample A 电商广告</td>
-              <td><span class="tag">ID</span></td>
-              <td>印尼语</td>
-              <td>8.00s</td>
-              <td class="delta-bad">-68.8%</td>
-              <td><audio controls preload="metadata" src="assets/audio/voxcpm2/sg_ad.id.wav"></audio></td>
-            </tr>
-            <tr>
-              <td>Sample A 电商广告</td>
-              <td><span class="tag">SG</span></td>
-              <td>英语，新加坡市场口吻待听评</td>
-              <td>5.92s</td>
-              <td class="delta-bad">-76.9%</td>
-              <td><audio controls preload="metadata" src="assets/audio/voxcpm2/sg_ad.sg.wav"></audio></td>
-            </tr>
-            <tr>
-              <td>Sample A 电商广告</td>
-              <td><span class="tag">BR</span></td>
-              <td>葡萄牙语，巴西口音需母语者确认</td>
-              <td>7.52s</td>
-              <td class="delta-bad">-70.6%</td>
-              <td><audio controls preload="metadata" src="assets/audio/voxcpm2/sg_ad.br.wav"></audio></td>
-            </tr>
-            <tr>
-              <td>Sample A 电商广告</td>
-              <td><span class="tag">MY</span></td>
-              <td>马来语</td>
-              <td>7.36s</td>
-              <td class="delta-bad">-71.2%</td>
-              <td><audio controls preload="metadata" src="assets/audio/voxcpm2/sg_ad.my.wav"></audio></td>
-            </tr>
-            <tr>
-              <td>Sample A 电商广告</td>
-              <td><span class="tag">TW</span></td>
-              <td>繁体中文 / 台湾用词口吻待确认</td>
-              <td>7.36s</td>
-              <td class="delta-bad">-71.2%</td>
-              <td><audio controls preload="metadata" src="assets/audio/voxcpm2/sg_ad.tw.wav"></audio></td>
-            </tr>
-            <tr>
-              <td>Sample B Mac 教程</td>
-              <td><span class="tag">ID</span></td>
-              <td>印尼语</td>
-              <td>14.72s</td>
-              <td class="delta-bad">-67.3%</td>
-              <td><audio controls preload="metadata" src="assets/audio/voxcpm2/mac_tutorial.id.wav"></audio></td>
-            </tr>
-            <tr>
-              <td>Sample B Mac 教程</td>
-              <td><span class="tag">SG</span></td>
-              <td>英语，新加坡市场口吻待听评</td>
-              <td>11.20s</td>
-              <td class="delta-bad">-75.1%</td>
-              <td><audio controls preload="metadata" src="assets/audio/voxcpm2/mac_tutorial.sg.wav"></audio></td>
-            </tr>
-            <tr>
-              <td>Sample B Mac 教程</td>
-              <td><span class="tag">BR</span></td>
-              <td>葡萄牙语，巴西口音需母语者确认</td>
-              <td>12.96s</td>
-              <td class="delta-bad">-71.2%</td>
-              <td><audio controls preload="metadata" src="assets/audio/voxcpm2/mac_tutorial.br.wav"></audio></td>
-            </tr>
-            <tr>
-              <td>Sample B Mac 教程</td>
-              <td><span class="tag">MY</span></td>
-              <td>马来语</td>
-              <td>13.44s</td>
-              <td class="delta-bad">-70.1%</td>
-              <td><audio controls preload="metadata" src="assets/audio/voxcpm2/mac_tutorial.my.wav"></audio></td>
-            </tr>
-            <tr>
-              <td>Sample B Mac 教程</td>
-              <td><span class="tag">TW</span></td>
-              <td>繁体中文 / 台湾用词口吻待确认</td>
-              <td>13.44s</td>
-              <td class="delta-bad">-70.1%</td>
-              <td><audio controls preload="metadata" src="assets/audio/voxcpm2/mac_tutorial.tw.wav"></audio></td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="aligned-grid">
+        <article class="aligned-card">
+          <h3>Sample A / TH / VoxCPM2</h3>
+          <p class="sub">7.84s，对齐到 TTS 输出长度</p>
+          <video controls preload="metadata" src="assets/aligned/sg_ad_th_voxcpm2.mp4"></video>
+        </article>
+        <article class="aligned-card">
+          <h3>Sample A / TH / JaiTTS-F5TTS</h3>
+          <p class="sub">25.60s，TTS 长于源视频，已截断音轨匹配源视频</p>
+          <video controls preload="metadata" src="assets/aligned/sg_ad_th_jaitts.mp4"></video>
+        </article>
+        <article class="aligned-card">
+          <h3>Sample A / VN / VoxCPM2</h3>
+          <p class="sub">7.36s，对齐到 TTS 输出长度</p>
+          <video controls preload="metadata" src="assets/aligned/sg_ad_vi_voxcpm2.mp4"></video>
+        </article>
+        <article class="aligned-card">
+          <h3>Sample A / VN / VieNeu-TTS</h3>
+          <p class="sub">10.00s，对齐到 TTS 输出长度</p>
+          <video controls preload="metadata" src="assets/aligned/sg_ad_vi_vieneu.mp4"></video>
+        </article>
+        <article class="aligned-card">
+          <h3>Sample A / ID / VoxCPM2</h3>
+          <p class="sub">8.00s，对齐到 TTS 输出长度</p>
+          <video controls preload="metadata" src="assets/aligned/sg_ad_id_voxcpm2.mp4"></video>
+        </article>
+        <article class="aligned-card">
+          <h3>Sample A / SG / VoxCPM2</h3>
+          <p class="sub">5.92s，对齐到 TTS 输出长度</p>
+          <video controls preload="metadata" src="assets/aligned/sg_ad_sg_voxcpm2.mp4"></video>
+        </article>
+        <article class="aligned-card">
+          <h3>Sample A / BR / VoxCPM2</h3>
+          <p class="sub">7.52s，对齐到 TTS 输出长度</p>
+          <video controls preload="metadata" src="assets/aligned/sg_ad_br_voxcpm2.mp4"></video>
+        </article>
+        <article class="aligned-card">
+          <h3>Sample A / MY / VoxCPM2</h3>
+          <p class="sub">7.36s，对齐到 TTS 输出长度</p>
+          <video controls preload="metadata" src="assets/aligned/sg_ad_my_voxcpm2.mp4"></video>
+        </article>
+        <article class="aligned-card">
+          <h3>Sample A / TW / VoxCPM2</h3>
+          <p class="sub">7.36s，对齐到 TTS 输出长度</p>
+          <video controls preload="metadata" src="assets/aligned/sg_ad_tw_voxcpm2.mp4"></video>
+        </article>
+        <article class="aligned-card">
+          <h3>Sample B / TH / VoxCPM2</h3>
+          <p class="sub">14.08s，对齐到 TTS 输出长度</p>
+          <video controls preload="metadata" src="assets/aligned/mac_tutorial_th_voxcpm2.mp4"></video>
+        </article>
+        <article class="aligned-card">
+          <h3>Sample B / TH / JaiTTS-F5TTS</h3>
+          <p class="sub">38.86s，对齐到 TTS 输出长度</p>
+          <video controls preload="metadata" src="assets/aligned/mac_tutorial_th_jaitts.mp4"></video>
+        </article>
+        <article class="aligned-card">
+          <h3>Sample B / VN / VoxCPM2</h3>
+          <p class="sub">11.52s，对齐到 TTS 输出长度</p>
+          <video controls preload="metadata" src="assets/aligned/mac_tutorial_vi_voxcpm2.mp4"></video>
+        </article>
+        <article class="aligned-card">
+          <h3>Sample B / VN / VieNeu-TTS</h3>
+          <p class="sub">11.44s，对齐到 TTS 输出长度</p>
+          <video controls preload="metadata" src="assets/aligned/mac_tutorial_vi_vieneu.mp4"></video>
+        </article>
+        <article class="aligned-card">
+          <h3>Sample B / ID / VoxCPM2</h3>
+          <p class="sub">14.72s，对齐到 TTS 输出长度</p>
+          <video controls preload="metadata" src="assets/aligned/mac_tutorial_id_voxcpm2.mp4"></video>
+        </article>
+        <article class="aligned-card">
+          <h3>Sample B / SG / VoxCPM2</h3>
+          <p class="sub">11.20s，对齐到 TTS 输出长度</p>
+          <video controls preload="metadata" src="assets/aligned/mac_tutorial_sg_voxcpm2.mp4"></video>
+        </article>
+        <article class="aligned-card">
+          <h3>Sample B / BR / VoxCPM2</h3>
+          <p class="sub">12.96s，对齐到 TTS 输出长度</p>
+          <video controls preload="metadata" src="assets/aligned/mac_tutorial_br_voxcpm2.mp4"></video>
+        </article>
+        <article class="aligned-card">
+          <h3>Sample B / MY / VoxCPM2</h3>
+          <p class="sub">13.44s，对齐到 TTS 输出长度</p>
+          <video controls preload="metadata" src="assets/aligned/mac_tutorial_my_voxcpm2.mp4"></video>
+        </article>
+        <article class="aligned-card">
+          <h3>Sample B / TW / VoxCPM2</h3>
+          <p class="sub">13.44s，对齐到 TTS 输出长度</p>
+          <video controls preload="metadata" src="assets/aligned/mac_tutorial_tw_voxcpm2.mp4"></video>
+        </article>
       </div>
     </section>
 
@@ -709,18 +624,11 @@
       </div>
     </section>
 
-    <section>
-      <h2>附件</h2>
-      <div class="panel">
-        <p>原始检查表：<a href="assets/metadata/smoke_output_check.csv">smoke_output_check.csv</a></p>
-        <p>生成说明：<a href="assets/metadata/smoke_generation_notes.md">smoke_generation_notes.md</a></p>
-      </div>
-    </section>
   </main>
 
   <footer>
     <div class="wrap">
-      本页面为 smoke test 汇报页，音频仅用于模型验证和内部听评。正式上线前需重新使用授权素材、准确翻译文本、母语者听评和合规审查。
+      本页面为 smoke test 汇报页，视频仅用于模型验证和内部听评。正式上线前需重新使用授权素材、准确翻译文本、逐句对齐、母语者听评和合规审查。
     </div>
   </footer>
 </body>
