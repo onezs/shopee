@@ -46,17 +46,17 @@
 <body>
   <header>
     <h1>PP-OCRv6 Overlay Detector: V1 Threshold and Error Review</h1>
-    <p>统一使用当前 held-out split 和 GT=200 口径，评估 overlay recall、clean false positive、类型召回、V1 阈值收益，并补充官方预训练 baseline、V4/V5/V6/V7/V8/V9 结果。</p>
+    <p>统一使用当前 held-out split 和 GT=200 口径，评估 overlay recall、clean false positive、类型召回、V1 阈值收益，并补充官方预训练 baseline、V4/V5/V6/V7/V8/V9/V10/V11/V12 结果。</p>
   </header>
   <main>
     <section class="grid">
       <div class="metric"><div class="label">当前最佳召回模型</div><div class="value">V1 continue</div><div class="note">test recall 94.00% (current GT=200)</div></div>
       <div class="metric"><div class="label">推荐工作点</div><div class="value">box 0.40</div><div class="note">recall 不掉，FP 更少</div></div>
       <div class="metric"><div class="label">主漏检类型</div><div class="value">Watermark</div><div class="note">recall 87.88%</div></div>
-      <div class="metric"><div class="label">V8/V9 结论</div><div class="value">No Gain</div><div class="note">V9 ties V1, V8 regresses</div></div>
+      <div class="metric"><div class="label">V10-V12 结论</div><div class="value">No Recall Gain</div><div class="note">V11 FP best, V12 ties V1</div></div>
     </section>
 
-    <h2>1. Current Unified Baseline / V1 / V4 / V5 / V6 / V7 / V8 / V9 Held-Out Comparison</h2>
+    <h2>1. Current Unified Baseline / V1 / V4-V12 Held-Out Comparison</h2>
     <p>当前主表统一使用最新 checked-in label：<code>work/ppocr_business_split_synth_v3/labels/test_business.txt</code>。该口径下 test images 为 134，GT boxes 为 200，clean images 为 25。Postprocess: <code>thresh=0.15</code>, <code>box_thresh=0.40</code>, <code>unclip_ratio=1.8</code>. Match: polygon IoU >= 0.50.</p>
     <div class="callout warn"><strong>口径更正：</strong>旧报告里的 V1 recall <strong>94.95%</strong> 使用旧 label，GT=198，V1 TP=188。当前 label 更新后 GT=200，V1 TP 仍为 188，因此当前同口径 V1 recall 是 <strong>94.00%</strong>。这不是模型退化，而是 GT 口径变化。</div>
     <div class="callout"><strong>Official pretrained baseline：</strong><code>reports/ppocrv6_official_pretrained_baseline_2026-06-29.md</code> 是旧 <code>work/business_benchmark</code> 口径，不能直接比较；下表的 official pretrained 行是 2026-07-06 在当前 GT=200 held-out split 上重跑的同口径结果。</div>
@@ -72,6 +72,11 @@
       <tr><td>V8 latest</td><td>231</td><td>185</td><td>46</td><td>15</td><td>80.09%</td><td>92.50%</td><td>85.85%</td><td>4/25 (16.00%)</td><td>83.33% (55/66)</td><td>仍低于 V1，不选</td></tr>
       <tr><td>V9 best</td><td>235</td><td>188</td><td>47</td><td>12</td><td>80.00%</td><td>94.00%</td><td>86.44%</td><td>5/25 (20.00%)</td><td>87.88% (58/66)</td><td>电商水印合成后打平 V1，但 FP 略高</td></tr>
       <tr><td>V9 latest</td><td>233</td><td>188</td><td>45</td><td>12</td><td>80.69%</td><td>94.00%</td><td>86.84%</td><td>4/25 (16.00%)</td><td>87.88% (58/66)</td><td>打平 V1，但 precision/F1 仍略低</td></tr>
+      <tr><td>V10 latest</td><td>234</td><td>188</td><td>46</td><td>12</td><td>80.34%</td><td>94.00%</td><td>86.64%</td><td>4/25 (16.00%)</td><td>87.88% (58/66)</td><td>targeted watermark 合成未带来 recall 收益，FP 略高</td></tr>
+      <tr><td>V11 best</td><td>230</td><td>188</td><td>42</td><td>12</td><td>81.74%</td><td>94.00%</td><td>87.44%</td><td>4/25 (16.00%)</td><td>87.88% (58/66)</td><td>group watermark 合成未提 recall，但 FP 最少</td></tr>
+      <tr><td>V11 latest</td><td>230</td><td>188</td><td>42</td><td>12</td><td>81.74%</td><td>94.00%</td><td>87.44%</td><td>4/25 (16.00%)</td><td>87.88% (58/66)</td><td>与 V11 best 一致，precision/F1 当前最好</td></tr>
+      <tr><td>V12 best</td><td>233</td><td>188</td><td>45</td><td>12</td><td>80.69%</td><td>94.00%</td><td>86.84%</td><td>4/25 (16.00%)</td><td>87.88% (58/66)</td><td>针对 FN 合成未解决 8 个 watermark FN</td></tr>
+      <tr><td>V12 latest</td><td>232</td><td>188</td><td>44</td><td>12</td><td>81.03%</td><td>94.00%</td><td>87.04%</td><td>4/25 (16.00%)</td><td>87.88% (58/66)</td><td>整体打平 V1，clean FP boxes 略少</td></tr>
     </tbody></table>
 
     <h2>2. V1 Threshold Scan, Corrected to Current GT=200</h2>
@@ -88,7 +93,7 @@
     <div class="callout"><strong>推荐阈值：</strong><code>box_thresh=0.40</code>。在当前 held-out test 上 recall 为 <strong>94.00%</strong>，miss rate <strong>6.00%</strong>，precision 为 <strong>81.03%</strong>，clean FP 为 <strong>4/25</strong>。</div>
 
     <h2>3. Recall by Overlay Type at box_thresh=0.40</h2>
-    <p>下表补充 official pretrained 和所有有类型拆分结果的 V4-V9。官方预训练对字幕/标题有较强文字先验，但 watermark 和 clean FP 明显弱于 V1；V4 的 watermark recall 最高，但 title/sticker 和 clean FP 明显变差；V7 best 相比 V6 恢复 watermark，但仍低于 V1；V8 退化，V9 在推荐工作点打平 V1。</p>
+    <p>下表补充 official pretrained 和所有有类型拆分结果的 V4-V12。官方预训练对字幕/标题有较强文字先验，但 watermark 和 clean FP 明显弱于 V1；V4 的 watermark recall 最高，但 title/sticker 和 clean FP 明显变差；V7 best 相比 V6 恢复 watermark，但仍低于 V1；V8 退化，V9/V10/V12 在推荐工作点打平 V1，V11 降低 FP 但没有提升 watermark recall。</p>
     <table><thead><tr><th>Model</th><th>title_text</th><th>watermark</th><th>subtitle</th><th>sticker</th><th>product_label</th><th>screen_ui</th></tr></thead><tbody>
       <tr class="selected"><td>V1 continue</td><td>100.00% (87/87)</td><td>87.88% (58/66)</td><td>96.77% (30/31)</td><td>81.82% (9/11)</td><td>100.00% (4/4)</td><td>0.00% (0/1)</td></tr>
       <tr><td>Official pretrained</td><td>96.55% (84/87)</td><td>81.82% (54/66)</td><td>96.77% (30/31)</td><td>90.91% (10/11)</td><td>100.00% (4/4)</td><td>100.00% (1/1)</td></tr>
@@ -101,15 +106,27 @@
       <tr><td>V8 latest</td><td>100.00% (87/87)</td><td>83.33% (55/66)</td><td>96.77% (30/31)</td><td>81.82% (9/11)</td><td>100.00% (4/4)</td><td>0.00% (0/1)</td></tr>
       <tr><td>V9 best</td><td>100.00% (87/87)</td><td>87.88% (58/66)</td><td>96.77% (30/31)</td><td>81.82% (9/11)</td><td>100.00% (4/4)</td><td>0.00% (0/1)</td></tr>
       <tr><td>V9 latest</td><td>100.00% (87/87)</td><td>87.88% (58/66)</td><td>96.77% (30/31)</td><td>81.82% (9/11)</td><td>100.00% (4/4)</td><td>0.00% (0/1)</td></tr>
+      <tr><td>V10 best</td><td>100.00% (87/87)</td><td>86.36% (57/66)</td><td>96.77% (30/31)</td><td>81.82% (9/11)</td><td>100.00% (4/4)</td><td>0.00% (0/1)</td></tr>
+      <tr><td>V10 latest</td><td>100.00% (87/87)</td><td>87.88% (58/66)</td><td>96.77% (30/31)</td><td>81.82% (9/11)</td><td>100.00% (4/4)</td><td>0.00% (0/1)</td></tr>
+      <tr><td>V11 best</td><td>100.00% (87/87)</td><td>87.88% (58/66)</td><td>96.77% (30/31)</td><td>81.82% (9/11)</td><td>100.00% (4/4)</td><td>0.00% (0/1)</td></tr>
+      <tr><td>V11 latest</td><td>100.00% (87/87)</td><td>87.88% (58/66)</td><td>96.77% (30/31)</td><td>81.82% (9/11)</td><td>100.00% (4/4)</td><td>0.00% (0/1)</td></tr>
+      <tr><td>V12 best</td><td>100.00% (87/87)</td><td>87.88% (58/66)</td><td>96.77% (30/31)</td><td>81.82% (9/11)</td><td>100.00% (4/4)</td><td>0.00% (0/1)</td></tr>
+      <tr><td>V12 latest</td><td>100.00% (87/87)</td><td>87.88% (58/66)</td><td>96.77% (30/31)</td><td>81.82% (9/11)</td><td>100.00% (4/4)</td><td>0.00% (0/1)</td></tr>
     </tbody></table>
 
-    <h2>4. V8 / V9 Low-threshold Check</h2>
-    <p>V8/V9 同时补充了 <code>box_thresh=0.25</code> 结果，用来判断“降低阈值是否能找回水印”。结论是 V9 低阈值只多召回 1 个 watermark，但 FP 大幅增加；V8 低阈值仍低于 V1。</p>
+    <h2>4. V8-V12 Low-threshold Check</h2>
+    <p>V8-V12 同时补充了 <code>box_thresh=0.25</code> 结果，用来判断“降低阈值是否能找回水印”。结论是 V9 低阈值只多召回 1 个 watermark，但 FP 大幅增加；V10/V11/V12 低阈值没有新增 TP，只增加 FP；V8 低阈值仍低于 V1。</p>
     <table><thead><tr><th>Model</th><th>box_thresh</th><th>Pred</th><th>TP</th><th>FP</th><th>FN</th><th>Precision</th><th>Recall</th><th>F1</th><th>Clean FP images</th><th>Watermark recall</th><th>Readout</th></tr></thead><tbody>
       <tr><td>V8 best</td><td>0.25</td><td>263</td><td>185</td><td>78</td><td>15</td><td>70.34%</td><td>92.50%</td><td>79.91%</td><td>6/25 (24.00%)</td><td>84.85% (56/66)</td><td>仍低于 V1，且 FP 增加</td></tr>
       <tr><td>V8 latest</td><td>0.25</td><td>267</td><td>186</td><td>81</td><td>14</td><td>69.66%</td><td>93.00%</td><td>79.66%</td><td>6/25 (24.00%)</td><td>84.85% (56/66)</td><td>仍低于 V1，且 FP 增加</td></tr>
       <tr><td>V9 best</td><td>0.25</td><td>292</td><td>189</td><td>103</td><td>11</td><td>64.73%</td><td>94.50%</td><td>76.83%</td><td>6/25 (24.00%)</td><td>89.39% (59/66)</td><td>只多召回 1 个 watermark，但 FP 翻倍，不推荐</td></tr>
       <tr><td>V9 latest</td><td>0.25</td><td>287</td><td>189</td><td>98</td><td>11</td><td>65.85%</td><td>94.50%</td><td>77.62%</td><td>6/25 (24.00%)</td><td>89.39% (59/66)</td><td>只多召回 1 个 watermark，但 FP 明显变差</td></tr>
+      <tr><td>V10 best</td><td>0.25</td><td>275</td><td>187</td><td>88</td><td>13</td><td>68.00%</td><td>93.50%</td><td>78.74%</td><td>6/25 (24.00%)</td><td>86.36% (57/66)</td><td>未补回 watermark，FP 增加，不推荐</td></tr>
+      <tr><td>V10 latest</td><td>0.25</td><td>278</td><td>188</td><td>90</td><td>12</td><td>67.63%</td><td>94.00%</td><td>78.66%</td><td>6/25 (24.00%)</td><td>87.88% (58/66)</td><td>recall 打平 V1，但 FP 大幅增加</td></tr>
+      <tr><td>V11 best</td><td>0.25</td><td>269</td><td>188</td><td>81</td><td>12</td><td>69.89%</td><td>94.00%</td><td>80.17%</td><td>6/25 (24.00%)</td><td>87.88% (58/66)</td><td>无新增 TP，FP 增加</td></tr>
+      <tr><td>V11 latest</td><td>0.25</td><td>270</td><td>188</td><td>82</td><td>12</td><td>69.63%</td><td>94.00%</td><td>80.00%</td><td>6/25 (24.00%)</td><td>87.88% (58/66)</td><td>无新增 TP，FP 增加</td></tr>
+      <tr><td>V12 best</td><td>0.25</td><td>294</td><td>188</td><td>106</td><td>12</td><td>63.95%</td><td>94.00%</td><td>76.11%</td><td>6/25 (24.00%)</td><td>87.88% (58/66)</td><td>无新增 TP，FP 最高</td></tr>
+      <tr><td>V12 latest</td><td>0.25</td><td>295</td><td>188</td><td>107</td><td>12</td><td>63.73%</td><td>94.00%</td><td>75.96%</td><td>6/25 (24.00%)</td><td>87.88% (58/66)</td><td>无新增 TP，FP 最高</td></tr>
     </tbody></table>
 
     <h2>5. V1 Clean FP Attribution at box_thresh=0.40</h2>
@@ -178,10 +195,10 @@
     </div>
 
     <h2>Recommendation</h2>
-    <div class="callout"><strong>建议：</strong>线上候选仍先用 V1 continue，推荐工作点 <code>box_thresh=0.40</code>。相比官方预训练，V1 在同口径下把 precision 从 47.66% 提到 81.03%，clean FP 从 11/25 降到 4/25，同时 recall 从 91.50% 提到 94.00%。V7 best 已修复 V6 退化但仍未超过 V1；V8 退化；V9 在推荐工作点打平 V1，但没有带来稳定收益。下一轮提升重点应转向后处理合框/coverage 指标和真实水印 badcase，而不是继续扩大普通合成数据。</div>
+    <div class="callout"><strong>建议：</strong>线上候选仍先用 V1 continue，推荐工作点 <code>box_thresh=0.40</code>。相比官方预训练，V1 在同口径下把 precision 从 47.66% 提到 81.03%，clean FP 从 11/25 降到 4/25，同时 recall 从 91.50% 提到 94.00%。V7 best 已修复 V6 退化但仍未超过 V1；V8 退化；V9/V10/V12 在推荐工作点基本打平 V1；V11 的 precision/F1 最好且 FP 最少，但 watermark recall 仍未提升。下一轮提升重点应转向后处理合框/coverage 指标和真实水印 badcase，而不是继续扩大普通合成数据。</div>
   </main>
   <footer>
-    Artifacts: <code>reports/v1_threshold_type_fp_attribution_2026-07-01.md</code>, <code>reports/ppocr_v1_v4_v5_same_standard_eval_2026-07-05.md</code>, <code>reports/ppocr_v1_v6_v7_watermark_same_standard_eval_2026-07-06.md</code>, <code>reports/ppocr_v8_logo_watermark_same_standard_eval_2026-07-06.md</code>, <code>reports/ppocr_v9_ecommerce_watermark_same_standard_eval_2026-07-07.md</code>, <code>reports/ppocrv6_official_pretrained_same_standard_baseline_2026-07-06.md</code>
+    Artifacts: <code>reports/v1_threshold_type_fp_attribution_2026-07-01.md</code>, <code>reports/ppocr_v1_v4_v5_same_standard_eval_2026-07-05.md</code>, <code>reports/ppocr_v1_v6_v7_watermark_same_standard_eval_2026-07-06.md</code>, <code>reports/ppocr_v8_logo_watermark_same_standard_eval_2026-07-06.md</code>, <code>reports/ppocr_v9_ecommerce_watermark_same_standard_eval_2026-07-07.md</code>, <code>reports/ppocr_v10_targeted_watermark_same_standard_eval_2026-07-07.md</code>, <code>reports/ppocr_v11_watermark_group_same_standard_eval_2026-07-09.md</code>, <code>reports/ppocr_v12_watermark_fn_targeted_same_standard_eval_2026-07-09.md</code>, <code>reports/ppocrv6_official_pretrained_same_standard_baseline_2026-07-06.md</code>
   </footer>
 </body>
 </html>
