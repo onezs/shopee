@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>视频翻译完整链路汇报 · 6v8gt</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --panel: #ffffff;
+      --ink: #182230;
+      --muted: #657286;
+      --line: #dfe6ef;
+      --accent: #2764d8;
+      --accent-soft: #eaf1ff;
+      --ok: #18794e;
+      --ok-soft: #e8f7ef;
+      --warn: #9a5b00;
+      --warn-soft: #fff4df;
+      --shadow: 0 12px 32px rgba(32, 56, 88, .08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 0%, #e8f0ff 0, transparent 28rem),
+        var(--bg);
+      font: 15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 36px 20px 64px; }
+    header { display: flex; justify-content: space-between; gap: 24px; align-items: flex-start; margin-bottom: 24px; }
+    h1, h2, h3 { margin: 0; line-height: 1.25; }
+    h1 { font-size: clamp(26px, 4vw, 42px); letter-spacing: -.03em; }
+    h2 { font-size: 21px; margin-bottom: 16px; }
+    h3 { font-size: 16px; margin-bottom: 10px; }
+    .eyebrow { color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 8px; }
+    .subtitle { color: var(--muted); margin: 10px 0 0; }
+    .status { flex: 0 0 auto; color: var(--ok); background: var(--ok-soft); border: 1px solid #bde7cf; border-radius: 999px; padding: 7px 14px; font-weight: 700; }
+    .grid { display: grid; gap: 18px; grid-template-columns: repeat(12, 1fr); margin-bottom: 18px; }
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); padding: 22px; }
+    .span-12 { grid-column: span 12; }
+    .span-8 { grid-column: span 8; }
+    .span-6 { grid-column: span 6; }
+    .span-4 { grid-column: span 4; }
+    .metrics { display: grid; gap: 12px; grid-template-columns: repeat(6, 1fr); }
+    .metric { background: #f8faff; border: 1px solid #e6edf8; border-radius: 12px; padding: 14px; min-width: 0; }
+    .metric .value { font-size: 22px; font-weight: 750; letter-spacing: -.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .metric .label { color: var(--muted); font-size: 12px; margin-top: 3px; }
+    .meta { display: grid; grid-template-columns: max-content 1fr; gap: 5px 16px; margin: 0; }
+    .meta dt { color: var(--muted); }
+    .meta dd { margin: 0; overflow-wrap: anywhere; }
+    .note { border-left: 4px solid var(--accent); background: var(--accent-soft); border-radius: 10px; padding: 12px 15px; color: #244679; }
+    .warning { border-left-color: #e19a22; background: var(--warn-soft); color: #704500; }
+    .media { overflow: hidden; border-radius: 12px; background: #101722; }
+    video { display: block; width: 100%; max-height: 620px; background: #101722; }
+    .media-caption { color: var(--muted); font-size: 12px; padding-top: 9px; }
+    .links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .button { display: inline-flex; align-items: center; border: 1px solid #c7d7f4; background: #f5f8ff; border-radius: 9px; padding: 6px 10px; font-size: 13px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border-bottom: 1px solid var(--line); padding: 10px 8px; text-align: left; vertical-align: top; }
+    th { color: var(--muted); font-size: 12px; font-weight: 650; white-space: nowrap; }
+    td.small { color: var(--muted); font-size: 13px; white-space: nowrap; }
+    td.text { min-width: 220px; }
+    .tag { display: inline-block; border-radius: 999px; padding: 2px 8px; font-size: 12px; font-weight: 650; white-space: nowrap; }
+    .tag.ok { color: var(--ok); background: var(--ok-soft); }
+    .tag.cache { color: #50627a; background: #edf1f6; }
+    .tag.warn { color: var(--warn); background: var(--warn-soft); }
+    .bar { height: 9px; background: #e9eef5; border-radius: 999px; overflow: hidden; margin-top: 8px; }
+    .bar > i { display: block; height: 100%; background: linear-gradient(90deg, #4d83e8, #75a0f0); border-radius: inherit; }
+    .kv { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px 18px; }
+    .kv div { border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+    .kv b { display: block; font-size: 18px; }
+    .kv span { color: var(--muted); font-size: 12px; }
+    details { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 14px; }
+    summary { cursor: pointer; color: var(--accent); font-weight: 650; }
+    code { font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; overflow-wrap: anywhere; }
+    footer { color: var(--muted); font-size: 12px; margin-top: 22px; }
+    @media (max-width: 900px) {
+      .span-8, .span-6, .span-4 { grid-column: span 12; }
+      .metrics { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .wrap { padding: 24px 12px 48px; }
+      header { display: block; }
+      .status { display: inline-block; margin-top: 16px; }
+      .metrics { grid-template-columns: repeat(2, 1fr); }
+      .card { padding: 16px; }
+      .kv { grid-template-columns: 1fr; }
+      th:nth-child(3), td:nth-child(3) { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <div>
+        <div class="eyebrow">Video Translation Pipeline · Run Report</div>
+        <h1>视频翻译完整链路汇报</h1>
+        <p class="subtitle">泰语短视频 → 越南语配音 · OCR 擦字 · 混音封装</p>
+      </div>
+      <div class="status">完成</div>
+    </header>
+
+    <section class="grid">
+      <div class="card span-12">
+        <div class="metrics">
+          <div class="metric"><div class="value">16.64 s</div><div class="label">视频时长</div></div>
+          <div class="metric"><div class="value">540 × 960</div><div class="label">分辨率</div></div>
+          <div class="metric"><div class="value">416</div><div class="label">视频帧数</div></div>
+          <div class="metric"><div class="value">8</div><div class="label">ASR / 翻译片段</div></div>
+          <div class="metric"><div class="value">452.31 s</div><div class="label">本次接续总耗时</div></div>
+          <div class="metric"><div class="value">th → vi</div><div class="label">语言方向</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card span-8">
+        <h2>最终视频</h2>
+        <div class="media">
+          <video controls preload="metadata" src="assets/03_final.mp4"></video>
+        </div>
+        <div class="media-caption">已擦除画面文字并替换为越南语配音，原视频时长保持 16.64 秒。</div>
+        <div class="links">
+          <a class="button" href="assets/03_final.mp4">打开最终视频</a>
+          <a class="button" href="assets/02_erased.mp4">擦字视频</a>
+          <a class="button" href="assets/04_mask_preview.mp4">Mask 预览</a>
+          <a class="button" href="assets/05_mixed_audio.mp4">混音音频</a>
+        </div>
+      </div>
+      <div class="card span-4">
+        <h2>运行信息</h2>
+        <dl class="meta">
+          <dt>Run ID</dt><dd><code>full-th-11110222-6v8gt-vision-001</code></dd>
+          <dt>开始时间</dt><dd>2026-07-13 03:49:13 UTC</dd>
+          <dt>结束时间</dt><dd>2026-07-13 03:56:45 UTC</dd>
+          <dt>输入文件</dt><dd><code>th-11110222-6v8gt-mq1q2eeg6hvk78.mp4</code></dd>
+          <dt>ASR</dt><dd>faster-whisper · large-v3</dd>
+          <dt>翻译</dt><dd>Compass · Vietnamese</dd>
+          <dt>TTS</dt><dd>VoxCPM2 · 48 kHz</dd>
+        </dl>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card span-12">
+        <h2>链路阶段</h2>
+        <div class="note">本次接续 run 复用了同一 run 目录中已经完成的视觉产物（OCR、mask、EraserDiT）；ASR、翻译、TTS、对齐、混音和 mux 在本次接续中完成。</div>
+        <div style="overflow-x:auto; margin-top:14px">
+          <table>
+            <thead><tr><th>阶段</th><th>状态</th><th>耗时</th><th>产物</th></tr></thead>
+            <tbody>
+              <tr><td>source</td><td><span class="tag cache">缓存复用</span></td><td class="small">0.00 s</td><td><a href="assets/01_original.mp4">源视频</a></td></tr>
+              <tr><td>extract_audio / reference</td><td><span class="tag cache">缓存复用</span></td><td class="small">0.00 s</td><td><a href="data/source_audio.wav">源音频</a> · <a href="data/reference.wav">参考音频</a></td></tr>
+              <tr><td>ASR</td><td><span class="tag ok">完成</span></td><td class="small">51.66 s</td><td><a href="data/source_segments.json">source_segments.json</a></td></tr>
+              <tr><td>翻译</td><td><span class="tag ok">完成</span></td><td class="small">4.30 s</td><td><a href="data/target_segments.json">target_segments.json</a></td></tr>
+              <tr><td>TTS</td><td><span class="tag ok">完成</span></td><td class="small">389.32 s</td><td><a href="data/tts_segments.json">tts_segments.json</a></td></tr>
+              <tr><td>对齐 / 混音</td><td><span class="tag ok">完成</span></td><td class="small">0.49 s</td><td><a href="data/tts_schedule.json">schedule</a> · <a href="data/mix_report.json">mix report</a></td></tr>
+              <tr><td>OCR / mask / EraserDiT</td><td><span class="tag cache">缓存复用</span></td><td class="small">0.00 s（本次）</td><td><a href="data/ocr_summary.json">OCR QA</a> · <a href="data/mask_summary.json">mask QA</a> · <a href="assets/02_erased.mp4">擦字视频</a></td></tr>
+              <tr><td>mux</td><td><span class="tag ok">完成</span></td><td class="small">4.01 s</td><td><a href="assets/03_final.mp4">final.mp4</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card span-4">
+        <h2>OCR / Mask QA</h2>
+        <div class="kv">
+          <div><b>1,248</b><span>OCR 检测框</span></div>
+          <div><b>416 / 416</b><span>正检出帧</span></div>
+          <div><b>7.97%</b><span>平均 mask 覆盖率</span></div>
+          <div><b>0</b><span>空 mask 帧</span></div>
+        </div>
+        <div style="margin-top:16px">Mask 覆盖率 <strong>7.97%</strong><div class="bar"><i style="width:79.7%"></i></div></div>
+        <div class="links">
+          <a class="button" href="data/ocr_summary.json">OCR summary</a>
+          <a class="button" href="data/mask_summary.json">Mask summary</a>
+        </div>
+      </div>
+      <div class="card span-8">
+        <h2>配音与音频 QA</h2>
+        <div class="note warning"><strong>需要关注：</strong>8 个片段均超出原始时间窗。最终音频仍按目标时长生成，但相邻语音可能发生重叠，建议重点试听最终视频。</div>
+        <div class="kv" style="margin-top:16px">
+          <div><b>16.64 s</b><span>混音时长 / 目标时长</span></div>
+          <div><b>-10 dB</b><span>人声窗口 ducking</span></div>
+          <div><b>-3 dB</b><span>原始背景音增益</span></div>
+          <div><b>48 kHz</b><span>输出采样率</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card span-12">
+        <h2>ASR 与越南语翻译</h2>
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>ID</th><th>时间</th><th>泰语 ASR</th><th>越南语目标文本</th><th>TTS</th><th>状态</th></tr></thead>
+            <tbody>
+              <tr><td>seg_0000</td><td class="small">0.00–1.38</td><td class="text">Lip Maybelline White New Ink</td><td class="text">Son Maybelline Vinyl Ink</td><td class="small">1.76 s</td><td><span class="tag warn">overrun</span></td></tr>
+              <tr><td>seg_0001</td><td class="small">1.38–3.72</td><td class="text">ป้ายยาลิปโทนนูตสวยหวานละมุนนูตโทโท</td><td class="text">Gợi ý thỏi son tông nude ngọt ngào, dịu dàng cực xinh.</td><td class="small">3.84 s</td><td><span class="tag warn">overrun</span></td></tr>
+              <tr><td>seg_0002</td><td class="small">3.72–5.76</td><td class="text">เปอร์หนึ่งสูญส่วนนูตชมพูอมพีชนิดนิด</td><td class="text">Màu số 10, tông nude hồng pha chút cam đào.</td><td class="small">3.04 s</td><td><span class="tag warn">overrun</span></td></tr>
+              <tr><td>seg_0003</td><td class="small">5.76–7.74</td><td class="text">เป็นอีกหนึ่งสีที่มีไว้ได้ใช้บ่อยแน่นอน</td><td class="text">Đây chắc chắn là màu son bạn sẽ dùng rất thường xuyên.</td><td class="small">3.20 s</td><td><span class="tag warn">overrun</span></td></tr>
+              <tr><td>seg_0004</td><td class="small">7.74–10.14</td><td class="text">เหนือลิปให้สีสวยชัดปากชื่นชื้นชำวาว</td><td class="text">Chất son lên màu chuẩn, dưỡng ẩm cho môi căng bóng.</td><td class="small">3.36 s</td><td><span class="tag warn">overrun</span></td></tr>
+              <tr><td>seg_0005</td><td class="small">10.14–11.90</td><td class="text">รุ่นนี้เขาขึ้นชื่อเรื่องความติดโทนเลย</td><td class="text">Dòng này nổi tiếng siêu lâu trôi luôn đó.</td><td class="small">2.56 s</td><td><span class="tag warn">overrun</span></td></tr>
+              <tr><td>seg_0006</td><td class="small">11.90–14.38</td><td class="text">สิ่งที่เห็นในตะกร้าต้องรีบกดนะ ของหมดไปมาก</td><td class="text">Thấy trong giỏ hàng là phải chốt ngay, nhanh hết lắm.</td><td class="small">4.00 s</td><td><span class="tag warn">overrun</span></td></tr>
+              <tr><td>seg_0007</td><td class="small">14.38–16.62</td><td class="text">ตอนนี้มีโปรด้วยนะพี่กับใต้คลิปเลยค่ะ</td><td class="text">Đang có ưu đãi nữa đó, nhấn vào dưới clip nha.</td><td class="small">3.36 s</td><td><span class="tag warn">overrun</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card span-12">
+        <h2>原始产物与技术文件</h2>
+        <div class="links">
+          <a class="button" href="data/pipeline_report.md">Markdown 报告</a>
+          <a class="button" href="data/manifest.json">运行 manifest</a>
+          <a class="button" href="data/full_tts.wav">完整 TTS</a>
+          <a class="button" href="data/mix_report.json">混音报告</a>
+          <a class="button" href="data/ocr_detections.jsonl">OCR detections</a>
+          <a class="button" href="data/mux.log">mux 日志</a>
+        </div>
+        <details>
+          <summary>查看输出路径</summary>
+          <p><code>assets/03_final.mp4</code> · <code>data/manifest.json</code></p>
+          <p>Run ID：<code>full-th-11110222-6v8gt-vision-001</code></p>
+        </details>
+      </div>
+    </section>
+
+    <footer>
+      生成于 2026-07-13 · 本页为 GitHub Pages 静态 HTML，媒体和技术文件已随页面打包。
+    </footer>
+  </main>
+</body>
+</html>

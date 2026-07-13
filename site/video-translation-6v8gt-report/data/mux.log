@@ -1,0 +1,50 @@
+$ /home/work/opa_common/zhanghaoran/video_trans_pipeline/.venv/lib/python3.10/site-packages/imageio_ffmpeg/binaries/ffmpeg-linux-x86_64-v7.0.2 -y -i /home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/50_erase/erased_video.mp4 -i /home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/35_mix/mixed_audio.wav -map 0:v:0 -map 1:a:0 -c:v copy -c:a aac -shortest /home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/60_mux/final.mp4
+
+ffmpeg version 7.0.2-static https://johnvansickle.com/ffmpeg/  Copyright (c) 2000-2024 the FFmpeg developers
+  built with gcc 8 (Debian 8.3.0-6)
+  configuration: --enable-gpl --enable-version3 --enable-static --disable-debug --disable-ffplay --disable-indev=sndio --disable-outdev=sndio --cc=gcc --enable-fontconfig --enable-frei0r --enable-gnutls --enable-gmp --enable-libgme --enable-gray --enable-libaom --enable-libfribidi --enable-libass --enable-libvmaf --enable-libfreetype --enable-libmp3lame --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-librubberband --enable-libsoxr --enable-libspeex --enable-libsrt --enable-libvorbis --enable-libopus --enable-libtheora --enable-libvidstab --enable-libvo-amrwbenc --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxml2 --enable-libdav1d --enable-libxvid --enable-libzvbi --enable-libzimg
+  libavutil      59.  8.100 / 59.  8.100
+  libavcodec     61.  3.100 / 61.  3.100
+  libavformat    61.  1.100 / 61.  1.100
+  libavdevice    61.  1.100 / 61.  1.100
+  libavfilter    10.  1.100 / 10.  1.100
+  libswscale      8.  1.100 /  8.  1.100
+  libswresample   5.  1.100 /  5.  1.100
+  libpostproc    58.  1.100 / 58.  1.100
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/50_erase/erased_video.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    encoder         : Lavf61.1.100
+  Duration: 00:00:16.64, start: 0.000000, bitrate: 752 kb/s
+  Stream #0:0[0x1](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(progressive), 540x960, 749 kb/s, 25 fps, 25 tbr, 12800 tbn (default)
+      Metadata:
+        handler_name    : VideoHandler
+        vendor_id       : [0][0][0][0]
+        encoder         : Lavc61.3.100 libx264
+[aist#1:0/pcm_s16le @ 0x43e43d80] Guessed Channel Layout: mono
+Input #1, wav, from '/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/35_mix/mixed_audio.wav':
+  Duration: 00:00:16.64, bitrate: 768 kb/s
+  Stream #1:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 48000 Hz, mono, s16, 768 kb/s
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+  Stream #1:0 -> #0:1 (pcm_s16le (native) -> aac (native))
+Press [q] to stop, [?] for help
+Output #0, mp4, to '/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/60_mux/final.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    encoder         : Lavf61.1.100
+  Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(progressive), 540x960, q=2-31, 749 kb/s, 25 fps, 25 tbr, 12800 tbn (default)
+      Metadata:
+        handler_name    : VideoHandler
+        vendor_id       : [0][0][0][0]
+        encoder         : Lavc61.3.100 libx264
+  Stream #0:1: Audio: aac (LC) (mp4a / 0x6134706D), 48000 Hz, mono, fltp, 69 kb/s
+      Metadata:
+        encoder         : Lavc61.3.100 aac
+size=       0KiB time=N/A bitrate=N/A speed=N/A    [out#0/mp4 @ 0x43eaab00] video:1523KiB audio:142KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 0.820811%
+size=    1678KiB time=00:00:16.56 bitrate= 830.0kbits/s speed=15.8x    
+[aac @ 0x43ece640] Qavg: 181.026

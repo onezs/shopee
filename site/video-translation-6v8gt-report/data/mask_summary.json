@@ -1,0 +1,47 @@
+{
+  "video": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/inputs/th-11110222-6v8gt-mq1q2eeg6hvk78.mp4",
+  "detections": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/40_ocr/det/detections.jsonl",
+  "output_mask": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/45_mask/mask.mp4",
+  "preview": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/45_mask/mask_preview.mp4",
+  "fps": 25.0,
+  "width": 540,
+  "height": 960,
+  "frames_reported": 416,
+  "frames_written": 416,
+  "detection_frames": 416,
+  "positive_mask_frames": 416,
+  "positive_mask_frame_ratio": 1.0,
+  "empty_mask_frames": 0,
+  "empty_mask_runs": [],
+  "kept_boxes": 2496,
+  "skipped_boxes": 0,
+  "avg_boxes_per_frame": 6.0,
+  "max_boxes_per_frame": 6,
+  "mask_coverage_ratio_avg": 0.07965711504220963,
+  "mask_coverage_ratio_p50": 0.07984182238578796,
+  "mask_coverage_ratio_p95": 0.08212432265281677,
+  "mask_coverage_ratio_max": 0.0838773176074028,
+  "pad": 2,
+  "dilate": 4,
+  "dilate_x": 6,
+  "dilate_y": 8,
+  "morph_close": 1,
+  "min_area": 0.0,
+  "max_area_ratio": 1.0,
+  "fill_missing": "last",
+  "persistence": {
+    "enabled": true,
+    "frames": 10,
+    "rois": [
+      "bottom",
+      "middle",
+      "top"
+    ],
+    "added_boxes": 0,
+    "refreshed_boxes": 1245,
+    "iou_threshold": 0.3
+  },
+  "tracking": {
+    "enabled": false
+  }
+}

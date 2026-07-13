@@ -1,0 +1,23 @@
+{
+  "run_dir": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001",
+  "input_video": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/inputs/th-11110222-6v8gt-mq1q2eeg6hvk78.mp4",
+  "config_path": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/configs/pipeline.local.yaml",
+  "elapsed_sec": 450.48632192611694,
+  "outputs": {
+    "source_video": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/00_source/th-11110222-6v8gt-mq1q2eeg6hvk78.mp4",
+    "source_audio": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/05_audio/source_audio.wav",
+    "vocals_audio": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/05_audio/source_audio.wav",
+    "background_audio": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/05_audio/source_audio.wav",
+    "reference_wav": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/05_audio/reference.wav",
+    "detections_jsonl": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/40_ocr/det/detections.jsonl",
+    "mask_video": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/45_mask/mask.mp4",
+    "erased_video": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/50_erase/erased_video.mp4",
+    "source_segments": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/10_asr/source_segments.json",
+    "target_segments": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/20_translate/target_segments.json",
+    "tts_manifest": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/30_tts/tts_segments.json",
+    "full_tts_audio": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/30_tts/full_tts.wav",
+    "mixed_audio": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/35_mix/mixed_audio.wav",
+    "final_video": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/60_mux/final.mp4",
+    "pipeline_report": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/reports/pipeline_report.md"
+  }
+}

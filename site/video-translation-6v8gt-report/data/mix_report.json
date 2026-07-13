@@ -1,0 +1,14 @@
+{
+  "background_audio": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/05_audio/source_audio.wav",
+  "tts_audio": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/30_tts/full_tts.wav",
+  "output": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/35_mix/mixed_audio.wav",
+  "sample_rate": 48000,
+  "duration_sec": 16.64,
+  "target_duration_sec": 16.64,
+  "ducking_source": "tts_schedule",
+  "peak_before_limit": 0.4671751856803894,
+  "bgm_gain_db": -3.0,
+  "tts_gain_db": 0.0,
+  "ducking_enabled": true,
+  "ducking_gain_db": -10.0
+}
