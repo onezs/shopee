@@ -55,6 +55,9 @@
     .warning { border-left-color: #e19a22; background: var(--warn-soft); color: #704500; }
     .media { overflow: hidden; border-radius: 12px; background: #101722; }
     video { display: block; width: 100%; max-height: 620px; background: #101722; }
+    .compare-grid { display: grid; gap: 14px; grid-template-columns: repeat(3, 1fr); }
+    .compare-item { min-width: 0; }
+    .compare-item h3 { margin: 10px 0 0; }
     .media-caption { color: var(--muted); font-size: 12px; padding-top: 9px; }
     .links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
     a { color: var(--accent); text-decoration: none; }
@@ -82,6 +85,7 @@
     @media (max-width: 900px) {
       .span-8, .span-6, .span-4 { grid-column: span 12; }
       .metrics { grid-template-columns: repeat(3, 1fr); }
+      .compare-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 560px) {
       .wrap { padding: 24px 12px 48px; }
@@ -112,7 +116,7 @@
           <div class="metric"><div class="value">540 × 960</div><div class="label">分辨率</div></div>
           <div class="metric"><div class="value">416</div><div class="label">视频帧数</div></div>
           <div class="metric"><div class="value">8</div><div class="label">ASR / 翻译片段</div></div>
-          <div class="metric"><div class="value">452.31 s</div><div class="label">本次接续总耗时</div></div>
+          <div class="metric"><div class="value">872.18 s</div><div class="label">强制完整重跑耗时</div></div>
           <div class="metric"><div class="value">th → vi</div><div class="label">语言方向</div></div>
         </div>
       </div>
@@ -124,7 +128,7 @@
         <div class="media">
           <video controls preload="metadata" src="assets/03_final.mp4"></video>
         </div>
-        <div class="media-caption">已擦除画面文字并替换为越南语配音，原视频时长保持 16.64 秒。</div>
+        <div class="media-caption">画面文字已擦除；原视频音轨已静音，最终音轨仅保留越南语 TTS，时长保持 16.64 秒。</div>
         <div class="links">
           <a class="button" href="assets/03_final.mp4">打开最终视频</a>
           <a class="button" href="assets/02_erased.mp4">擦字视频</a>
@@ -135,10 +139,11 @@
       <div class="card span-4">
         <h2>运行信息</h2>
         <dl class="meta">
-          <dt>Run ID</dt><dd><code>full-th-11110222-6v8gt-vision-001</code></dd>
-          <dt>开始时间</dt><dd>2026-07-13 03:49:13 UTC</dd>
-          <dt>结束时间</dt><dd>2026-07-13 03:56:45 UTC</dd>
+          <dt>Run ID</dt><dd><code>full-th-11110222-6v8gt-clean-mute-20260713</code></dd>
+          <dt>开始时间</dt><dd>2026-07-13 06:13:21 UTC</dd>
+          <dt>结束时间</dt><dd>2026-07-13 06:27:53 UTC</dd>
           <dt>输入文件</dt><dd><code>th-11110222-6v8gt-mq1q2eeg6hvk78.mp4</code></dd>
+          <dt>输入 SHA-256</dt><dd><code>c2d63970c973668d3e5acbf0860ee9ad4ef3248fa3bce8060c708195100ca532</code></dd>
           <dt>ASR</dt><dd>faster-whisper · large-v3</dd>
           <dt>翻译</dt><dd>Compass · Vietnamese</dd>
           <dt>TTS</dt><dd>VoxCPM2 · 48 kHz</dd>
@@ -148,20 +153,48 @@
 
     <section class="grid">
       <div class="card span-12">
+        <h2>原视频 / 处理后对比</h2>
+        <div class="note">原视频保留原始画面和原始音频；擦字版本展示视觉处理结果；最终版本在同一画面处理基础上静音原音，只保留 TTS。</div>
+        <div class="compare-grid" style="margin-top:16px">
+          <div class="compare-item">
+            <div class="media"><video controls preload="metadata" src="assets/01_original.mp4"></video></div>
+            <h3>原视频</h3>
+            <div class="media-caption">原始画面 + 原始音频</div>
+          </div>
+          <div class="compare-item">
+            <div class="media"><video controls preload="metadata" src="assets/02_erased.mp4"></video></div>
+            <h3>擦字版本</h3>
+            <div class="media-caption">画面文字移除后的中间结果</div>
+          </div>
+          <div class="compare-item">
+            <div class="media"><video controls preload="metadata" src="assets/03_final.mp4"></video></div>
+            <h3>最终版本</h3>
+            <div class="media-caption">原音静音 + 越南语 TTS</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card span-12">
         <h2>链路阶段</h2>
-        <div class="note">本次接续 run 复用了同一 run 目录中已经完成的视觉产物（OCR、mask、EraserDiT）；ASR、翻译、TTS、对齐、混音和 mux 在本次接续中完成。</div>
+        <div class="note">本次 run 使用新的输入指纹和强制完整重跑；所有阶段均重新生成，没有复用旧视频的阶段产物。</div>
         <div style="overflow-x:auto; margin-top:14px">
           <table>
             <thead><tr><th>阶段</th><th>状态</th><th>耗时</th><th>产物</th></tr></thead>
             <tbody>
-              <tr><td>source</td><td><span class="tag cache">缓存复用</span></td><td class="small">0.00 s</td><td><a href="assets/01_original.mp4">源视频</a></td></tr>
-              <tr><td>extract_audio / reference</td><td><span class="tag cache">缓存复用</span></td><td class="small">0.00 s</td><td><a href="data/source_audio.wav">源音频</a> · <a href="data/reference.wav">参考音频</a></td></tr>
-              <tr><td>ASR</td><td><span class="tag ok">完成</span></td><td class="small">51.66 s</td><td><a href="data/source_segments.json">source_segments.json</a></td></tr>
-              <tr><td>翻译</td><td><span class="tag ok">完成</span></td><td class="small">4.30 s</td><td><a href="data/target_segments.json">target_segments.json</a></td></tr>
-              <tr><td>TTS</td><td><span class="tag ok">完成</span></td><td class="small">389.32 s</td><td><a href="data/tts_segments.json">tts_segments.json</a></td></tr>
-              <tr><td>对齐 / 混音</td><td><span class="tag ok">完成</span></td><td class="small">0.49 s</td><td><a href="data/tts_schedule.json">schedule</a> · <a href="data/mix_report.json">mix report</a></td></tr>
-              <tr><td>OCR / mask / EraserDiT</td><td><span class="tag cache">缓存复用</span></td><td class="small">0.00 s（本次）</td><td><a href="data/ocr_summary.json">OCR QA</a> · <a href="data/mask_summary.json">mask QA</a> · <a href="assets/02_erased.mp4">擦字视频</a></td></tr>
-              <tr><td>mux</td><td><span class="tag ok">完成</span></td><td class="small">4.01 s</td><td><a href="assets/03_final.mp4">final.mp4</a></td></tr>
+              <tr><td>source</td><td><span class="tag ok">完成</span></td><td class="small">0.43 s</td><td><a href="assets/01_original.mp4">源视频</a></td></tr>
+              <tr><td>extract_audio</td><td><span class="tag ok">完成</span></td><td class="small">1.07 s</td><td><a href="data/source_audio.wav">源音频</a></td></tr>
+              <tr><td>reference</td><td><span class="tag ok">完成</span></td><td class="small">0.49 s</td><td><a href="data/reference.wav">本视频参考音频</a></td></tr>
+              <tr><td>ASR</td><td><span class="tag ok">完成</span></td><td class="small">47.00 s</td><td><a href="data/source_segments.json">source_segments.json</a></td></tr>
+              <tr><td>翻译</td><td><span class="tag ok">完成</span></td><td class="small">4.96 s</td><td><a href="data/target_segments.json">target_segments.json</a></td></tr>
+              <tr><td>TTS</td><td><span class="tag ok">完成</span></td><td class="small">249.37 s</td><td><a href="data/tts_segments.json">tts_segments.json</a></td></tr>
+              <tr><td>对齐</td><td><span class="tag ok">完成</span></td><td class="small">0.24 s</td><td><a href="data/tts_schedule.json">schedule</a></td></tr>
+              <tr><td>静音混音</td><td><span class="tag ok">完成</span></td><td class="small">0.18 s</td><td><a href="data/mix_report.json">mix report</a> · <a href="assets/05_mixed_audio.mp4">TTS 音频</a></td></tr>
+              <tr><td>OCR</td><td><span class="tag ok">完成</span></td><td class="small">143.27 s</td><td><a href="data/ocr_summary.json">OCR QA</a></td></tr>
+              <tr><td>mask</td><td><span class="tag ok">完成</span></td><td class="small">12.97 s</td><td><a href="data/mask_summary.json">mask QA</a> · <a href="assets/04_mask_preview.mp4">Mask 预览</a></td></tr>
+              <tr><td>EraserDiT</td><td><span class="tag ok">完成</span></td><td class="small">410.81 s</td><td><a href="assets/02_erased.mp4">擦字视频</a></td></tr>
+              <tr><td>mux</td><td><span class="tag ok">完成</span></td><td class="small">0.83 s</td><td><a href="assets/03_final.mp4">final.mp4</a></td></tr>
             </tbody>
           </table>
         </div>
@@ -185,11 +218,12 @@
       </div>
       <div class="card span-8">
         <h2>配音与音频 QA</h2>
-        <div class="note warning"><strong>需要关注：</strong>8 个片段均超出原始时间窗。最终音频仍按目标时长生成，但相邻语音可能发生重叠，建议重点试听最终视频。</div>
+        <div class="note warning"><strong>需要关注：</strong>5 个片段 overrun，1 个片段发生 shift conflict。原视频音轨已静音，最终音频只保留 TTS；仍需重点试听片段衔接。</div>
         <div class="kv" style="margin-top:16px">
           <div><b>16.64 s</b><span>混音时长 / 目标时长</span></div>
-          <div><b>-10 dB</b><span>人声窗口 ducking</span></div>
-          <div><b>-3 dB</b><span>原始背景音增益</span></div>
+          <div><b>silence</b><span>原视频背景音轨</span></div>
+          <div><b>5 / 8</b><span>overrun 片段</span></div>
+          <div><b>1</b><span>shift conflict</span></div>
           <div><b>48 kHz</b><span>输出采样率</span></div>
         </div>
       </div>
@@ -202,14 +236,14 @@
           <table>
             <thead><tr><th>ID</th><th>时间</th><th>泰语 ASR</th><th>越南语目标文本</th><th>TTS</th><th>状态</th></tr></thead>
             <tbody>
-              <tr><td>seg_0000</td><td class="small">0.00–1.38</td><td class="text">Lip Maybelline White New Ink</td><td class="text">Son Maybelline Vinyl Ink</td><td class="small">1.76 s</td><td><span class="tag warn">overrun</span></td></tr>
-              <tr><td>seg_0001</td><td class="small">1.38–3.72</td><td class="text">ป้ายยาลิปโทนนูตสวยหวานละมุนนูตโทโท</td><td class="text">Gợi ý thỏi son tông nude ngọt ngào, dịu dàng cực xinh.</td><td class="small">3.84 s</td><td><span class="tag warn">overrun</span></td></tr>
-              <tr><td>seg_0002</td><td class="small">3.72–5.76</td><td class="text">เปอร์หนึ่งสูญส่วนนูตชมพูอมพีชนิดนิด</td><td class="text">Màu số 10, tông nude hồng pha chút cam đào.</td><td class="small">3.04 s</td><td><span class="tag warn">overrun</span></td></tr>
-              <tr><td>seg_0003</td><td class="small">5.76–7.74</td><td class="text">เป็นอีกหนึ่งสีที่มีไว้ได้ใช้บ่อยแน่นอน</td><td class="text">Đây chắc chắn là màu son bạn sẽ dùng rất thường xuyên.</td><td class="small">3.20 s</td><td><span class="tag warn">overrun</span></td></tr>
-              <tr><td>seg_0004</td><td class="small">7.74–10.14</td><td class="text">เหนือลิปให้สีสวยชัดปากชื่นชื้นชำวาว</td><td class="text">Chất son lên màu chuẩn, dưỡng ẩm cho môi căng bóng.</td><td class="small">3.36 s</td><td><span class="tag warn">overrun</span></td></tr>
-              <tr><td>seg_0005</td><td class="small">10.14–11.90</td><td class="text">รุ่นนี้เขาขึ้นชื่อเรื่องความติดโทนเลย</td><td class="text">Dòng này nổi tiếng siêu lâu trôi luôn đó.</td><td class="small">2.56 s</td><td><span class="tag warn">overrun</span></td></tr>
-              <tr><td>seg_0006</td><td class="small">11.90–14.38</td><td class="text">สิ่งที่เห็นในตะกร้าต้องรีบกดนะ ของหมดไปมาก</td><td class="text">Thấy trong giỏ hàng là phải chốt ngay, nhanh hết lắm.</td><td class="small">4.00 s</td><td><span class="tag warn">overrun</span></td></tr>
-              <tr><td>seg_0007</td><td class="small">14.38–16.62</td><td class="text">ตอนนี้มีโปรด้วยนะพี่กับใต้คลิปเลยค่ะ</td><td class="text">Đang có ưu đãi nữa đó, nhấn vào dưới clip nha.</td><td class="small">3.36 s</td><td><span class="tag warn">overrun</span></td></tr>
+              <tr><td>seg_0000</td><td class="small">0.00–1.40</td><td class="text">Lip Maybelline White New Ink</td><td class="text">Son Maybelline Vinyl Ink</td><td class="small">1.76 s</td><td><span class="tag warn">overrun</span></td></tr>
+              <tr><td>seg_0001</td><td class="small">1.40–3.70</td><td class="text">ป้ายยาลิปโทนนูสสวยหวานละมุนนูโทโท</td><td class="text">Gợi ý dòng son tông nude ngọt ngào, dịu dàng</td><td class="small">2.40 s</td><td><span class="tag ok">ok</span></td></tr>
+              <tr><td>seg_0002</td><td class="small">3.70–5.90</td><td class="text">เปอร์หนึ่งสูญสวน นูสชมพูอมพีชนิดนิด</td><td class="text">Màu 100, tông nude hồng pha chút ánh đào</td><td class="small">2.40 s</td><td><span class="tag warn">shift conflict</span></td></tr>
+              <tr><td>seg_0003</td><td class="small">5.90–7.90</td><td class="text">เป็นอีกหนึ่งสีที่มีไว้ได้ใช้บ่อยแน่นอน</td><td class="text">Đây chắc chắn là màu son bạn sẽ dùng rất thường xuyên</td><td class="small">2.56 s</td><td><span class="tag warn">overrun</span></td></tr>
+              <tr><td>seg_0004</td><td class="small">7.90–10.20</td><td class="text">เหนือลิปให้สีสวยชัด ปากชื่นชื้นฉ่ำว้าว</td><td class="text">Chất son lên màu chuẩn, môi căng mọng ẩm mượt</td><td class="small">2.72 s</td><td><span class="tag warn">overrun</span></td></tr>
+              <tr><td>seg_0005</td><td class="small">10.20–11.90</td><td class="text">รุ่นนี้เขาขึ้นชื่อเรื่องความติดโทนเลย</td><td class="text">Dòng này nổi tiếng siêu lâu trôi luôn</td><td class="small">2.08 s</td><td><span class="tag warn">overrun</span></td></tr>
+              <tr><td>seg_0006</td><td class="small">11.90–14.40</td><td class="text">สิ่งที่เห็นในตะกร้าต้องรีบกดนะ ของหมดไปมาก</td><td class="text">Thấy trong giỏ hàng là phải chốt ngay, nhanh hết lắm</td><td class="small">2.40 s</td><td><span class="tag ok">ok</span></td></tr>
+              <tr><td>seg_0007</td><td class="small">14.40–16.60</td><td class="text">ตอนนี้มีโปรด้วยนะพี่กับใต้คลิปเลยค่ะ</td><td class="text">Đang có ưu đãi đó, nhấn vào link dưới clip nha</td><td class="small">2.72 s</td><td><span class="tag warn">overrun</span></td></tr>
             </tbody>
           </table>
         </div>
@@ -230,13 +264,13 @@
         <details>
           <summary>查看输出路径</summary>
           <p><code>assets/03_final.mp4</code> · <code>data/manifest.json</code></p>
-          <p>Run ID：<code>full-th-11110222-6v8gt-vision-001</code></p>
+          <p>Run ID：<code>full-th-11110222-6v8gt-clean-mute-20260713</code></p>
         </details>
       </div>
     </section>
 
     <footer>
-      生成于 2026-07-13 · 本页为 GitHub Pages 静态 HTML，媒体和技术文件已随页面打包。
+      生成于 2026-07-13 · 本页为 GitHub Pages 静态 HTML；原视频、擦字视频、最终视频和 TTS 音频均已随页面打包。
     </footer>
   </main>
 </body>

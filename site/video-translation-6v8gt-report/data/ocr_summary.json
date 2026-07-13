@@ -1,7 +1,7 @@
 {
-  "video": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/inputs/th-11110222-6v8gt-mq1q2eeg6hvk78.mp4",
-  "config": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/models/ppocrv6_overlay_best/infer_config.yml",
-  "checkpoint": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/models/ppocrv6_overlay_best/best_accuracy",
+  "video": "video_trans_pipeline/inputs/th-11110222-6v8gt-mq1q2eeg6hvk78.mp4",
+  "config": "video_trans_pipeline/models/ppocrv6_overlay_best/infer_config.yml",
+  "checkpoint": "video_trans_pipeline/models/ppocrv6_overlay_best/best_accuracy",
   "device": "gpu:0",
   "inference_path": "PaddleOCR official tools/infer_det.py",
   "thresholds": {
@@ -21,9 +21,9 @@
     "duration_sec": 16.64
   },
   "runtime": {
-    "wall_time_sec": 236.44476789899636,
-    "official_infer_sec": 210.17217027791776,
-    "processed_fps": 1.7593960893975265
+    "wall_time_sec": 139.16656338900793,
+    "official_infer_sec": 125.94269004499074,
+    "processed_fps": 2.9892237752337696
   },
   "detections": {
     "positive_frames": 416,
@@ -43,8 +43,8 @@
     "box_area_ratio_max": 0.02456597238779068
   },
   "outputs": {
-    "official_predictions": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/40_ocr/det/predictions.txt",
-    "detections_jsonl": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/40_ocr/det/detections.jsonl",
-    "samples_dir": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/40_ocr/det/samples"
+    "official_predictions": "video_trans_pipeline/runs/full-th-11110222-6v8gt-clean-mute-20260713/40_ocr/det/predictions.txt",
+    "detections_jsonl": "video_trans_pipeline/runs/full-th-11110222-6v8gt-clean-mute-20260713/40_ocr/det/detections.jsonl",
+    "samples_dir": "video_trans_pipeline/runs/full-th-11110222-6v8gt-clean-mute-20260713/40_ocr/det/samples"
   }
 }

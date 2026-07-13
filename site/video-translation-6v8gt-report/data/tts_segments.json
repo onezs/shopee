@@ -2,81 +2,81 @@
   {
     "segment_id": "seg_0000",
     "start_sec": 0.0,
-    "end_sec": 1.3800000000000001,
+    "end_sec": 1.4000000000000001,
     "target_lang": "vi",
     "target_text": "Son Maybelline Vinyl Ink",
-    "wav_path": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/30_tts/segments/seg_0000.wav",
+    "wav_path": "video_trans_pipeline/runs/full-th-11110222-6v8gt-clean-mute-20260713/30_tts/segments/seg_0000.wav",
     "sample_rate": 48000,
-    "elapsed_sec": 42.17444205284119
+    "elapsed_sec": 25.971548318862915
   },
   {
     "segment_id": "seg_0001",
-    "start_sec": 1.3800000000000001,
-    "end_sec": 3.72,
+    "start_sec": 1.4000000000000001,
+    "end_sec": 3.7,
     "target_lang": "vi",
-    "target_text": "Gợi ý thỏi son tông nude ngọt ngào, dịu dàng cực xinh.",
-    "wav_path": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/30_tts/segments/seg_0001.wav",
+    "target_text": "Gợi ý dòng son tông nude ngọt ngào, dịu dàng",
+    "wav_path": "video_trans_pipeline/runs/full-th-11110222-6v8gt-clean-mute-20260713/30_tts/segments/seg_0001.wav",
     "sample_rate": 48000,
-    "elapsed_sec": 2.37391996383667
+    "elapsed_sec": 2.06538462638855
   },
   {
     "segment_id": "seg_0002",
-    "start_sec": 3.72,
-    "end_sec": 5.76,
+    "start_sec": 3.7,
+    "end_sec": 5.9,
     "target_lang": "vi",
-    "target_text": "Màu số 10, tông nude hồng pha chút cam đào.",
-    "wav_path": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/30_tts/segments/seg_0002.wav",
+    "target_text": "Màu 100, tông nude hồng pha chút ánh đào",
+    "wav_path": "video_trans_pipeline/runs/full-th-11110222-6v8gt-clean-mute-20260713/30_tts/segments/seg_0002.wav",
     "sample_rate": 48000,
-    "elapsed_sec": 1.3950045108795166
+    "elapsed_sec": 1.211069107055664
   },
   {
     "segment_id": "seg_0003",
-    "start_sec": 5.76,
-    "end_sec": 7.74,
+    "start_sec": 5.9,
+    "end_sec": 7.9,
     "target_lang": "vi",
-    "target_text": "Đây chắc chắn là màu son bạn sẽ dùng rất thường xuyên.",
-    "wav_path": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/30_tts/segments/seg_0003.wav",
+    "target_text": "Đây chắc chắn là màu son bạn sẽ dùng rất thường xuyên",
+    "wav_path": "video_trans_pipeline/runs/full-th-11110222-6v8gt-clean-mute-20260713/30_tts/segments/seg_0003.wav",
     "sample_rate": 48000,
-    "elapsed_sec": 2.2581729888916016
+    "elapsed_sec": 2.0600638389587402
   },
   {
     "segment_id": "seg_0004",
-    "start_sec": 7.74,
-    "end_sec": 10.14,
+    "start_sec": 7.9,
+    "end_sec": 10.200000000000001,
     "target_lang": "vi",
-    "target_text": "Chất son lên màu chuẩn, dưỡng ẩm cho môi căng bóng.",
-    "wav_path": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/30_tts/segments/seg_0004.wav",
+    "target_text": "Chất son lên màu chuẩn, môi căng mọng ẩm mượt",
+    "wav_path": "video_trans_pipeline/runs/full-th-11110222-6v8gt-clean-mute-20260713/30_tts/segments/seg_0004.wav",
     "sample_rate": 48000,
-    "elapsed_sec": 3.107572317123413
+    "elapsed_sec": 2.067991018295288
   },
   {
     "segment_id": "seg_0005",
-    "start_sec": 10.14,
+    "start_sec": 10.200000000000001,
     "end_sec": 11.9,
     "target_lang": "vi",
-    "target_text": "Dòng này nổi tiếng siêu lâu trôi luôn đó.",
-    "wav_path": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/30_tts/segments/seg_0005.wav",
+    "target_text": "Dòng này nổi tiếng siêu lâu trôi luôn",
+    "wav_path": "video_trans_pipeline/runs/full-th-11110222-6v8gt-clean-mute-20260713/30_tts/segments/seg_0005.wav",
     "sample_rate": 48000,
-    "elapsed_sec": 1.5316073894500732
+    "elapsed_sec": 1.1500377655029297
   },
   {
     "segment_id": "seg_0006",
     "start_sec": 11.9,
-    "end_sec": 14.38,
+    "end_sec": 14.4,
     "target_lang": "vi",
-    "target_text": "Thấy trong giỏ hàng là phải chốt ngay, nhanh hết lắm.",
-    "wav_path": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/30_tts/segments/seg_0006.wav",
+    "target_text": "Thấy trong giỏ hàng là phải chốt ngay, nhanh hết lắm",
+    "wav_path": "video_trans_pipeline/runs/full-th-11110222-6v8gt-clean-mute-20260713/30_tts/segments/seg_0006.wav",
     "sample_rate": 48000,
-    "elapsed_sec": 2.493685245513916
+    "elapsed_sec": 1.9711670875549316
   },
   {
     "segment_id": "seg_0007",
-    "start_sec": 14.38,
-    "end_sec": 16.62,
+    "start_sec": 14.4,
+    "end_sec": 16.6,
     "target_lang": "vi",
-    "target_text": "Đang có ưu đãi nữa đó, nhấn vào dưới clip nha.",
-    "wav_path": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/30_tts/segments/seg_0007.wav",
+    "target_text": "Đang có ưu đãi đó, nhấn vào link dưới clip nha",
+    "wav_path": "video_trans_pipeline/runs/full-th-11110222-6v8gt-clean-mute-20260713/30_tts/segments/seg_0007.wav",
     "sample_rate": 48000,
-    "elapsed_sec": 2.245664358139038
+    "elapsed_sec": 1.2920091152191162
   }
 ]

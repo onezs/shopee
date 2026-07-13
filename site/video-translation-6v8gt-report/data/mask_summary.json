@@ -1,8 +1,8 @@
 {
-  "video": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/inputs/th-11110222-6v8gt-mq1q2eeg6hvk78.mp4",
-  "detections": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/40_ocr/det/detections.jsonl",
-  "output_mask": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/45_mask/mask.mp4",
-  "preview": "/home/work/opa_common/zhanghaoran/video_trans_pipeline/runs/full-th-11110222-6v8gt-vision-001/45_mask/mask_preview.mp4",
+  "video": "video_trans_pipeline/inputs/th-11110222-6v8gt-mq1q2eeg6hvk78.mp4",
+  "detections": "video_trans_pipeline/runs/full-th-11110222-6v8gt-clean-mute-20260713/40_ocr/det/detections.jsonl",
+  "output_mask": "video_trans_pipeline/runs/full-th-11110222-6v8gt-clean-mute-20260713/45_mask/mask.mp4",
+  "preview": "video_trans_pipeline/runs/full-th-11110222-6v8gt-clean-mute-20260713/45_mask/mask_preview.mp4",
   "fps": 25.0,
   "width": 540,
   "height": 960,

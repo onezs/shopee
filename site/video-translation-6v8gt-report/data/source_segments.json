@@ -2,41 +2,41 @@
   {
     "segment_id": "seg_0000",
     "start_sec": 0.0,
-    "end_sec": 1.3800000000000001,
+    "end_sec": 1.4000000000000001,
     "source_lang": "th",
     "source_text": "Lip Maybelline White New Ink"
   },
   {
     "segment_id": "seg_0001",
-    "start_sec": 1.3800000000000001,
-    "end_sec": 3.72,
+    "start_sec": 1.4000000000000001,
+    "end_sec": 3.7,
     "source_lang": "th",
-    "source_text": "ป้ายยาลิปโทนนูตสวยหวานละมุนนูตโทโท"
+    "source_text": "ป้ายยาลิปโทนนูสสวยหวานละมุนนูโทโท"
   },
   {
     "segment_id": "seg_0002",
-    "start_sec": 3.72,
-    "end_sec": 5.76,
+    "start_sec": 3.7,
+    "end_sec": 5.9,
     "source_lang": "th",
-    "source_text": "เปอร์หนึ่งสูญส่วนนูตชมพูอมพีชนิดนิด"
+    "source_text": "เปอร์หนึ่งสูญสวน นูสชมพูอมพีชนิดนิด"
   },
   {
     "segment_id": "seg_0003",
-    "start_sec": 5.76,
-    "end_sec": 7.74,
+    "start_sec": 5.9,
+    "end_sec": 7.9,
     "source_lang": "th",
     "source_text": "เป็นอีกหนึ่งสีที่มีไว้ได้ใช้บ่อยแน่นอน"
   },
   {
     "segment_id": "seg_0004",
-    "start_sec": 7.74,
-    "end_sec": 10.14,
+    "start_sec": 7.9,
+    "end_sec": 10.200000000000001,
     "source_lang": "th",
-    "source_text": "เหนือลิปให้สีสวยชัดปากชื่นชื้นชำวาว"
+    "source_text": "เหนือลิปให้สีสวยชัด ปากชื่นชื้นฉ่ำว้าว"
   },
   {
     "segment_id": "seg_0005",
-    "start_sec": 10.14,
+    "start_sec": 10.200000000000001,
     "end_sec": 11.9,
     "source_lang": "th",
     "source_text": "รุ่นนี้เขาขึ้นชื่อเรื่องความติดโทนเลย"
@@ -44,14 +44,14 @@
   {
     "segment_id": "seg_0006",
     "start_sec": 11.9,
-    "end_sec": 14.38,
+    "end_sec": 14.4,
     "source_lang": "th",
     "source_text": "สิ่งที่เห็นในตะกร้าต้องรีบกดนะ ของหมดไปมาก"
   },
   {
     "segment_id": "seg_0007",
-    "start_sec": 14.38,
-    "end_sec": 16.62,
+    "start_sec": 14.4,
+    "end_sec": 16.6,
     "source_lang": "th",
     "source_text": "ตอนนี้มีโปรด้วยนะพี่กับใต้คลิปเลยค่ะ"
   }
