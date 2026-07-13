@@ -11,6 +11,7 @@
   "peak_before_limit": 0.996734619140625,
   "bgm_gain_db": -3.0,
   "tts_gain_db": 0.0,
-  "ducking_enabled": true,
+  "ducking_requested": true,
+  "ducking_enabled": false,
   "ducking_gain_db": -10.0
 }
