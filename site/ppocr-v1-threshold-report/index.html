@@ -249,6 +249,12 @@
       <tr><td>V23 paired residual E2</td><td>94.50% / 81.12%</td><td>59/66</td><td>68.39%</td><td>8/12</td><td>2/4 / 3/4</td><td>35.06%</td><td>FAIL</td></tr>
       <tr><td>V23 paired residual E4</td><td>94.00% / 82.46%</td><td>59/66</td><td>65.81%</td><td>8/12</td><td>2/4 / 3/4</td><td>34.75%</td><td>FAIL</td></tr>
     </tbody></table>
+    <h3>V20 Additional Match vs V16</h3>
+    <p>V20 LR1e-6 在 canonical test 相比 V16 best 唯一新增命中的 case 是 <code>video_033/scene_0001_frame_000029.jpg</code>。该帧底部水印为 <code>video milik @titin suhartinn</code>：V16 最高 IoU 为 <code>0.4803</code>，低于 <code>0.50</code>，V20 最高 IoU 为 <code>0.5165</code>，达到命中阈值。因此 canonical recall 从 <code>189/200</code> 增加到 <code>190/200</code>，本质是框向右扩展后跨过阈值，并非完整水印覆盖能力已经解决。</p>
+    <div class="legend"><span><i class="dot gt"></i>GT</span><span><i class="dot pred"></i>V16 best</span><span><i class="dot pred-v13b"></i>V20 LR1e-6</span></div>
+    <div class="casegrid">
+      <article class="case"><img src="cases/v20_extra_canonical_video_033_scene_0001_frame_000029.jpg" alt="V20 additional canonical watermark match"><div class="cap"><strong>Canonical / titin watermark threshold crossing</strong><span class="small">绿色=GT，橙色=V16 best，蓝色=V20 LR1e-6；V16 IoU 0.4803，V20 IoU 0.5165，新增 1 个 watermark TP。</span></div></article>
+    </div>
     <div class="callout warn"><strong>水印 probe 结论：</strong>V19-V23 在合成验证集上有小幅可学习性变化，但没有新增 TH20 Logo 命中，也没有把完整水印 coverage 提到 80%。公开配对残差解决了合成矩形背景伪影，却仍无法复现业务中的小头像 Logo + 半透明账号文字。</div>
 
     <h2>11. Video Temporal Aggregation Diagnostic</h2>
