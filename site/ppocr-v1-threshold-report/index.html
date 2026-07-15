@@ -47,14 +47,14 @@
 <body>
   <header>
     <h1>PP-OCRv6 Overlay Detector: Threshold and Model Evolution Review</h1>
-    <p>统一使用当前 held-out split 和 GT=200 口径，评估 overlay recall、clean false positive、类型召回和阈值收益，并补充官方预训练 baseline、V4-V14 训练结果。</p>
+    <p>统一使用当前 held-out split 和 GT=200 口径，评估 overlay recall、clean false positive、类型召回和阈值收益，并补充官方预训练 baseline、V4-V23 训练/探针结果。</p>
   </header>
   <main>
     <section class="grid">
-      <div class="metric"><div class="label">当前稳定候选</div><div class="value">V13-B best</div><div class="note">test recall 94.50% (189/200)</div></div>
+      <div class="metric"><div class="label">当前稳定候选</div><div class="value">V16 best</div><div class="note">test recall 94.50% (189/200)</div></div>
       <div class="metric"><div class="label">推荐工作点</div><div class="value">box 0.40</div><div class="note">recall 不掉，FP 更少</div></div>
-      <div class="metric"><div class="label">V13-B 水印召回</div><div class="value">89.39%</div><div class="note">59/66，较 V1 多命中 1 个</div></div>
-      <div class="metric"><div class="label">V14 结论</div><div class="value">Not Promoted</div><div class="note">TH20 composite watermark 仍为 0/4</div></div>
+      <div class="metric"><div class="label">V16 水印召回</div><div class="value">89.39%</div><div class="note">59/66，未超过 V13-B</div></div>
+      <div class="metric"><div class="label">V19-V23 结论</div><div class="value">Not Promoted</div><div class="note">真实 Logo/半透明水印未新增有效命中</div></div>
     </section>
 
     <h2>1. Current Unified Baseline / V1 / V4-V14 Held-Out Comparison</h2>
@@ -80,9 +80,14 @@
       <tr><td>V12 latest</td><td>232</td><td>188</td><td>44</td><td>12</td><td>81.03%</td><td>94.00%</td><td>87.04%</td><td>4/25 (16.00%)</td><td>87.88% (58/66)</td><td>整体打平 V1，clean FP boxes 略少</td></tr>
       <tr><td>V13-A best</td><td>235</td><td>187</td><td>48</td><td>13</td><td>79.57%</td><td>93.50%</td><td>85.98%</td><td>6/25 (24.00%)</td><td>86.36% (57/66)</td><td>真实水印适配未超过 V1</td></tr>
       <tr><td>V13-A latest</td><td>247</td><td>188</td><td>59</td><td>12</td><td>76.11%</td><td>94.00%</td><td>84.12%</td><td>6/25 (24.00%)</td><td>87.88% (58/66)</td><td>召回打平 V1，但 FP 明显增加</td></tr>
-      <tr class="selected"><td>V13-B best</td><td>233</td><td>189</td><td>44</td><td>11</td><td>81.12%</td><td>94.50%</td><td>87.30%</td><td>5/25 (20.00%)</td><td>89.39% (59/66)</td><td>当前稳定候选；整体及水印各多命中 1 个</td></tr>
+      <tr><td>V13-B best</td><td>233</td><td>189</td><td>44</td><td>11</td><td>81.12%</td><td>94.50%</td><td>87.30%</td><td>5/25 (20.00%)</td><td>89.39% (59/66)</td><td>V16 之前的稳定候选</td></tr>
       <tr><td>V13-B latest</td><td>245</td><td>189</td><td>56</td><td>11</td><td>77.14%</td><td>94.50%</td><td>84.94%</td><td>5/25 (20.00%)</td><td>89.39% (59/66)</td><td>召回与 best 相同，但 FP 更多</td></tr>
       <tr><td>V14 best (epoch 3)</td><td>234</td><td>189</td><td>45</td><td>11</td><td>80.77%</td><td>94.50%</td><td>87.10%</td><td>5/25 (20.00%)</td><td>89.39% (59/66)</td><td>组合水印 probe 未提升业务召回，FP 多 1 个</td></tr>
+      <tr><td>V15 best</td><td>236</td><td>188</td><td>48</td><td>12</td><td>79.66%</td><td>94.00%</td><td>86.24%</td><td>5/25 (20.00%)</td><td>87.88% (58/66)</td><td>多尺度继续训练未超过 V13-B</td></tr>
+      <tr class="selected"><td>V16 best</td><td>231</td><td>189</td><td>42</td><td>11</td><td>81.82%</td><td>94.50%</td><td>87.70%</td><td>5/25 (20.00%)</td><td>89.39% (59/66)</td><td>当前生产候选；V4 recall/precision 更平衡</td></tr>
+      <tr><td>V17 best</td><td>231</td><td>189</td><td>42</td><td>11</td><td>81.82%</td><td>94.50%</td><td>87.70%</td><td>5/25 (20.00%)</td><td>89.39% (59/66)</td><td>水印单元训练未改变 canonical</td></tr>
+      <tr><td>V18 lr5e-7 best</td><td>229</td><td>189</td><td>40</td><td>11</td><td>82.53%</td><td>94.50%</td><td>88.11%</td><td>5/25 (20.00%)</td><td>89.39% (59/66)</td><td>canonical F1 较高，但 V4 recall 下降</td></tr>
+      <tr><td>V18 lr7e-7 best</td><td>230</td><td>189</td><td>41</td><td>11</td><td>82.17%</td><td>94.50%</td><td>87.91%</td><td>5/25 (20.00%)</td><td>89.39% (59/66)</td><td>提高 LR 未带来水印收益</td></tr>
     </tbody></table>
 
     <h2>2. V1 Threshold Scan, Corrected to Current GT=200</h2>
@@ -133,7 +138,7 @@
       <tr><td>V14 epoch 2</td><td>94.50% (189/200)</td><td>65.81% (102/155)</td><td>24/43 (55.81%)</td><td>33.00% (66/200)</td><td>32.00% (64/200)</td><td>64.76%</td><td>0/4</td></tr>
       <tr><td>V14 best (epoch 3)</td><td>94.50% (189/200)</td><td>65.81% (102/155)</td><td>25/43 (58.14%)</td><td>34.50% (69/200)</td><td>32.50% (65/200)</td><td>65.22%</td><td>0/4</td></tr>
     </tbody></table>
-    <div class="callout warn"><strong>结论：</strong>V14 未通过晋级门槛。合成完整框 recall 仅从 31.50% 提到 34.50%，真实 TH20 组合水印仍为 0/4；输出平均约 1.69 个碎片框/图，没有形成完整组合框。业务测试召回没有增加，V4 dev 与 clean FP 反而略退化，因此继续保留 V13-B best。</div>
+    <div class="callout warn"><strong>结论：</strong>V14 未通过晋级门槛。合成完整框 recall 仅从 31.50% 提到 34.50%，真实 TH20 组合水印仍为 0/4；输出平均约 1.69 个碎片框/图，没有形成完整组合框。业务测试召回没有增加，V4 dev 与 clean FP 反而略退化，因此继续保留 V16 best。</div>
 
     <h2>5. V8-V12 Low-threshold Check</h2>
     <p>V8-V12 同时补充了 <code>box_thresh=0.25</code> 结果，用来判断“降低阈值是否能找回水印”。结论是 V9 低阈值只多召回 1 个 watermark，但 FP 大幅增加；V10/V11/V12 低阈值没有新增 TP，只增加 FP；V8 低阈值仍低于 V1。</p>
@@ -221,11 +226,45 @@
       <article class="case"><img src="cases/clean_fp_04_scene_0006_frame_000402.jpg" alt="clean false positive top region repeated"><div class="cap"><strong>Clean FP</strong><span class="small">同视频相邻帧重复误检，适合加入 hard negative。</span></div></article>
     </div>
 
+    <h2>9. Recent Formal Training: V15-V18</h2>
+    <p>V15-V18 都从前一版 best 继续训练，canonical test 仍使用 GT=200 的冻结口径。V16 best 在 canonical 上与 V17 持平，并比 V13-B 少 2 个 FP；V18 的 canonical F1 更高，但 V4 video-held-out recall 下降，因此不替换 V16。</p>
+    <table><thead><tr><th>Model</th><th>Canonical R/P</th><th>F1</th><th>Watermark</th><th>V4 all recall</th><th>V4 watermark</th><th>Canonical clean FP</th><th>Readout</th></tr></thead><tbody>
+      <tr><td>V15 best</td><td>94.00% / 79.66%</td><td>86.24%</td><td>58/66</td><td>66.45%</td><td>4/12</td><td>5/25</td><td>未超过 V13-B</td></tr>
+      <tr class="selected"><td>V16 best</td><td>94.50% / 81.82%</td><td>87.70%</td><td>59/66</td><td>66.45%</td><td>4/12</td><td>5/25</td><td>当前生产候选</td></tr>
+      <tr><td>V17 best</td><td>94.50% / 81.82%</td><td>87.70%</td><td>59/66</td><td>64.90%*</td><td>0/8*</td><td>5/25</td><td>水印单元训练未改变 canonical</td></tr>
+      <tr><td>V18 lr5e-7 best</td><td>94.50% / 82.53%</td><td>88.11%</td><td>59/66</td><td>64.90%*</td><td>0/8*</td><td>5/25</td><td>V4 recall 低于 V16</td></tr>
+      <tr><td>V18 lr7e-7 best</td><td>94.50% / 82.17%</td><td>87.91%</td><td>59/66</td><td>62.91%*</td><td>0/8*</td><td>5/25</td><td>提高 LR 未带来水印收益</td></tr>
+    </tbody></table>
+    <p class="small">* V17/V18 使用 cleaned V4 watermark holdout（151 GT、8 个 watermark），与 V15/V16 的 V4 dev（155 GT、12 个 watermark）不是同一分片；只用于各自报告内诊断，不作为跨表绝对提升。</p>
+
+    <h2>10. Recent Watermark Probes: V19-V23</h2>
+    <p>这些实验主要验证合成水印、困难样本、亮度/色度和公开配对残差是否能迁移到真实业务水印。它们不是新的生产候选，统一记录失败原因。</p>
+    <table><thead><tr><th>Probe</th><th>Canonical R/P</th><th>Canonical watermark</th><th>V4 all recall</th><th>V4 watermark</th><th>TH20 logo/text</th><th>TH20 mean coverage</th><th>Gate</th></tr></thead><tbody>
+      <tr><td>V19 unit-label</td><td>95.00% / 80.17%</td><td>60/66</td><td>未记录</td><td>8/12</td><td>2/4 / 3/4</td><td>36.57%</td><td>FAIL</td></tr>
+      <tr><td>V19 component-label</td><td>95.00% / 79.17%</td><td>60/66</td><td>未记录</td><td>8/12</td><td>2/4 / 3/4</td><td>35.91%</td><td>FAIL</td></tr>
+      <tr><td>V20 matched LR1e-6</td><td>95.00% / 80.51%</td><td>60/66</td><td>67.74%</td><td>8/12</td><td>2/4 / 3/4</td><td>35.30%</td><td>FAIL</td></tr>
+      <tr><td>V21 mined AIS</td><td>95.00% / 78.84%</td><td>60/66</td><td>69.68%</td><td>8/12</td><td>2/4 / 3/4</td><td>36.16%</td><td>FAIL</td></tr>
+      <tr><td>V22 gray LR3e-6</td><td>94.50% / 83.63%</td><td>59/66</td><td>68.39%</td><td>8/12</td><td>2/4 / 3/4</td><td>35.30%</td><td>FAIL</td></tr>
+      <tr><td>V22 chroma LR3e-6</td><td>94.50% / 81.12%</td><td>59/66</td><td>67.74%</td><td>8/12</td><td>2/4 / 3/4</td><td>35.31%</td><td>FAIL</td></tr>
+      <tr><td>V23 paired residual E2</td><td>94.50% / 81.12%</td><td>59/66</td><td>68.39%</td><td>8/12</td><td>2/4 / 3/4</td><td>35.06%</td><td>FAIL</td></tr>
+      <tr><td>V23 paired residual E4</td><td>94.00% / 82.46%</td><td>59/66</td><td>65.81%</td><td>8/12</td><td>2/4 / 3/4</td><td>34.75%</td><td>FAIL</td></tr>
+    </tbody></table>
+    <div class="callout warn"><strong>水印 probe 结论：</strong>V19-V23 在合成验证集上有小幅可学习性变化，但没有新增 TH20 Logo 命中，也没有把完整水印 coverage 提到 80%。公开配对残差解决了合成矩形背景伪影，却仍无法复现业务中的小头像 Logo + 半透明账号文字。</div>
+
+    <h2>11. Video Temporal Aggregation Diagnostic</h2>
+    <p>该结果不是训练模型，而是基于 V16 在 120 张冻结视频抽帧上的跨帧几何 probe。原始 MP4 不在当前工作区，因此只能验证相邻 reviewed frames 的保守时序代理。</p>
+    <table><thead><tr><th>Variant</th><th>Recall</th><th>Precision</th><th>F1</th><th>Coverage &gt;=80%</th><th>Watermark</th><th>Clean FP images</th></tr></thead><tbody>
+      <tr><td>V16 raw</td><td>65.56%</td><td>50.25%</td><td>56.90%</td><td>62.91%</td><td>0/8</td><td>23/43</td></tr>
+      <tr><td>Track fill</td><td>66.23%</td><td>42.74%</td><td>51.95%</td><td>62.91%</td><td>0/8</td><td>30/43</td></tr>
+      <tr><td>Track union</td><td>61.59%</td><td>47.21%</td><td>53.45%</td><td>72.85%</td><td>1/8</td><td>23/43</td></tr>
+    </tbody></table>
+    <div class="callout warn"><strong>时序结论：</strong>补框只恢复 1 个 GT，同时新增 7 张 clean FP；union 虽提高 coverage，但降低 IoU recall，水印仍无 coverage>=80% 命中。当前不接入生产。</div>
+
     <h2>Recommendation</h2>
-    <div class="callout"><strong>建议：</strong>当前稳定候选更新为 V13-B best，继续使用 <code>box_thresh=0.40</code>。相较 V1，V13-B 的整体 recall 从 94.00% 提到 94.50%，watermark recall 从 58/66 提到 59/66；代价是 clean FP images 从 4/25 增至 5/25。V13-A 在 V4 dev 略高，但冻结测试集、水印召回和 clean FP 均不如 V13-B。V14 没有解决组合水印完整覆盖问题，不替换 V13-B，也不建议从 V14 继续训练。下一步先做更强的 easy-synthetic overfit 诊断；若完整框 recall 仍无法显著提升，应转向二阶段合框或 YOLO/segmentation 表达组合图形单元。</div>
+    <div class="callout"><strong>建议：</strong>生产继续使用 V16 best 和 <code>box_thresh=0.40</code>。V16 在 canonical 上为 94.50% recall、81.82% precision、87.70% F1，watermark 为 59/66；V18 虽然 canonical F1 达到 88.11%，但 V4 recall 下降且没有新增水印能力。V19-V23 不加入生产训练集，时序补框也暂不启用。下一步应转向 YOLO11-seg 或 PP-OCRv6 增加 overlay segmentation 分支，专门解决 Logo、半透明水印和非文字图形。</div>
   </main>
   <footer>
-    Artifacts: <code>reports/v1_threshold_type_fp_attribution_2026-07-01.md</code>, <code>reports/ppocr_v1_v4_v5_same_standard_eval_2026-07-05.md</code>, <code>reports/ppocr_v1_v6_v7_watermark_same_standard_eval_2026-07-06.md</code>, <code>reports/ppocr_v8_logo_watermark_same_standard_eval_2026-07-06.md</code>, <code>reports/ppocr_v9_ecommerce_watermark_same_standard_eval_2026-07-07.md</code>, <code>reports/ppocr_v10_targeted_watermark_same_standard_eval_2026-07-07.md</code>, <code>reports/ppocr_v11_watermark_group_same_standard_eval_2026-07-09.md</code>, <code>reports/ppocr_v12_watermark_fn_targeted_same_standard_eval_2026-07-09.md</code>, <code>reports/ppocr_v13_ab_same_standard_eval_2026-07-10.md</code>, <code>reports/ppocr_v14_composite_probe_eval_2026-07-10.md</code>, <code>reports/ppocrv6_official_pretrained_same_standard_baseline_2026-07-06.md</code>
+    Artifacts: <code>reports/v1_threshold_type_fp_attribution_2026-07-01.md</code>, <code>reports/ppocr_v1_v4_v5_same_standard_eval_2026-07-05.md</code>, <code>reports/ppocr_v1_v6_v7_watermark_same_standard_eval_2026-07-06.md</code>, <code>reports/ppocr_v8_logo_watermark_same_standard_eval_2026-07-06.md</code>, <code>reports/ppocr_v9_ecommerce_watermark_same_standard_eval_2026-07-07.md</code>, <code>reports/ppocr_v10_targeted_watermark_same_standard_eval_2026-07-07.md</code>, <code>reports/ppocr_v11_watermark_group_same_standard_eval_2026-07-09.md</code>, <code>reports/ppocr_v12_watermark_fn_targeted_same_standard_eval_2026-07-09.md</code>, <code>reports/ppocr_v13_ab_same_standard_eval_2026-07-10.md</code>, <code>reports/ppocr_v14_composite_probe_eval_2026-07-10.md</code>, <code>reports/ppocr_v15_business_same_standard_eval_2026-07-13.md</code>, <code>reports/ppocr_v16_same_standard_eval_2026-07-13.md</code>, <code>reports/ppocr_v17_same_standard_eval_2026-07-14.md</code>, <code>reports/ppocr_v18_lr5e7_same_standard_eval_2026-07-14.md</code>, <code>reports/ppocr_v18_lr7e7_same_standard_eval_2026-07-14.md</code>, <code>reports/ppocr_v19_synthesis_label_probe_eval_2026-07-14.md</code>, <code>reports/ppocr_v20_th20_matched_probe_eval_2026-07-14.md</code>, <code>reports/ppocr_v21_mined_probe_eval_2026-07-14.md</code>, <code>reports/ppocr_v22_chroma_pair_probe_eval_2026-07-14.md</code>, <code>reports/ppocr_v23_paired_residual_probe_eval_2026-07-15.md</code>, <code>reports/ppocr_temporal_aggregation_v16_v4_dev_2026-07-15.md</code>, <code>reports/ppocrv6_official_pretrained_same_standard_baseline_2026-07-06.md</code>
   </footer>
 </body>
 </html>
