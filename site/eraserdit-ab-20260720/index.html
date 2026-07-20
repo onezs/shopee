@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EraserDiT 参数对比 · 2026-07-20</title>
+  <style>
+    :root { --bg:#0b1020; --panel:#121a2e; --panel2:#18233b; --line:#2a3958; --text:#e9eefc; --muted:#9caaca; --blue:#72a7ff; --green:#64d5a0; --amber:#ffc66d; --red:#ff8b8b; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:linear-gradient(145deg,#080d1a,#111a30 55%,#0b1224); color:var(--text); font:15px/1.6 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    .wrap { max-width:1440px; margin:0 auto; padding:32px 24px 64px; }
+    h1,h2,h3 { line-height:1.25; margin:0 0 12px; }
+    h1 { font-size:clamp(28px,4vw,48px); letter-spacing:-.03em; }
+    h2 { font-size:24px; margin-top:42px; }
+    h3 { font-size:18px; }
+    p { margin:8px 0; }
+    a { color:var(--blue); }
+    .eyebrow { color:var(--blue); font-weight:700; letter-spacing:.08em; text-transform:uppercase; font-size:12px; }
+    .sub { color:var(--muted); max-width:900px; font-size:16px; }
+    .hero { padding:30px; border:1px solid var(--line); border-radius:22px; background:radial-gradient(circle at 85% 5%,#233f70 0,transparent 35%),var(--panel); box-shadow:0 20px 70px #0004; }
+    .cards { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin-top:22px; }
+    .card,.panel { border:1px solid var(--line); border-radius:16px; background:#10182aeb; padding:17px; }
+    .card .value { display:block; color:#fff; font-size:25px; font-weight:800; margin-top:2px; }
+    .card .label { color:var(--muted); font-size:12px; }
+    .callout { margin-top:18px; border-left:4px solid var(--green); background:#123328aa; padding:16px 18px; border-radius:0 12px 12px 0; }
+    .callout strong { color:var(--green); }
+    .notice { margin:16px 0; border-left:4px solid var(--amber); background:#3a2a12aa; padding:13px 16px; border-radius:0 12px 12px 0; color:#ffe5b2; }
+    .table-wrap { overflow:auto; border:1px solid var(--line); border-radius:14px; }
+    table { border-collapse:collapse; width:100%; min-width:920px; background:#0f1728; }
+    th,td { padding:11px 12px; border-bottom:1px solid #25324c; text-align:left; vertical-align:top; white-space:nowrap; }
+    th { color:#b9c8e8; background:#17223a; font-size:12px; position:sticky; top:0; }
+    td { color:#e4eaf8; }
+    tr:last-child td { border-bottom:0; }
+    .good { color:var(--green); }
+    .warn { color:var(--amber); }
+    .bad { color:var(--red); }
+    .small { color:var(--muted); font-size:12px; }
+    .video-block { margin-top:26px; padding:22px; border:1px solid var(--line); border-radius:20px; background:linear-gradient(145deg,#111a2d,#0e1627); }
+    .video-head { display:flex; justify-content:space-between; gap:16px; align-items:flex-start; flex-wrap:wrap; }
+    .video-meta { color:var(--muted); font-size:13px; }
+    .preview { margin:16px 0; }
+    .preview img { width:100%; max-height:900px; object-fit:contain; display:block; border-radius:12px; border:1px solid var(--line); background:#070b14; }
+    .media-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px; }
+    figure { margin:0; min-width:0; }
+    figcaption { color:#bfcae1; font-size:12px; margin:0 0 6px; }
+    video { display:block; width:100%; aspect-ratio:9/16; object-fit:contain; background:#050812; border:1px solid var(--line); border-radius:10px; }
+    details { margin-top:14px; border-top:1px solid var(--line); padding-top:12px; }
+    summary { cursor:pointer; color:var(--blue); }
+    code { color:#d7e3ff; background:#1b2945; padding:2px 5px; border-radius:5px; }
+    .grid2 { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+    ul { margin:8px 0 8px 20px; padding:0; }
+    li { margin:5px 0; }
+    footer { margin-top:42px; color:var(--muted); font-size:12px; border-top:1px solid var(--line); padding-top:16px; }
+    @media (max-width:900px) { .cards { grid-template-columns:repeat(2,minmax(0,1fr)); } .media-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .media-grid figure:first-child { grid-column:span 2; } .grid2 { grid-template-columns:1fr; } }
+    @media (max-width:560px) { .wrap { padding:18px 12px 42px; } .hero { padding:20px; } .cards { grid-template-columns:1fr 1fr; } .media-grid { grid-template-columns:1fr 1fr; } }
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <section class="hero">
+    <div class="eyebrow">EraserDiT · A/B benchmark · 2026-07-20</div>
+    <h1>50/3、30/3、30/1 参数对比</h1>
+    <p class="sub">两条泰国短视频使用同一输入、同一 mask、同一 prompt，分别验证 <code>num_inference_steps</code> 与 <code>guidance_scale</code> 对完整推理耗时和擦除质量的影响。</p>
+    <div id="summaryCards" class="cards"></div>
+    <div class="callout"><strong>当前建议：</strong>生产默认优先使用 <code>30 / CFG 3</code>。本次样本中它比 50 步更快，质量代理指标与 50/3 接近；30/1 可作为追求最低延迟的 fallback，但正式上线前仍建议对更多复杂 mask 做抽样复核。</div>
+  </section>
+
+  <h2>实验结论</h2>
+  <section class="grid2">
+    <div class="panel"><h3>速度</h3><ul><li>视频 1：50/3 为 <span id="v1slow"></span>，30/3 为 <span id="v1mid"></span>，30/1 为 <span id="v1fast"></span>。</li><li>视频 2：50/3 为 <span id="v2slow"></span>，30/3 为 <span id="v2mid"></span>，30/1 为 <span id="v2fast"></span>。</li></ul></div>
+    <div class="panel"><h3>质量</h3><ul><li><code>mask 外 changed%</code> 越低，代表非擦除区域被改动得越少。</li><li>本次样例的黑块代理帧数均为 0；视频 1 的 30/3、30/1 在 mask 外保持度优于 50/3。</li><li>视频 2 三组主观观感接近，30/3 的 mask 内改动幅度略低于 30/1。</li></ul></div>
+  </section>
+
+  <h2>实验配置</h2>
+  <div class="table-wrap"><table><tbody>
+    <tr><th>项目</th><th>设置</th><th>说明</th></tr>
+    <tr><td>时序窗口</td><td><code>121 frames</code></td><td>三组参数固定，保证比较只反映 steps / CFG 差异。</td></tr>
+    <tr><td>参数组</td><td><code>50/3</code>、<code>30/3</code>、<code>30/1</code></td><td>格式为 num_inference_steps / guidance_scale。</td></tr>
+    <tr><td>mask</td><td>每个视频固定一份</td><td>视频 1：s30-c3 mask；视频 2：align-121 mask；三组不重新检测。</td></tr>
+    <tr><td>Prompt</td><td>每个视频固定一份</td><td>保留商品、手、皮肤、光照和相机运动，避免黑块、涂抹和非文字区域变化。</td></tr>
+    <tr><td>耗时口径</td><td>完整 wall time</td><td>包含模型加载、预处理、各批次扩散、后处理和 ffmpeg 写盘；单卡串行运行。</td></tr>
+  </tbody></table></div>
+
+  <h2>耗时与质量代理指标</h2>
+  <p class="small">MAE / changed% 均按逐帧 source 与 output 比较；mask 外指标越低越好。没有干净 GT，因此 mask 内 MAE 不能单独等价为“擦除更好”。</p>
+  <div class="table-wrap"><table><thead><tr><th>视频</th><th>steps / CFG</th><th>耗时</th><th>相对同视频 50/3</th><th>帧</th><th>mask 覆盖</th><th>mask 外 MAE</th><th>mask 外 changed%</th><th>mask 内 MAE</th><th>输出黑像素%</th><th>黑块代理帧</th></tr></thead><tbody id="metricsBody"></tbody></table></div>
+  <div id="frameNotice" class="notice"></div>
+
+  <h2>逐视频可视化</h2>
+  <p class="small">每个视频的预览图从 15%、50%、85% 位置抽帧，列顺序为 source、mask overlay、50/3、30/3、30/1。下方视频可直接播放检查连续帧效果。</p>
+  <div id="videoSections"></div>
+
+  <h2>指标定义与限制</h2>
+  <div class="panel">
+    <ul>
+      <li><b>mask 外 MAE / changed%</b>：source 与 output 在 mask 外区域的平均绝对像素差、差异超过 8 灰度的像素比例，用于衡量非目标区域保持度。</li>
+      <li><b>mask 内 MAE</b>：擦除区域的变化幅度，只说明模型确实改动了多少，不代表内容一定更真实。</li>
+      <li><b>输出黑像素% / 黑块代理帧</b>：mask 内接近黑色的像素比例，以及相对 source 明显增加黑像素的帧数，用于捕捉黑块风险。</li>
+      <li><b>帧数差异</b>：视频 2 的 OpenCV 解码结果是 source 413 帧、mask/output 414 帧；容器声明均为 414 帧。该差异对三组完全一致，报告不将其归因于参数。</li>
+      <li>本报告不包含模型权重或内部绝对路径；媒体和对比图均与页面一起打包。</li>
+    </ul>
+  </div>
+  <footer>Generated from the local EraserDiT run on 2026-07-20 UTC. All three variants for each video reuse the same mask artifact.</footer>
+</main>
+<script>
+  const $ = (id) => document.getElementById(id);
+  const esc = (v) => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const pct = (v, n=2) => v == null ? '—' : `${Number(v).toFixed(n)}%`;
+  const num = (v, n=2) => v == null ? '—' : Number(v).toFixed(n);
+  const sec = (v) => `${Number(v).toFixed(3)} s`;
+  const byId = (cases, id) => cases.find(x => x.id === id);
+  function render(data) {
+    const cases = data.cases;
+    const v1 = cases.filter(x => x.video === 'video1');
+    const v2 = cases.filter(x => x.video === 'video2');
+    const allTimes = cases.map(x => x.wall_time_sec);
+    $('summaryCards').innerHTML = [
+      ['视频数','2'], ['参数组合','3 / 视频'], ['成功输出',`${cases.filter(x=>x.status==='success').length} / ${cases.length}`], ['时序窗口',`${data.config.temp_infer_len} 帧`]
+    ].map(x => `<div class="card"><span class="label">${x[0]}</span><span class="value">${x[1]}</span></div>`).join('');
+    const fill = (id, item) => $(id).textContent = sec(item.wall_time_sec);
+    fill('v1slow', byId(cases,'video1_50_3')); fill('v1mid', byId(cases,'video1_30_3')); fill('v1fast', byId(cases,'video1_30_1'));
+    fill('v2slow', byId(cases,'video2_50_3')); fill('v2mid', byId(cases,'video2_30_3')); fill('v2fast', byId(cases,'video2_30_1'));
+    const rows=[];
+    for (const video of ['video1','video2']) {
+      const base=byId(cases,`${video}_50_3`);
+      for (const x of cases.filter(c=>c.video===video)) {
+        rows.push(`<tr><td>${esc(video === 'video1' ? '视频 1' : '视频 2')}</td><td><code>${x.steps} / ${x.guidance_scale}</code>${x.reused_output ? ' <span class="small">(复用)</span>' : ''}</td><td>${sec(x.wall_time_sec)}</td><td class="${x.wall_time_sec < base.wall_time_sec ? 'good':'warn'}">${x===base?'基准':`-${((1-x.wall_time_sec/base.wall_time_sec)*100).toFixed(1)}%`}</td><td>${x.source.decoded_frames} → ${x.output.decoded_frames}</td><td>${pct(x.mask_coverage_pct)}</td><td>${num(x.outside_mae)}</td><td>${pct(x.outside_changed_pct)}</td><td>${num(x.inside_mae)}</td><td>${pct(x.output_inside_dark_pct)}</td><td class="${x.dark_block_frames===0?'good':'bad'}">${x.dark_block_frames}</td></tr>`);
+      }
+    }
+    $('metricsBody').innerHTML=rows.join('');
+    const mismatch=cases.filter(x=>!x.frame_count_match);
+    $('frameNotice').innerHTML = mismatch.length ? `<b>帧边界提示：</b>${mismatch.map(x=>`${esc(x.video)} ${x.source.decoded_frames} → ${x.output.decoded_frames}`).join('；')}。容器声明均为 414 帧，三组结果一致，建议后续在发布前统一用 ffmpeg/decord 再做一次帧数口径确认。` : '<b>帧一致性：</b>六组输出均与输入保持一致。';
+    $('videoSections').innerHTML = data.videos.map(v => {
+      const vc=cases.filter(x=>x.video===v.id);
+      const mask=v.mask_summary;
+      const figs=[['原视频',v.source_asset],['Mask',v.mask_asset],...vc.map(x=>[`${x.steps} 步 / CFG ${x.guidance_scale}`,x.output_asset])];
+      return `<section class="video-block"><div class="video-head"><div><h3>${esc(v.label)}</h3><div class="video-meta">${mask.frames_written} 帧 · ${num(mask.fps,3)} FPS · 平均 mask 覆盖 ${pct(mask.mask_coverage_ratio_avg*100)} · 正 mask 帧 ${pct(mask.positive_mask_frame_ratio*100)}</div></div><div class="small">mask SHA256：${esc(vc[0].mask.sha256)}</div></div><div class="preview"><img src="${esc(v.preview_asset)}" alt="${esc(v.label)} 参数对比预览"></div><div class="media-grid">${figs.map(([label,src])=>`<figure><figcaption>${esc(label)}</figcaption><video controls preload="metadata" muted playsinline src="${esc(src)}"></video></figure>`).join('')}</div><details><summary>查看该视频使用的 prompt</summary><p class="small">${esc(v.prompt)}</p></details></section>`;
+    }).join('');
+  }
+  fetch('data.json').then(r => r.json()).then(render).catch(err => { document.body.innerHTML += `<p style="padding:24px;color:#ff8b8b">报告数据加载失败：${esc(err)}</p>`; });
+</script>
+</body>
+</html>
