@@ -1,10 +1,12 @@
 {
-  "generated_at": "2026-07-20T07:15:00Z",
+  "generated_at": "2026-07-20T08:09:28.800051+00:00",
   "config": {
     "temp_infer_len": 121,
     "cpu_offload": false,
     "same_mask_per_video": true,
     "same_prompt_per_video": true,
+    "video2_mask_override": "outputs/video_det_eval_box035/mask/mask.mp4",
+    "mask_browser_codec": "H.264 / yuv420p / faststart",
     "quality_note": "无干净 GT，质量指标是工程代理指标；最终以视频主观观感为准。"
   },
   "videos": [
@@ -13,7 +15,6 @@
       "label": "视频 1 · mq1pi44hb9xrf7",
       "source_asset": "assets/video1_source.mp4",
       "mask_asset": "assets/video1_mask.mp4",
-      "preview_asset": "assets/video1_comparison.jpg",
       "prompt": "A vertical short-form Thailand-market product advertisement video. Remove overlaid text while preserving the original background, product packaging, people, hands, skin texture, lighting, and camera motion. Keep the scene realistic and avoid dark blocks, smudges, artificial patches, or changes to non-text regions.",
       "mask_summary": {
         "fps": 25.0,
@@ -70,10 +71,9 @@
     },
     {
       "id": "video2",
-      "label": "视频 2 · mq1qc2r3hvd8c3",
+      "label": "视频 2 · mq1qc2r3hvd8c3 · box035 mask",
       "source_asset": "assets/video2_source.mp4",
       "mask_asset": "assets/video2_mask.mp4",
-      "preview_asset": "assets/video2_comparison.jpg",
       "prompt": "A short-form Thailand-market product advertisement video. Remove overlaid text while preserving the original background, product packaging, people, hands, skin texture, lighting, and camera motion. Keep the scene realistic and avoid dark blocks, smudges, artificial patches, or changes to non-text regions.",
       "mask_summary": {
         "fps": 25.06053268765133,
@@ -82,53 +82,71 @@
         "frames_reported": 414,
         "frames_written": 414,
         "detection_frames": 414,
-        "positive_mask_frames": 365,
-        "positive_mask_frame_ratio": 0.8816425120772947,
-        "empty_mask_frames": 49,
+        "positive_mask_frames": 304,
+        "positive_mask_frame_ratio": 0.7342995169082126,
+        "empty_mask_frames": 110,
         "empty_mask_runs": [
           [
-            68,
+            53,
             81
           ],
           [
-            167,
+            108,
+            112
+          ],
+          [
+            152,
             172
           ],
           [
-            263,
+            174,
+            177
+          ],
+          [
+            180,
+            187
+          ],
+          [
+            248,
+            288
+          ],
+          [
+            290,
             291
           ]
         ],
-        "kept_boxes": 1960,
+        "kept_boxes": 826,
         "skipped_boxes": 0,
-        "avg_boxes_per_frame": 4.734299659729004,
-        "max_boxes_per_frame": 11,
-        "mask_coverage_ratio_avg": 0.08918558806180954,
-        "mask_coverage_ratio_p50": 0.0939641147851944,
-        "mask_coverage_ratio_p95": 0.16572290658950806,
-        "mask_coverage_ratio_max": 0.26537036895751953,
+        "avg_boxes_per_frame": 1.9951690435409546,
+        "max_boxes_per_frame": 5,
+        "mask_coverage_ratio_avg": 0.06838297843933105,
+        "mask_coverage_ratio_p50": 0.07889564335346222,
+        "mask_coverage_ratio_p95": 0.1626468002796173,
+        "mask_coverage_ratio_max": 0.18064428865909576,
         "pad": 2,
         "dilate": 4,
-        "dilate_x": 6,
-        "dilate_y": 8,
-        "morph_close": 1,
+        "dilate_x": 4,
+        "dilate_y": 4,
+        "morph_close": 0,
         "min_area": 0.0,
         "max_area_ratio": 1.0,
         "fill_missing": "last",
         "persistence": {
-          "enabled": true,
-          "frames": 15,
-          "rois": [
-            "bottom",
-            "middle",
-            "top"
-          ],
-          "added_boxes": 406,
-          "refreshed_boxes": 752,
-          "iou_threshold": 0.3
+          "enabled": false,
+          "frames": 0,
+          "rois": [],
+          "added_boxes": 0,
+          "refreshed_boxes": 0
         },
         "tracking": {
-          "enabled": false
+          "enabled": true,
+          "track_count": 34,
+          "raw_track_count": 34,
+          "interpolated_boxes": 8,
+          "iou_threshold": 0.3,
+          "max_gap_frames": 3,
+          "smooth_window": 5,
+          "min_track_len": 1
         }
       }
     }
@@ -315,7 +333,7 @@
       "id": "video2_50_3",
       "steps": 50,
       "guidance_scale": 3.0,
-      "wall_time_sec": 432.907,
+      "wall_time_sec": 432.681,
       "status": "success",
       "reused_output": false,
       "source": {
@@ -331,8 +349,8 @@
         "asset": "assets/video2_source.mp4"
       },
       "mask": {
-        "bytes": 481410,
-        "sha256": "a771b85406b7af84c0c1883029443da02b817d0feb34b6b4a19cfd8cb3492c7c",
+        "bytes": 428949,
+        "sha256": "4dd07a1a347276632aae27df741ffba108525cfc278291ebdc77582efc9aeb9f",
         "opened": true,
         "fps": 25.06,
         "declared_frames": 414,
@@ -343,7 +361,7 @@
         "asset": "assets/video2_mask.mp4"
       },
       "output": {
-        "bytes": 2701924,
+        "bytes": 2681109,
         "opened": true,
         "fps": 25.06053268765133,
         "declared_frames": 414,
@@ -355,18 +373,18 @@
       "aligned_frames": 413,
       "read_failures": 0,
       "frame_count_match": false,
-      "mask_coverage_pct": 8.921468646309748,
-      "outside_mae": 4.813293408084098,
-      "outside_changed_pct": 15.356446475996083,
-      "inside_mae": 42.79780771405669,
-      "inside_changed_pct": 49.23585633329464,
-      "source_inside_dark_pct": 8.558534716333504,
-      "output_inside_dark_pct": 0.26956995973936787,
-      "source_outside_dark_pct": 0.029294085463990482,
-      "output_outside_dark_pct": 0.291633151649285,
+      "mask_coverage_pct": 6.837267490957463,
+      "outside_mae": 4.9177407736006495,
+      "outside_changed_pct": 15.377689129834195,
+      "inside_mae": 53.120915583424164,
+      "inside_changed_pct": 60.86717694086191,
+      "source_inside_dark_pct": 11.237231048052282,
+      "output_inside_dark_pct": 0.18440369886740715,
+      "source_outside_dark_pct": 0.023515914779487977,
+      "output_outside_dark_pct": 0.3118053376589314,
       "dark_block_frames": 0,
-      "output_temporal_inside_mae": 3.593160798349129,
-      "source_temporal_inside_mae": 4.0086103565287505,
+      "output_temporal_inside_mae": 3.424083867573894,
+      "source_temporal_inside_mae": 2.972711641523173,
       "video": "video2",
       "output_asset": "assets/video2_50_3.mp4"
     },
@@ -374,7 +392,7 @@
       "id": "video2_30_3",
       "steps": 30,
       "guidance_scale": 3.0,
-      "wall_time_sec": 374.156,
+      "wall_time_sec": 372.068,
       "status": "success",
       "reused_output": false,
       "source": {
@@ -390,8 +408,8 @@
         "asset": "assets/video2_source.mp4"
       },
       "mask": {
-        "bytes": 481410,
-        "sha256": "a771b85406b7af84c0c1883029443da02b817d0feb34b6b4a19cfd8cb3492c7c",
+        "bytes": 428949,
+        "sha256": "4dd07a1a347276632aae27df741ffba108525cfc278291ebdc77582efc9aeb9f",
         "opened": true,
         "fps": 25.06,
         "declared_frames": 414,
@@ -402,7 +420,7 @@
         "asset": "assets/video2_mask.mp4"
       },
       "output": {
-        "bytes": 2685017,
+        "bytes": 2648995,
         "opened": true,
         "fps": 25.06053268765133,
         "declared_frames": 414,
@@ -414,18 +432,18 @@
       "aligned_frames": 413,
       "read_failures": 0,
       "frame_count_match": false,
-      "mask_coverage_pct": 8.921468646309748,
-      "outside_mae": 4.979125891013048,
-      "outside_changed_pct": 15.344863817272108,
-      "inside_mae": 41.545232598458085,
-      "inside_changed_pct": 49.009007112950755,
-      "source_inside_dark_pct": 8.558534716333504,
-      "output_inside_dark_pct": 0.23526248360473828,
-      "source_outside_dark_pct": 0.029294085463990482,
-      "output_outside_dark_pct": 0.2961598552956384,
+      "mask_coverage_pct": 6.837267490957463,
+      "outside_mae": 4.890236964766963,
+      "outside_changed_pct": 15.221709002123301,
+      "inside_mae": 52.63991451330342,
+      "inside_changed_pct": 60.370317111650856,
+      "source_inside_dark_pct": 11.237231048052282,
+      "output_inside_dark_pct": 0.20675566236648682,
+      "source_outside_dark_pct": 0.023515914779487977,
+      "output_outside_dark_pct": 0.32945593558509395,
       "dark_block_frames": 0,
-      "output_temporal_inside_mae": 3.56518258490508,
-      "source_temporal_inside_mae": 4.0086103565287505,
+      "output_temporal_inside_mae": 2.9794752815396763,
+      "source_temporal_inside_mae": 2.972711641523173,
       "video": "video2",
       "output_asset": "assets/video2_30_3.mp4"
     },
@@ -433,7 +451,7 @@
       "id": "video2_30_1",
       "steps": 30,
       "guidance_scale": 1.0,
-      "wall_time_sec": 331.945,
+      "wall_time_sec": 332.501,
       "status": "success",
       "reused_output": false,
       "source": {
@@ -449,8 +467,8 @@
         "asset": "assets/video2_source.mp4"
       },
       "mask": {
-        "bytes": 481410,
-        "sha256": "a771b85406b7af84c0c1883029443da02b817d0feb34b6b4a19cfd8cb3492c7c",
+        "bytes": 428949,
+        "sha256": "4dd07a1a347276632aae27df741ffba108525cfc278291ebdc77582efc9aeb9f",
         "opened": true,
         "fps": 25.06,
         "declared_frames": 414,
@@ -461,7 +479,7 @@
         "asset": "assets/video2_mask.mp4"
       },
       "output": {
-        "bytes": 2692843,
+        "bytes": 2662772,
         "opened": true,
         "fps": 25.06053268765133,
         "declared_frames": 414,
@@ -473,18 +491,18 @@
       "aligned_frames": 413,
       "read_failures": 0,
       "frame_count_match": false,
-      "mask_coverage_pct": 8.921468646309748,
-      "outside_mae": 4.714377805147916,
-      "outside_changed_pct": 14.605727009862187,
-      "inside_mae": 43.015117382822794,
-      "inside_changed_pct": 50.675576663230686,
-      "source_inside_dark_pct": 8.558534716333504,
-      "output_inside_dark_pct": 0.20389205830354792,
-      "source_outside_dark_pct": 0.029294085463990482,
-      "output_outside_dark_pct": 0.22520799362222482,
+      "mask_coverage_pct": 6.837267490957463,
+      "outside_mae": 4.806394594142159,
+      "outside_changed_pct": 15.38499432958373,
+      "inside_mae": 53.29312673706761,
+      "inside_changed_pct": 60.58445056148037,
+      "source_inside_dark_pct": 11.237231048052282,
+      "output_inside_dark_pct": 0.16015946950975626,
+      "source_outside_dark_pct": 0.023515914779487977,
+      "output_outside_dark_pct": 0.3044304499837098,
       "dark_block_frames": 0,
-      "output_temporal_inside_mae": 3.8943937974152187,
-      "source_temporal_inside_mae": 4.0086103565287505,
+      "output_temporal_inside_mae": 3.2805552835597163,
+      "source_temporal_inside_mae": 2.972711641523173,
       "video": "video2",
       "output_asset": "assets/video2_30_1.mp4"
     }

@@ -38,8 +38,6 @@
     .video-block { margin-top:26px; padding:22px; border:1px solid var(--line); border-radius:20px; background:linear-gradient(145deg,#111a2d,#0e1627); }
     .video-head { display:flex; justify-content:space-between; gap:16px; align-items:flex-start; flex-wrap:wrap; }
     .video-meta { color:var(--muted); font-size:13px; }
-    .preview { margin:16px 0; }
-    .preview img { width:100%; max-height:900px; object-fit:contain; display:block; border-radius:12px; border:1px solid var(--line); background:#070b14; }
     .media-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px; }
     figure { margin:0; min-width:0; }
     figcaption { color:#bfcae1; font-size:12px; margin:0 0 6px; }
@@ -87,7 +85,7 @@
   <div id="frameNotice" class="notice"></div>
 
   <h2>逐视频可视化</h2>
-  <p class="small">每个视频的预览图从 15%、50%、85% 位置抽帧，列顺序为 source、mask overlay、50/3、30/3、30/1。下方视频可直接播放检查连续帧效果。</p>
+  <p class="small">每个视频保留原视频、mask 视频和三组擦除结果，可直接播放检查连续帧效果。</p>
   <div id="videoSections"></div>
 
   <h2>指标定义与限制</h2>
@@ -134,7 +132,7 @@
       const vc=cases.filter(x=>x.video===v.id);
       const mask=v.mask_summary;
       const figs=[['原视频',v.source_asset],['Mask',v.mask_asset],...vc.map(x=>[`${x.steps} 步 / CFG ${x.guidance_scale}`,x.output_asset])];
-      return `<section class="video-block"><div class="video-head"><div><h3>${esc(v.label)}</h3><div class="video-meta">${mask.frames_written} 帧 · ${num(mask.fps,3)} FPS · 平均 mask 覆盖 ${pct(mask.mask_coverage_ratio_avg*100)} · 正 mask 帧 ${pct(mask.positive_mask_frame_ratio*100)}</div></div><div class="small">mask SHA256：${esc(vc[0].mask.sha256)}</div></div><div class="preview"><img src="${esc(v.preview_asset)}" alt="${esc(v.label)} 参数对比预览"></div><div class="media-grid">${figs.map(([label,src])=>`<figure><figcaption>${esc(label)}</figcaption><video controls preload="metadata" muted playsinline src="${esc(src)}"></video></figure>`).join('')}</div><details><summary>查看该视频使用的 prompt</summary><p class="small">${esc(v.prompt)}</p></details></section>`;
+      return `<section class="video-block"><div class="video-head"><div><h3>${esc(v.label)}</h3><div class="video-meta">${mask.frames_written} 帧 · ${num(mask.fps,3)} FPS · 平均 mask 覆盖 ${pct(mask.mask_coverage_ratio_avg*100)} · 正 mask 帧 ${pct(mask.positive_mask_frame_ratio*100)}</div></div><div class="small">mask SHA256：${esc(vc[0].mask.sha256)}</div></div><div class="media-grid">${figs.map(([label,src])=>`<figure><figcaption>${esc(label)}</figcaption><video controls preload="metadata" muted playsinline src="${esc(src)}"></video></figure>`).join('')}</div><details><summary>查看该视频使用的 prompt</summary><p class="small">${esc(v.prompt)}</p></details></section>`;
     }).join('');
   }
   fetch('data.json').then(r => r.json()).then(render).catch(err => { document.body.innerHTML += `<p style="padding:24px;color:#ff8b8b">报告数据加载失败：${esc(err)}</p>`; });
